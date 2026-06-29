@@ -1,0 +1,154 @@
+{
+  "brand": { "name": "Plugcut" },
+  "nav": {
+    "how": "How it works",
+    "security": "What we secure",
+    "calculator": "Calculator",
+    "faq": "FAQ",
+    "login": "Log in",
+    "start": "Get started"
+  },
+  "hero": {
+    "badge": "Business referrals — person to person",
+    "title1": "You plugged them in.",
+    "title2": "Take your cut.",
+    "subtitle": "Placed a freelancer, an indie, a company? Plugcut formalizes and executes the private commission they owe you — a percentage of the daily rate, over time. Discreetly, with a real contract.",
+    "ctaPrimary": "Create my first deal",
+    "ctaSecondary": "See how it works",
+    "note": "The relationship already exists. Plugcut secures the agreement, not the intro.",
+    "receipt": {
+      "label": "Referral agreement",
+      "client": "End client",
+      "clientValue": "confidential",
+      "tjm": "Placed day rate",
+      "rate": "Your commission",
+      "duration": "Duration",
+      "months": "12 months",
+      "yourCut": "Your cut / month",
+      "stamp": "Attribution sealed"
+    }
+  },
+  "marquee": {
+    "items": [
+      "The project lead placing a freelancer",
+      "The dev recommending a friend",
+      "The baker with a developer buddy",
+      "The agency subcontracting a gig",
+      "The ex-colleague handing you a client",
+      "The consultant opening their address book"
+    ]
+  },
+  "how": {
+    "eyebrow": "The flow",
+    "title": "From intro to payout, on a single rail.",
+    "steps": [
+      {
+        "n": "01",
+        "title": "Create the deal",
+        "desc": "Who placed whom, at which client — kept discreet from the end client."
+      },
+      {
+        "n": "02",
+        "title": "Set the commission",
+        "desc": "A percentage of the day rate, over a duration. For example 10% over 12 months."
+      },
+      {
+        "n": "03",
+        "title": "Two-sided acceptance",
+        "desc": "Both parties accept the terms. That's your attribution proof — timestamped and sealed."
+      },
+      {
+        "n": "04",
+        "title": "Contract generated",
+        "desc": "The written agreement between referrer and placed person, ready to sign."
+      },
+      {
+        "n": "05",
+        "title": "Recurring collection",
+        "desc": "Your cut is computed and tracked against the day rate, month after month."
+      }
+    ]
+  },
+  "pillars": {
+    "eyebrow": "The real value",
+    "title": "What Plugcut secures — that a handshake never could.",
+    "items": [
+      {
+        "title": "A real contract",
+        "desc": "The written agreement between you and the placed person. Not a promise — a document."
+      },
+      {
+        "title": "Attribution proof",
+        "desc": "Who introduced whom, timestamped and sealed by fingerprint. Your protection in a dispute."
+      },
+      {
+        "title": "Recurring collection",
+        "desc": "Your commission pulled automatically from the day rate, month after month — no chasing."
+      },
+      {
+        "title": "Total discretion",
+        "desc": "The end client sees nothing. The agreement stays strictly between the two of you."
+      }
+    ]
+  },
+  "calc": {
+    "eyebrow": "Calculator",
+    "title": "What's your intro worth?",
+    "subtitle": "Estimate your cut over the duration. The real figure follows the days actually billed.",
+    "tjm": "Placed person's day rate",
+    "rate": "Your commission",
+    "duration": "Duration",
+    "durationUnit": "months",
+    "daysPerMonth": "Days billed / month",
+    "monthly": "Your cut / month",
+    "total": "Total over the duration",
+    "disclaimer": "Indicative estimate. The final figure is based on the days actually billed by the placed person."
+  },
+  "faq": {
+    "eyebrow": "Fair questions",
+    "title": "What everyone wonders.",
+    "items": [
+      {
+        "q": "Why not just shake hands and send an invoice?",
+        "a": "Because on 10% of a day rate for a year, the referrer fears being forgotten, and the placed person wants a clean, discreet frame. Plugcut sells trust and execution of the deal — not the intro."
+      },
+      {
+        "q": "Who pays the commission?",
+        "a": "The placed person, never the end client. Privately, discreetly."
+      },
+      {
+        "q": "Does Plugcut match strangers?",
+        "a": "No. The relationship already exists offline. We formalize and track the agreement — we don't do matching."
+      },
+      {
+        "q": "Who can be a referrer?",
+        "a": "Anyone. A project lead, a developer, or someone entirely outside tech who knows the right person."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Your network has value. Cash it in.",
+    "subtitle": "Put your next referral on a clean, discreet, contractual rail.",
+    "button": "Get started now"
+  },
+  "footer": {
+    "tagline": "The rail for referral commissions, person to person.",
+    "product": "Product",
+    "legal": "Legal",
+    "legalNotice": "Legal notice",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "rights": "All rights reserved.",
+    "disclaimer": "Demonstration project."
+  },
+  "placeholder": {
+    "back": "Back to home",
+    "soon": "This page is coming soon.",
+    "register": "Sign up",
+    "login": "Log in",
+    "legalNotice": "Legal notice",
+    "terms": "Terms & conditions",
+    "privacy": "Privacy policy"
+  },
+  "lang": { "fr": "FR", "en": "EN" }
+}

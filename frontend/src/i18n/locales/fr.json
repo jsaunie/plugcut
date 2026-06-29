@@ -1,0 +1,154 @@
+{
+  "brand": { "name": "Plugcut" },
+  "nav": {
+    "how": "Comment ça marche",
+    "security": "Ce qu'on sécurise",
+    "calculator": "Simulateur",
+    "faq": "FAQ",
+    "login": "Se connecter",
+    "start": "Commencer"
+  },
+  "hero": {
+    "badge": "Apport d'affaires — de particulier à particulier",
+    "title1": "Tu l'as branché.",
+    "title2": "Prends ta part.",
+    "subtitle": "Tu as placé un freelance, un indé, une boîte ? Plugcut formalise et exécute la commission privée qu'on te verse — un pourcentage du TJM, sur la durée. Discrètement, avec un vrai contrat.",
+    "ctaPrimary": "Créer mon premier deal",
+    "ctaSecondary": "Voir comment ça marche",
+    "note": "La relation existe déjà. Plugcut sécurise l'accord, pas la mise en relation.",
+    "receipt": {
+      "label": "Accord d'apport",
+      "client": "Client final",
+      "clientValue": "confidentiel",
+      "tjm": "TJM placé",
+      "rate": "Ta commission",
+      "duration": "Durée",
+      "months": "12 mois",
+      "yourCut": "Ta part / mois",
+      "stamp": "Attribution scellée"
+    }
+  },
+  "marquee": {
+    "items": [
+      "Le chef de projet qui place un freelance",
+      "Le dev qui recommande un pote",
+      "Le boulanger qui a un pote développeur",
+      "L'agence qui sous-traite une mission",
+      "L'ancien collègue qui te branche un client",
+      "Le consultant qui ouvre son carnet d'adresses"
+    ]
+  },
+  "how": {
+    "eyebrow": "Le parcours",
+    "title": "De l'intro à l'encaissement, sur un seul rail.",
+    "steps": [
+      {
+        "n": "01",
+        "title": "Crée le deal",
+        "desc": "Qui place qui, chez quel client — gardé discret vis-à-vis du client final."
+      },
+      {
+        "n": "02",
+        "title": "Fixe la commission",
+        "desc": "Un pourcentage du TJM, sur une durée. Par exemple 10 % sur 12 mois."
+      },
+      {
+        "n": "03",
+        "title": "Double validation",
+        "desc": "Les deux parties acceptent les termes. C'est ta preuve d'attribution, horodatée et scellée."
+      },
+      {
+        "n": "04",
+        "title": "Contrat généré",
+        "desc": "L'accord écrit entre l'apporteur et la personne placée, prêt à signer."
+      },
+      {
+        "n": "05",
+        "title": "Collecte récurrente",
+        "desc": "Ta part est calculée et suivie sur le TJM, mois après mois, jusqu'au bout."
+      }
+    ]
+  },
+  "pillars": {
+    "eyebrow": "La vraie valeur",
+    "title": "Ce que Plugcut sécurise — et que la poignée de main ne sécurise pas.",
+    "items": [
+      {
+        "title": "Un vrai contrat",
+        "desc": "L'accord écrit entre toi et la personne placée. Pas une promesse, un document."
+      },
+      {
+        "title": "Preuve d'attribution",
+        "desc": "Qui a introduit qui, horodaté et scellé par empreinte. Ta protection en cas de litige."
+      },
+      {
+        "title": "Collecte récurrente",
+        "desc": "Ta commission prélevée automatiquement sur le TJM, mois après mois — sans relancer."
+      },
+      {
+        "title": "Discrétion totale",
+        "desc": "Le client final ne voit rien. L'accord reste strictement entre vous deux."
+      }
+    ]
+  },
+  "calc": {
+    "eyebrow": "Simulateur",
+    "title": "Combien vaut ton intro ?",
+    "subtitle": "Estime ta part sur la durée. Le montant réel suivra les jours réellement facturés.",
+    "tjm": "TJM de la personne placée",
+    "rate": "Ta commission",
+    "duration": "Durée",
+    "durationUnit": "mois",
+    "daysPerMonth": "Jours facturés / mois",
+    "monthly": "Ta part / mois",
+    "total": "Total sur la durée",
+    "disclaimer": "Estimation indicative. Le calcul définitif se base sur les jours réellement facturés par la personne placée."
+  },
+  "faq": {
+    "eyebrow": "Questions légitimes",
+    "title": "Ce que tout le monde se demande.",
+    "items": [
+      {
+        "q": "Pourquoi ne pas juste se serrer la main et envoyer une facture ?",
+        "a": "Parce que sur 10 % d'un TJM pendant un an, l'apporteur a peur de se faire oublier, et la personne placée veut un cadre propre et discret. Plugcut vend la confiance et l'exécution du deal — pas l'intro."
+      },
+      {
+        "q": "Qui paie la commission ?",
+        "a": "La personne placée, jamais le client final. En privé, en toute discrétion."
+      },
+      {
+        "q": "Est-ce que Plugcut met en relation des inconnus ?",
+        "a": "Non. La relation existe déjà hors-ligne. On formalise et on suit l'accord — on ne fait pas de matching."
+      },
+      {
+        "q": "Qui peut être apporteur ?",
+        "a": "N'importe qui. Un chef de projet, un développeur, ou quelqu'un de totalement hors tech qui connaît la bonne personne."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Ton réseau a de la valeur. Encaisse-la.",
+    "subtitle": "Mets ton prochain apport sur un rail propre, discret et contractuel.",
+    "button": "Commencer maintenant"
+  },
+  "footer": {
+    "tagline": "Le rail des commissions d'apport, de particulier à particulier.",
+    "product": "Produit",
+    "legal": "Légal",
+    "legalNotice": "Mentions légales",
+    "terms": "CGU / CGV",
+    "privacy": "Confidentialité",
+    "rights": "Tous droits réservés.",
+    "disclaimer": "Projet de démonstration."
+  },
+  "placeholder": {
+    "back": "Retour à l'accueil",
+    "soon": "Cette page arrive bientôt.",
+    "register": "Inscription",
+    "login": "Connexion",
+    "legalNotice": "Mentions légales",
+    "terms": "Conditions générales",
+    "privacy": "Politique de confidentialité"
+  },
+  "lang": { "fr": "FR", "en": "EN" }
+}

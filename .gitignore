@@ -20,6 +20,10 @@ dist-ssr/
 coverage/
 playwright-report/
 test-results/
+*.tsbuildinfo
+# stray TS build-mode emit of the vite config
+frontend/vite.config.js
+frontend/vite.config.d.ts
 
 # Env / secrets
 .env
@@ -31,3 +35,4 @@ test-results/
 .idea/
 .vscode/
 *.swp
+.gstack/

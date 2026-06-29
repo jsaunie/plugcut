@@ -27,7 +27,20 @@ uv run alembic upgrade head               # apply DB migrations
 uv run alembic revision --autogenerate -m "msg"  # generate a migration
 ```
 
-Frontend (from `frontend/`, once scaffolded): `pnpm install`, `pnpm dev`, `pnpm test`.
+Frontend (from `frontend/`):
+
+```bash
+pnpm install
+pnpm dev          # Vite dev server on :5173, proxies /api -> :8000
+pnpm build        # type-check (vue-tsc -p tsconfig.app.json) + production build
+pnpm lint         # eslint
+```
+
+Frontend is Vue 3 + TS, feature-sliced under `src/` (pages, components/landing,
+components/shared, i18n, router). Marketing/landing uses bespoke CSS with design tokens
+in `src/styles/base.css` (deliberately not utility-first, for a distinctive look). All
+user-facing copy goes through vue-i18n (`src/i18n/locales/{fr,en}.json`) — never hardcode
+strings.
 
 ## Architecture (read `docs/ARCHITECTURE.md` first)
 
@@ -69,6 +82,11 @@ Backend is runnable end-to-end (57 tests, ruff + mypy strict clean):
 - API: `POST /api/v1/auth/{register,login}`, `GET /api/v1/auth/me` (Bearer), `/health`,
   localized (FR/EN) error responses, live Swagger at `/docs`.
 
+Frontend: Vue 3 app scaffolded; **landing page complete** (hero, how-it-works, pillars,
+interactive commission calculator, FAQ, CTA, footer) with full FR/EN i18n and a working
+language switch. Placeholder routes exist for `/inscription`, `/connexion`, and the legal
+pages.
+
 Not yet built: the referrals/billing **API + persistence** (only the domain exists for
-those), agreement PDF generation, and the entire `frontend/`. Next milestones in
-`docs/ROADMAP.md`.
+those), agreement PDF generation, the **auth UI** + **legal document pages** (currently
+placeholders), and the authenticated dashboard. Next milestones in `docs/ROADMAP.md`.
