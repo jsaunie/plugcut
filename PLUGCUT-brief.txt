@@ -1,0 +1,119 @@
+PLUGCUT — BRIEF PROJET
+=======================
+Date : 30 juin 2026
+Auteur du brief : session Claude Code (résumé de conversation pour reprise dans une nouvelle session)
+
+
+1. POURQUOI CE PROJET EXISTE
+----------------------------
+Un freelance a conseillé à Jean de faire un petit projet en Vue.js + FastAPI à montrer
+sur un CV (anonymisé, sans nom/prénom/email/téléphone), parce qu'un client cherche un
+dev VueJS + FastAPI et Jean n'a actuellement pas de FastAPI à présenter.
+
+Constat technique vérifié :
+- Le Vue.js de Jean date de 2017-2018 (Web L'Agence : missions Dailycheck, lesBigBoss,
+  Cream Paris, stack Laravel + Vue.js). C'est ancien, à rafraîchir.
+- Freelance OS (FOS) n'utilise AUCUN FastAPI. L'API de FOS est en TypeScript (Hono dans
+  apps/api + Next.js API routes), base Supabase/Postgres. Donc rien à valoriser côté
+  FastAPI via FOS.
+
+=> Plugcut sert à la fois de preuve techno (Vue 3 + FastAPI sur le CV) ET d'une vraie
+   idée que Jean a en tête depuis un moment. Projet PERSONNEL, distinct de FOS.
+
+
+2. LE CONCEPT (validé en office-hours, modèle affiné par Jean)
+-------------------------------------------------------------
+Plugcut = un rail pour formaliser et exécuter des commissions d'apport d'affaires
+DE PARTICULIER À PARTICULIER.
+
+Mécanique :
+- N'importe qui peut être apporteur : un chef de projet en interne dans une boîte qui
+  lève des fonds et recrute des freelances, ou même quelqu'un de totalement hors tech
+  (le boulanger qui a un pote dev) qui place un freelance/indépendant/entreprise.
+- C'est la PERSONNE PLACÉE qui paie l'apporteur (PAS le client final). En privé, en
+  toute discrétion vis-à-vis du client final.
+- Rémunération négociée entre les deux, ex. 10% du TJM pendant X mois.
+- La plateforme NE FAIT PAS de mise en relation entre inconnus. La relation existe déjà
+  hors-ligne. Plugcut formalise et suit l'accord privé de commission.
+
+Ce que vend le produit (la vraie valeur) :
+- Le contrat / l'accord entre apporteur et personne placée.
+- La preuve d'attribution : qui a introduit qui (protection en cas de litige).
+- La collecte récurrente automatique de la commission (sur le TJM, sur la durée).
+- La discrétion vis-à-vis du client final.
+Ce n'est PAS le matching.
+
+
+3. POURQUOI CE CADRAGE TIENT LA ROUTE
+-------------------------------------
+Le marketplace classique d'apport d'affaires est une mauvaise idée (et c'est pour ça
+qu'aucun acteur du secteur n'est devenu gros : ApporteursdAffaires.com, First2Trade,
+Beezy'UP, affaires.io, Yuccan en FR) à cause de :
+- la DÉSINTERMÉDIATION : deux inconnus se rencontrent sur la plateforme puis font le
+  deal en direct pour éviter la commission.
+- le COLD START à deux faces : il faut amorcer offre et demande en même temps.
+
+Le modèle de Jean évite les deux :
+- pas de désintermédiation, parce que les gens amènent leur propre réseau (relation
+  préexistante), il n'y a pas d'intro à protéger.
+- pas de cold start de matching.
+
+NB : PartnerStack / Buyapowa ne sont PAS des marketplaces, ce sont des logiciels de
+gestion de programme de parrainage vendus AUX entreprises. Modèle différent.
+
+Risque restant à traiter dans la démo et le pitch :
+"Pourquoi ne pas juste se serrer la main et s'envoyer une facture ?"
+Réponse : sur 10% d'un TJM pendant un an, l'apporteur a peur de se faire arnaquer, et
+la personne placée veut un cadre propre et discret. Le produit vend la confiance et
+l'exécution du side deal, pas l'intro. Toute la démo doit rendre ça évident.
+
+
+4. NOM ET DOMAINES
+------------------
+Nom retenu : PLUGCUT.
+Logique : "plug" = brancher / placer quelqu'un (en argot, un "plug" est la personne qui
+te connecte = exactement l'apporteur). "cut" = ta part / la commission. Le nom raconte
+le produit sans explication.
+
+Domaines achetés par Jean le 30 juin 2026 :
+- plugcut.com   (principal)
+- refercut.com  (backup / redirection)
+- introcut.com  (backup / redirection)
+
+
+5. STACK ET PÉRIMÈTRE TECHNIQUE PRÉVU
+-------------------------------------
+- Front : Vue 3 + Vite (remet Jean à jour vs son Vue 2017-2018).
+- Back : FastAPI (Python). Bonus entretien : doc Swagger / OpenAPI auto-générée sur
+  /docs.
+- Objectif livrable : un repo propre + une démo en ligne, de quoi cocher franchement
+  Vue.js ET FastAPI sur le CV.
+
+Flux produit pour la démo (premier scope proposé) :
+1. Créer un deal d'apport (qui place qui, chez quel client).
+2. Définir le % de commission + la durée (ex. 10% du TJM sur 12 mois).
+3. Suivre le statut : envoyée -> en discussion -> qualifiée -> signée -> payée.
+4. Générer l'accord (le contrat entre apporteur et personne placée).
+5. Tracker la commission due (récurrence sur le TJM).
+
+Idées techniques FastAPI à montrer : endpoints REST CRUD (deals / commissions /
+parties), auth JWT, calcul de commission récurrente, doc Swagger auto.
+
+
+6. ÉTAT D'AVANCEMENT / PROCHAINES ÉTAPES
+----------------------------------------
+FAIT :
+- Idée validée et cadrée (office-hours).
+- Nom choisi, 3 domaines achetés.
+- Ce dossier ~/Lab/plugcut créé avec ce brief.
+
+À FAIRE (prochaine session, à démarrer depuis ce dossier) :
+- Scaffold du projet : Vue 3 + Vite (front) et FastAPI (back), structure du repo,
+  README, le flux décrit au point 5.
+- En parallèle, chantier séparé : CV anonymisé de Jean (sans nom/prénom/email/tel) à
+  transmettre via le freelance, en mettant Vue.js en avant et en pointant Plugcut une
+  fois le scaffold prêt. (Sources CV : docs/jean/dossier-de-competences-jean/ dans le
+  repo FOS, + ~/Downloads/linkedin-jean-saunie-fr-en.md)
+
+Phrase de reprise suggérée pour la nouvelle session :
+"On attaque le scaffold de Plugcut : Vue 3 + Vite en front, FastAPI en back."

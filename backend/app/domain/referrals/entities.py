@@ -1,0 +1,121 @@
+"""The Referral aggregate root.
+
+A Referral is the private deal between a *referrer* (apporteur) and the *placed person*
+(personne placée): who introduced whom, at which client, on what commission terms. It
+owns its lifecycle invariants and produces the tamper-evident attribution record that is
+the product's core value.
+"""
+
+from __future__ import annotations
+
+import hashlib
+from dataclasses import dataclass, field
+from datetime import datetime
+from uuid import UUID
+
+from app.domain.referrals.enums import ReferralStatus
+from app.domain.referrals.value_objects import CommissionTerms
+from app.domain.shared.errors import IllegalStateTransition, InvariantViolation
+
+# Allowed forward transitions. CANCELLED/DISPUTED are reachable from any live state.
+_TRANSITIONS: dict[ReferralStatus, set[ReferralStatus]] = {
+    ReferralStatus.SENT: {ReferralStatus.IN_DISCUSSION, ReferralStatus.QUALIFIED},
+    ReferralStatus.IN_DISCUSSION: {ReferralStatus.QUALIFIED},
+    ReferralStatus.QUALIFIED: {ReferralStatus.SIGNED},
+    ReferralStatus.SIGNED: {ReferralStatus.ACTIVE},
+    ReferralStatus.ACTIVE: {ReferralStatus.COMPLETED},
+}
+_LIVE = set(_TRANSITIONS) | {ReferralStatus.SIGNED, ReferralStatus.ACTIVE}
+
+
+@dataclass(slots=True)
+class Referral:
+    id: UUID
+    referrer_id: UUID
+    placed_person_email: str
+    client_reference: str
+    terms: CommissionTerms
+    created_at: datetime
+    status: ReferralStatus = ReferralStatus.SENT
+    placed_person_id: UUID | None = None
+    accepted_by_referrer_at: datetime | None = None
+    accepted_by_placed_at: datetime | None = None
+    activated_at: datetime | None = None
+    attribution_hash: str | None = field(default=None)
+
+    def __post_init__(self) -> None:
+        if not self.client_reference.strip():
+            raise InvariantViolation("client_reference is required")
+        if "@" not in self.placed_person_email:
+            raise InvariantViolation("placed_person_email must be an email")
+
+    @property
+    def is_fully_accepted(self) -> bool:
+        return self.accepted_by_referrer_at is not None and self.accepted_by_placed_at is not None
+
+    def _transition(self, to: ReferralStatus) -> None:
+        if to not in _TRANSITIONS.get(self.status, set()):
+            raise IllegalStateTransition(f"{self.status.value} -> {to.value}")
+        self.status = to
+
+    def mark_in_discussion(self) -> None:
+        self._transition(ReferralStatus.IN_DISCUSSION)
+
+    def qualify(self) -> None:
+        self._transition(ReferralStatus.QUALIFIED)
+
+    def accept_as_referrer(self, *, at: datetime) -> None:
+        self.accepted_by_referrer_at = at
+        self._sign_if_ready(at=at)
+
+    def accept_as_placed_person(
+        self, *, at: datetime, placed_person_id: UUID | None = None
+    ) -> None:
+        self.accepted_by_placed_at = at
+        if placed_person_id is not None:
+            self.placed_person_id = placed_person_id
+        self._sign_if_ready(at=at)
+
+    def _sign_if_ready(self, *, at: datetime) -> None:
+        if self.status is not ReferralStatus.QUALIFIED or not self.is_fully_accepted:
+            return
+        self.attribution_hash = self._compute_attribution_hash(signed_at=at)
+        self._transition(ReferralStatus.SIGNED)
+
+    def activate(self, *, at: datetime) -> None:
+        self._transition(ReferralStatus.ACTIVE)
+        self.activated_at = at
+
+    def complete(self) -> None:
+        self._transition(ReferralStatus.COMPLETED)
+
+    def cancel(self) -> None:
+        if self.status not in _LIVE:
+            raise IllegalStateTransition(f"cannot cancel from {self.status.value}")
+        self.status = ReferralStatus.CANCELLED
+
+    def dispute(self) -> None:
+        if self.status not in _LIVE:
+            raise IllegalStateTransition(f"cannot dispute from {self.status.value}")
+        self.status = ReferralStatus.DISPUTED
+
+    def _compute_attribution_hash(self, *, signed_at: datetime) -> str:
+        """Tamper-evident fingerprint of the immutable facts of who introduced whom.
+
+        Any later change to the parties, client, or terms would not match this hash,
+        which is the evidence the product offers in case of dispute.
+        """
+        canonical = "|".join(
+            [
+                str(self.id),
+                str(self.referrer_id),
+                self.placed_person_email.lower(),
+                self.client_reference.strip().lower(),
+                str(self.terms.daily_rate),
+                str(self.terms.commission),
+                str(self.terms.duration_months),
+                self.created_at.isoformat(),
+                signed_at.isoformat(),
+            ]
+        )
+        return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
