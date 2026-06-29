@@ -20,6 +20,10 @@ class Settings(BaseSettings):
 
     database_url: str = "sqlite+aiosqlite:///./plugcut.db"
 
+    # Create tables from ORM metadata on startup. Convenient for local/sqlite dev;
+    # set false in production and manage schema with Alembic migrations.
+    auto_create_schema: bool = True
+
     default_locale: str = "fr"
 
 

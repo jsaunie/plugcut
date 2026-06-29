@@ -1,0 +1,82 @@
+"""FastAPI dependency wiring: settings, db session, repos, use-cases, current user."""
+
+from __future__ import annotations
+
+from collections.abc import AsyncIterator
+from datetime import UTC, datetime
+from typing import Annotated
+from uuid import UUID
+
+from fastapi import Depends, Request
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.application.identity.errors import InvalidToken
+from app.application.identity.ports import TokenService, UserRepository
+from app.application.identity.use_cases import AuthenticateUser, RegisterUser
+from app.domain.identity.entities import User
+from app.domain.identity.ports import PasswordHasher
+from app.infrastructure.config import Settings
+from app.infrastructure.persistence.repositories import SqlAlchemyUserRepository
+from app.infrastructure.security.jwt_token_service import JwtTokenService
+from app.infrastructure.security.password_hasher import BcryptPasswordHasher
+
+_bearer = HTTPBearer(auto_error=False)
+
+
+def get_settings(request: Request) -> Settings:
+    settings: Settings = request.app.state.settings
+    return settings
+
+
+async def get_session(request: Request) -> AsyncIterator[AsyncSession]:
+    async with request.app.state.database.session_factory() as session:
+        yield session
+
+
+def get_hasher() -> PasswordHasher:
+    return BcryptPasswordHasher()
+
+
+def get_token_service(settings: Annotated[Settings, Depends(get_settings)]) -> TokenService:
+    return JwtTokenService(settings)
+
+
+def get_user_repository(
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> UserRepository:
+    return SqlAlchemyUserRepository(session)
+
+
+def get_register_user(
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    hasher: Annotated[PasswordHasher, Depends(get_hasher)],
+) -> RegisterUser:
+    return RegisterUser(users, hasher, now=lambda: datetime.now(UTC))
+
+
+def get_authenticate_user(
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    hasher: Annotated[PasswordHasher, Depends(get_hasher)],
+    tokens: Annotated[TokenService, Depends(get_token_service)],
+) -> AuthenticateUser:
+    return AuthenticateUser(users, hasher, tokens)
+
+
+async def get_current_user(
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)],
+    tokens: Annotated[TokenService, Depends(get_token_service)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+) -> User:
+    if credentials is None:
+        raise InvalidToken
+    claims = tokens.decode(credentials.credentials)
+    if claims.token_type != "access":
+        raise InvalidToken
+    user = await users.get_by_id(UUID(claims.subject))
+    if user is None or not user.is_active:
+        raise InvalidToken
+    return user
+
+
+CurrentUser = Annotated[User, Depends(get_current_user)]

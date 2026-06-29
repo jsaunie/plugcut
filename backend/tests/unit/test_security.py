@@ -11,7 +11,6 @@ from app.infrastructure.config import Settings
 from app.infrastructure.security.jwt_token_service import JwtTokenService
 from app.infrastructure.security.password_hasher import BcryptPasswordHasher
 
-
 _TEST_SECRET = "x" * 48  # >= 32 bytes, satisfies pyjwt's HMAC key-length check
 
 

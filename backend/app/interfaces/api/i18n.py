@@ -1,0 +1,57 @@
+"""Minimal i18n for API error messages, keyed by stable domain error codes.
+
+Domain/application errors carry a ``code``; the API never exposes raw English. The
+front-end has its own full i18n catalog — this one localizes server-side responses
+(errors, emails) so the API is usable directly in FR or EN.
+"""
+
+from __future__ import annotations
+
+SUPPORTED_LOCALES = ("fr", "en")
+FALLBACK_LOCALE = "en"
+
+MESSAGES: dict[str, dict[str, str]] = {
+    "identity.email_already_registered": {
+        "fr": "Cet email est déjà utilisé.",
+        "en": "This email is already registered.",
+    },
+    "identity.invalid_credentials": {
+        "fr": "Identifiants invalides.",
+        "en": "Invalid credentials.",
+    },
+    "identity.inactive_user": {
+        "fr": "Ce compte est désactivé.",
+        "en": "This account is inactive.",
+    },
+    "identity.invalid_token": {
+        "fr": "Jeton d'authentification invalide ou expiré.",
+        "en": "Invalid or expired authentication token.",
+    },
+    "identity.invalid_email": {
+        "fr": "Adresse email invalide.",
+        "en": "Invalid email address.",
+    },
+    "identity.weak_password": {
+        "fr": "Mot de passe trop court (8 caractères minimum).",
+        "en": "Password is too short (8 characters minimum).",
+    },
+    "domain.error": {
+        "fr": "Une erreur est survenue.",
+        "en": "An error occurred.",
+    },
+}
+
+
+def translate(code: str, locale: str) -> str:
+    entry = MESSAGES.get(code, MESSAGES["domain.error"])
+    return entry.get(locale, entry[FALLBACK_LOCALE])
+
+
+def resolve_locale(accept_language: str | None, default: str) -> str:
+    """Pick a supported locale from an Accept-Language header, else the default."""
+    if accept_language:
+        for part in accept_language.split(","):
+            tag = part.split(";")[0].strip().lower()[:2]
+            if tag in SUPPORTED_LOCALES:
+                return tag
+    return default if default in SUPPORTED_LOCALES else FALLBACK_LOCALE

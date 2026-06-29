@@ -22,7 +22,9 @@ uv run pytest -q                          # all tests
 uv run pytest tests/unit/test_referral.py # a single test file
 uv run ruff check .                       # lint
 uv run mypy app                           # strict type-check
-uv run uvicorn app.main:app --reload      # serve API (once main.py exists); docs at /docs
+uv run uvicorn app.main:app --reload      # serve API; Swagger at /docs
+uv run alembic upgrade head               # apply DB migrations
+uv run alembic revision --autogenerate -m "msg"  # generate a migration
 ```
 
 Frontend (from `frontend/`, once scaffolded): `pnpm install`, `pnpm dev`, `pnpm test`.
@@ -57,7 +59,16 @@ Value objects enforce invariants in `__post_init__`, so an invalid instance can'
 
 ## Status
 
-Backend domain layer (referrals + billing value objects, aggregate, schedule service)
-is built and fully tested (27 unit tests). Not yet built: identity/auth, application
-use-cases, SQLAlchemy persistence + Alembic, FastAPI `interfaces/api` layer + `main.py`,
-and the entire `frontend/`. Next milestones in `docs/ROADMAP.md`.
+Backend is runnable end-to-end (57 tests, ruff + mypy strict clean):
+
+- Domain: `referrals` (Referral aggregate + attribution), `billing` (commission schedule
+  service), `identity` (User).
+- Application: `RegisterUser` / `AuthenticateUser` use-cases behind ports.
+- Infrastructure: bcrypt hashing, own JWT tokens, SQLAlchemy async repos, Alembic
+  migrations (initial `users` table).
+- API: `POST /api/v1/auth/{register,login}`, `GET /api/v1/auth/me` (Bearer), `/health`,
+  localized (FR/EN) error responses, live Swagger at `/docs`.
+
+Not yet built: the referrals/billing **API + persistence** (only the domain exists for
+those), agreement PDF generation, and the entire `frontend/`. Next milestones in
+`docs/ROADMAP.md`.
