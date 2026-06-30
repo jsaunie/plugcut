@@ -35,6 +35,9 @@ def _to_domain(model: ReferralModel) -> Referral:
         accepted_by_placed_at=model.accepted_by_placed_at,
         activated_at=model.activated_at,
         attribution_hash=model.attribution_hash,
+        invitation_token=model.invitation_token,
+        referrer_signature=model.referrer_signature,
+        placed_signature=model.placed_signature,
     )
 
 
@@ -56,6 +59,9 @@ def _apply_to_model(model: ReferralModel, referral: Referral) -> ReferralModel:
     model.accepted_by_placed_at = referral.accepted_by_placed_at
     model.activated_at = referral.activated_at
     model.attribution_hash = referral.attribution_hash
+    model.invitation_token = referral.invitation_token
+    model.referrer_signature = referral.referrer_signature
+    model.placed_signature = referral.placed_signature
     return model
 
 
@@ -72,6 +78,12 @@ class SqlAlchemyReferralRepository:
 
     async def get(self, referral_id: UUID) -> Referral | None:
         model = await self._session.get(ReferralModel, referral_id)
+        return _to_domain(model) if model is not None else None
+
+    async def get_by_invitation_token(self, token: str) -> Referral | None:
+        model = await self._session.scalar(
+            select(ReferralModel).where(ReferralModel.invitation_token == token)
+        )
         return _to_domain(model) if model is not None else None
 
     async def list_for_referrer(self, referrer_id: UUID) -> list[Referral]:

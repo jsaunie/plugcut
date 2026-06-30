@@ -49,6 +49,11 @@ class ReferralModel(Base):
     )
     activated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     attribution_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    invitation_token: Mapped[str | None] = mapped_column(
+        String(64), nullable=True, unique=True, index=True
+    )
+    referrer_signature: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    placed_signature: Mapped[str | None] = mapped_column(String(120), nullable=True)
 
 
 class CommissionInstallmentModel(Base):

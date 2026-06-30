@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import secrets
 from collections.abc import Callable
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
@@ -11,6 +12,7 @@ from app.application.referrals.dtos import CreateReferralCommand
 from app.application.referrals.errors import (
     AgreementNotReady,
     InstallmentNotFound,
+    InvitationNotFound,
     ReferralForbidden,
     ReferralNotFound,
 )
@@ -31,6 +33,24 @@ def _utc_now() -> datetime:
     return datetime.now(UTC)
 
 
+def _make_invitation_token() -> str:
+    return secrets.token_urlsafe(24)
+
+
+async def _persist_schedule_on_signing(
+    referral: Referral,
+    was_signed: bool,
+    installments: InstallmentRepository,
+    schedule_service: CommissionScheduleService,
+) -> None:
+    """When a deal becomes signed, generate and persist its commission schedule."""
+    if referral.status is ReferralStatus.SIGNED and not was_signed:
+        schedule = schedule_service.generate(
+            referral.terms, start_date=referral.created_at.date()
+        )
+        await installments.replace_for_referral(referral.id, schedule.installments)
+
+
 async def _load_owned(
     referrals: ReferralRepository, referral_id: UUID, requester_id: UUID
 ) -> Referral:
@@ -49,10 +69,12 @@ class CreateReferral:
         *,
         now: Callable[[], datetime],
         id_factory: Callable[[], UUID] = uuid4,
+        token_factory: Callable[[], str] = _make_invitation_token,
     ) -> None:
         self._referrals = referrals
         self._now = now
         self._id_factory = id_factory
+        self._token_factory = token_factory
 
     async def execute(self, command: CreateReferralCommand) -> Referral:
         terms = CommissionTerms(
@@ -68,6 +90,7 @@ class CreateReferral:
             client_reference=command.client_reference,
             terms=terms,
             created_at=self._now(),
+            invitation_token=self._token_factory(),
         )
         await self._referrals.add(referral)
         return referral
@@ -145,21 +168,19 @@ class AcceptReferral:
         self._schedule_service = schedule_service or CommissionScheduleService()
 
     async def execute(
-        self, referral_id: UUID, *, requester_id: UUID, party: str
+        self, referral_id: UUID, *, requester_id: UUID, party: str, signature: str
     ) -> Referral:
         referral = await _load_owned(self._referrals, referral_id, requester_id)
         was_signed = referral.status is ReferralStatus.SIGNED
         at = self._now()
         if party == "placed":
-            referral.accept_as_placed_person(at=at)
+            referral.accept_as_placed_person(at=at, signature=signature)
         else:
-            referral.accept_as_referrer(at=at)
+            referral.accept_as_referrer(at=at, signature=signature)
         await self._referrals.save(referral)
-        if referral.status is ReferralStatus.SIGNED and not was_signed:
-            schedule = self._schedule_service.generate(
-                referral.terms, start_date=referral.created_at.date()
-            )
-            await self._installments.replace_for_referral(referral.id, schedule.installments)
+        await _persist_schedule_on_signing(
+            referral, was_signed, self._installments, self._schedule_service
+        )
         return referral
 
 
@@ -228,3 +249,50 @@ class RecordInstallmentPayment:
         installment.mark_paid()
         await self._installments.update(referral_id, installment)
         return installment
+
+
+class GetReferralByInvitation:
+    """Public read of a referral by its invitation token (for the placed person)."""
+
+    def __init__(self, referrals: ReferralRepository, users: UserRepository) -> None:
+        self._referrals = referrals
+        self._users = users
+
+    async def execute(self, token: str) -> tuple[Referral, str]:
+        referral = await self._referrals.get_by_invitation_token(token)
+        if referral is None:
+            raise InvitationNotFound
+        referrer = await self._users.get_by_id(referral.referrer_id)
+        return referral, (referrer.email.value if referrer is not None else "")
+
+
+class SignByInvitation:
+    """The placed person signs their side of the deal via the invitation token."""
+
+    def __init__(
+        self,
+        referrals: ReferralRepository,
+        installments: InstallmentRepository,
+        users: UserRepository,
+        *,
+        now: Callable[[], datetime] = _utc_now,
+        schedule_service: CommissionScheduleService | None = None,
+    ) -> None:
+        self._referrals = referrals
+        self._installments = installments
+        self._users = users
+        self._now = now
+        self._schedule_service = schedule_service or CommissionScheduleService()
+
+    async def execute(self, token: str, *, signature: str) -> tuple[Referral, str]:
+        referral = await self._referrals.get_by_invitation_token(token)
+        if referral is None:
+            raise InvitationNotFound
+        was_signed = referral.status is ReferralStatus.SIGNED
+        referral.accept_as_placed_person(at=self._now(), signature=signature)
+        await self._referrals.save(referral)
+        await _persist_schedule_on_signing(
+            referral, was_signed, self._installments, self._schedule_service
+        )
+        referrer = await self._users.get_by_id(referral.referrer_id)
+        return referral, (referrer.email.value if referrer is not None else "")

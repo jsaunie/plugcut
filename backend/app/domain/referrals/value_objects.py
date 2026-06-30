@@ -13,6 +13,10 @@ class InvalidTerms(InvariantViolation):
     code = "referral.invalid_terms"
 
 
+class SignatureRequired(InvariantViolation):
+    code = "referral.signature_required"
+
+
 @dataclass(frozen=True, slots=True)
 class CommissionTerms:
     """The negotiated commission deal: a cut of the daily rate over a fixed duration.

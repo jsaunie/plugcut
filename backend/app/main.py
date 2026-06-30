@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.infrastructure.config import Settings, get_settings
 from app.infrastructure.persistence.database import Database
 from app.interfaces.api.errors import register_error_handlers
-from app.interfaces.api.routers import auth, referrals
+from app.interfaces.api.routers import auth, invitations, referrals
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -40,6 +40,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     register_error_handlers(app)
     app.include_router(auth.router, prefix="/api/v1")
     app.include_router(referrals.router, prefix="/api/v1")
+    app.include_router(invitations.router, prefix="/api/v1")
 
     @app.get("/health", tags=["meta"])
     async def health() -> dict[str, str]:

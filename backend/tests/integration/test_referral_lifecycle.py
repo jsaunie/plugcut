@@ -53,10 +53,14 @@ async def _sign(client: AsyncClient, headers: dict[str, str]) -> str:
     deal_id = await _create(client, headers)
     await client.post(f"/api/v1/referrals/{deal_id}/qualify", headers=headers)
     await client.post(
-        f"/api/v1/referrals/{deal_id}/accept", json={"party": "referrer"}, headers=headers
+        f"/api/v1/referrals/{deal_id}/accept",
+        json={"party": "referrer", "signature": "Jean Apporteur"},
+        headers=headers,
     )
     await client.post(
-        f"/api/v1/referrals/{deal_id}/accept", json={"party": "placed"}, headers=headers
+        f"/api/v1/referrals/{deal_id}/accept",
+        json={"party": "placed", "signature": "Dev Place"},
+        headers=headers,
     )
     return deal_id
 
@@ -71,13 +75,17 @@ class TestSigningFlow:
         await client.post(f"/api/v1/referrals/{deal_id}/qualify", headers=headers)
 
         first = await client.post(
-            f"/api/v1/referrals/{deal_id}/accept", json={"party": "referrer"}, headers=headers
+            f"/api/v1/referrals/{deal_id}/accept",
+            json={"party": "referrer", "signature": "Jean Apporteur"},
+            headers=headers,
         )
         assert first.json()["status"] == "qualified"
         assert first.json()["attribution_hash"] is None
 
         second = await client.post(
-            f"/api/v1/referrals/{deal_id}/accept", json={"party": "placed"}, headers=headers
+            f"/api/v1/referrals/{deal_id}/accept",
+            json={"party": "placed", "signature": "Dev Place"},
+            headers=headers,
         )
         body = second.json()
         assert body["status"] == "signed"
@@ -89,10 +97,14 @@ class TestSigningFlow:
         deal_id = await _create(client, headers)
         await client.post(f"/api/v1/referrals/{deal_id}/qualify", headers=headers)
         await client.post(
-            f"/api/v1/referrals/{deal_id}/accept", json={"party": "referrer"}, headers=headers
+            f"/api/v1/referrals/{deal_id}/accept",
+            json={"party": "referrer", "signature": "Jean Apporteur"},
+            headers=headers,
         )
         await client.post(
-            f"/api/v1/referrals/{deal_id}/accept", json={"party": "placed"}, headers=headers
+            f"/api/v1/referrals/{deal_id}/accept",
+            json={"party": "placed", "signature": "Dev Place"},
+            headers=headers,
         )
         detail = await client.get(f"/api/v1/referrals/{deal_id}", headers=headers)
         assert len(detail.json()["schedule"]) == 12

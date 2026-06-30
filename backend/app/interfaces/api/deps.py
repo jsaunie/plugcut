@@ -28,10 +28,12 @@ from app.application.referrals.use_cases import (
     ActivateReferral,
     CreateReferral,
     GetAgreement,
+    GetReferralByInvitation,
     GetReferralWithSchedule,
     ListReferrals,
     QualifyReferral,
     RecordInstallmentPayment,
+    SignByInvitation,
 )
 from app.domain.identity.entities import User
 from app.domain.identity.ports import PasswordHasher
@@ -181,6 +183,21 @@ def get_get_agreement(
     renderer: Annotated[AgreementRenderer, Depends(get_agreement_renderer)],
 ) -> GetAgreement:
     return GetAgreement(referrals, users, renderer)
+
+
+def get_invitation_view(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+) -> GetReferralByInvitation:
+    return GetReferralByInvitation(referrals, users)
+
+
+def get_sign_invitation(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+    installments: Annotated[InstallmentRepository, Depends(get_installment_repository)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+) -> SignByInvitation:
+    return SignByInvitation(referrals, installments, users)
 
 
 def get_locale(

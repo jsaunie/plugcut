@@ -27,8 +27,8 @@ def _signed_referral() -> Referral:
     )
     at = datetime(2026, 1, 2, tzinfo=UTC)
     referral.qualify()
-    referral.accept_as_referrer(at=at)
-    referral.accept_as_placed_person(at=at)
+    referral.accept_as_referrer(at=at, signature="Jean")
+    referral.accept_as_placed_person(at=at, signature="Dev")
     return referral
 
 

@@ -10,7 +10,7 @@ import pytest
 
 from app.domain.referrals.entities import Referral
 from app.domain.referrals.enums import ReferralStatus
-from app.domain.referrals.value_objects import CommissionTerms
+from app.domain.referrals.value_objects import CommissionTerms, SignatureRequired
 from app.domain.shared.errors import IllegalStateTransition, InvariantViolation
 from app.domain.shared.value_objects import Money, Percentage
 
@@ -33,8 +33,8 @@ def make_referral() -> Referral:
 def bring_to_signed(referral: Referral) -> None:
     referral.qualify()
     at = datetime(2026, 1, 2, tzinfo=UTC)
-    referral.accept_as_referrer(at=at)
-    referral.accept_as_placed_person(at=at, placed_person_id=uuid4())
+    referral.accept_as_referrer(at=at, signature="Jean")
+    referral.accept_as_placed_person(at=at, signature="Dev", placed_person_id=uuid4())
 
 
 class TestConstruction:
@@ -67,10 +67,16 @@ class TestLifecycle:
         with pytest.raises(IllegalStateTransition):
             referral.activate(at=datetime(2026, 2, 1, tzinfo=UTC))
 
+    def test_empty_signature_is_rejected(self) -> None:
+        referral = make_referral()
+        referral.qualify()
+        with pytest.raises(SignatureRequired):
+            referral.accept_as_referrer(at=datetime(2026, 1, 2, tzinfo=UTC), signature="  ")
+
     def test_signing_needs_both_acceptances(self) -> None:
         referral = make_referral()
         referral.qualify()
-        referral.accept_as_referrer(at=datetime(2026, 1, 2, tzinfo=UTC))
+        referral.accept_as_referrer(at=datetime(2026, 1, 2, tzinfo=UTC), signature="Jean")
         assert referral.status is ReferralStatus.QUALIFIED
         assert referral.attribution_hash is None
 
@@ -96,6 +102,6 @@ class TestAttribution:
         at = datetime(2026, 1, 2, tzinfo=UTC)
         for ref in (a, b):
             ref.qualify()
-            ref.accept_as_referrer(at=at)
-            ref.accept_as_placed_person(at=at)
+            ref.accept_as_referrer(at=at, signature="Jean")
+            ref.accept_as_placed_person(at=at, signature="Dev")
         assert a.attribution_hash == b.attribution_hash

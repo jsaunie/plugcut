@@ -19,3 +19,7 @@ class InstallmentNotFound(DomainError):
 
 class AgreementNotReady(DomainError):
     code = "agreement.not_ready"
+
+
+class InvitationNotFound(DomainError):
+    code = "invitation.not_found"

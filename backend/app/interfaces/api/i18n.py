@@ -63,6 +63,14 @@ MESSAGES: dict[str, dict[str, str]] = {
         "fr": "Le contrat sera disponible une fois le deal signé.",
         "en": "The agreement is available once the deal is signed.",
     },
+    "invitation.not_found": {
+        "fr": "Cette invitation est invalide ou expirée.",
+        "en": "This invitation is invalid or expired.",
+    },
+    "referral.signature_required": {
+        "fr": "La signature est requise.",
+        "en": "A signature is required.",
+    },
     "domain.error": {
         "fr": "Une erreur est survenue.",
         "en": "An error occurred.",

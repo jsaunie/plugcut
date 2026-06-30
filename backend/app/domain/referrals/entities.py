@@ -14,7 +14,7 @@ from datetime import datetime
 from uuid import UUID
 
 from app.domain.referrals.enums import ReferralStatus
-from app.domain.referrals.value_objects import CommissionTerms
+from app.domain.referrals.value_objects import CommissionTerms, SignatureRequired
 from app.domain.shared.errors import IllegalStateTransition, InvariantViolation
 
 # Allowed forward transitions. CANCELLED/DISPUTED are reachable from any live state.
@@ -26,6 +26,13 @@ _TRANSITIONS: dict[ReferralStatus, set[ReferralStatus]] = {
     ReferralStatus.ACTIVE: {ReferralStatus.COMPLETED},
 }
 _LIVE = set(_TRANSITIONS) | {ReferralStatus.SIGNED, ReferralStatus.ACTIVE}
+
+
+def _clean_signature(signature: str) -> str:
+    cleaned = signature.strip()
+    if not cleaned:
+        raise SignatureRequired
+    return cleaned
 
 
 @dataclass(slots=True)
@@ -42,6 +49,9 @@ class Referral:
     accepted_by_placed_at: datetime | None = None
     activated_at: datetime | None = None
     attribution_hash: str | None = field(default=None)
+    invitation_token: str | None = None
+    referrer_signature: str | None = None
+    placed_signature: str | None = None
 
     def __post_init__(self) -> None:
         if not self.client_reference.strip():
@@ -64,13 +74,15 @@ class Referral:
     def qualify(self) -> None:
         self._transition(ReferralStatus.QUALIFIED)
 
-    def accept_as_referrer(self, *, at: datetime) -> None:
+    def accept_as_referrer(self, *, at: datetime, signature: str) -> None:
+        self.referrer_signature = _clean_signature(signature)
         self.accepted_by_referrer_at = at
         self._sign_if_ready(at=at)
 
     def accept_as_placed_person(
-        self, *, at: datetime, placed_person_id: UUID | None = None
+        self, *, at: datetime, signature: str, placed_person_id: UUID | None = None
     ) -> None:
+        self.placed_signature = _clean_signature(signature)
         self.accepted_by_placed_at = at
         if placed_person_id is not None:
             self.placed_person_id = placed_person_id
@@ -114,6 +126,8 @@ class Referral:
                 str(self.terms.daily_rate),
                 str(self.terms.commission),
                 str(self.terms.duration_months),
+                (self.referrer_signature or "").lower(),
+                (self.placed_signature or "").lower(),
                 self.created_at.isoformat(),
                 signed_at.isoformat(),
             ]

@@ -107,7 +107,10 @@ async def accept_referral(
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> ReferralResponse:
     referral = await use_case.execute(
-        referral_id, requester_id=current_user.id, party=payload.party
+        referral_id,
+        requester_id=current_user.id,
+        party=payload.party,
+        signature=payload.signature,
     )
     await session.commit()
     return ReferralResponse.from_domain(referral)
