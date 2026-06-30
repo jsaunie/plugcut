@@ -18,6 +18,12 @@ export interface Referral {
 
 export type AcceptParty = 'referrer' | 'placed'
 
+export interface TimelineEntry {
+  type: string
+  at: string
+  detail: string
+}
+
 export interface ReferralStats {
   total_deals: number
   active_deals: number

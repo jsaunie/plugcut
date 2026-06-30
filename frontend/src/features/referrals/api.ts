@@ -7,6 +7,7 @@ import type {
   Referral,
   ReferralDetail,
   ReferralStats,
+  TimelineEntry,
 } from './types'
 
 export function listReferrals(): Promise<Referral[]> {
@@ -59,4 +60,8 @@ export function getAgreement(id: string): Promise<{ html: string }> {
 
 export function getInstallmentInvoice(id: string, sequence: number): Promise<{ html: string }> {
   return apiFetch<{ html: string }>(`/referrals/${id}/installments/${sequence}/invoice`)
+}
+
+export function getDealTimeline(id: string): Promise<TimelineEntry[]> {
+  return apiFetch<TimelineEntry[]>(`/referrals/${id}/timeline`)
 }

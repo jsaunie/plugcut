@@ -263,6 +263,17 @@
       "paid": "Réglé",
       "overdue": "En retard"
     },
+    "timeline": {
+      "title": "Historique",
+      "events": {
+        "created": "Deal créé",
+        "accepted_referrer": "Signé par l'apporteur",
+        "accepted_placed": "Signé par la personne placée",
+        "signed": "Accord scellé (attribution)",
+        "activated": "Deal activé",
+        "payment_recorded": "Paiement enregistré (échéance {n})"
+      }
+    },
     "errors": {
       "clientRequired": "Référence client requise.",
       "generic": "Une action a échoué. Réessaie."

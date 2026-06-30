@@ -263,6 +263,17 @@
       "paid": "Paid",
       "overdue": "Overdue"
     },
+    "timeline": {
+      "title": "History",
+      "events": {
+        "created": "Deal created",
+        "accepted_referrer": "Signed by the referrer",
+        "accepted_placed": "Signed by the placed person",
+        "signed": "Agreement sealed (attribution)",
+        "activated": "Deal activated",
+        "payment_recorded": "Payment recorded (installment {n})"
+      }
+    },
     "errors": {
       "clientRequired": "Client reference is required.",
       "generic": "An action failed. Please try again."

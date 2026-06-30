@@ -8,15 +8,16 @@ import {
   acceptReferral,
   activateReferral,
   getAgreement,
+  getDealTimeline,
   getInstallmentInvoice,
   getReferral,
   payInstallment,
   qualifyReferral,
 } from '@/features/referrals/api'
 import DealStatus from '@/features/referrals/DealStatus.vue'
-import type { ReferralDetail } from '@/features/referrals/types'
+import type { ReferralDetail, TimelineEntry } from '@/features/referrals/types'
 import { UiButton, UiField, UiTextInput } from '@/ui'
-import { formatCurrency, formatDate } from '@/shared/format'
+import { formatCurrency, formatDate, formatDateTime } from '@/shared/format'
 import { ApiError } from '@/shared/http'
 
 const { t, locale } = useI18n()
@@ -24,6 +25,7 @@ const route = useRoute()
 const id = route.params.id as string
 
 const deal = ref<ReferralDetail | null>(null)
+const timeline = ref<TimelineEntry[]>([])
 const error = ref('')
 const loading = ref(true)
 const actionError = ref('')
@@ -49,11 +51,23 @@ async function load(): Promise<void> {
   loading.value = true
   try {
     deal.value = await getReferral(id)
+    timeline.value = await getDealTimeline(id)
   } catch (err) {
     error.value = err instanceof ApiError ? err.message : t('deals.errors.generic')
   } finally {
     loading.value = false
   }
+}
+
+function dateTime(iso: string): string {
+  return formatDateTime(iso, locale.value)
+}
+
+function eventLabel(entry: TimelineEntry): string {
+  if (entry.type === 'payment_recorded') {
+    return t('deals.timeline.events.payment_recorded', { n: entry.detail })
+  }
+  return t(`deals.timeline.events.${entry.type}`)
 }
 
 async function run(action: () => Promise<unknown>): Promise<void> {
@@ -237,6 +251,24 @@ onMounted(load)
           </tbody>
         </table>
       </section>
+
+      <section v-if="timeline.length" class="history">
+        <h2 class="section-title">{{ t('deals.timeline.title') }}</h2>
+        <ol class="tl">
+          <li v-for="(entry, i) in timeline" :key="i" class="tl__item">
+            <time class="tl__time">{{ dateTime(entry.at) }}</time>
+            <div class="tl__body">
+              <span class="tl__label">{{ eventLabel(entry) }}</span>
+              <span
+                v-if="entry.detail && entry.type !== 'payment_recorded'"
+                class="tl__detail"
+              >
+                {{ entry.detail }}
+              </span>
+            </div>
+          </li>
+        </ol>
+      </section>
     </template>
   </AppShell>
 </template>
@@ -417,6 +449,46 @@ onMounted(load)
 }
 .istatus--overdue {
   color: var(--danger);
+}
+.history {
+  margin-top: 2.5rem;
+}
+.tl {
+  list-style: none;
+  display: grid;
+  border-left: 1px solid var(--line-on-ink);
+}
+.tl__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  padding: 0.6rem 0 0.6rem 1.2rem;
+}
+.tl__time {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  color: var(--muted-on-ink);
+  white-space: nowrap;
+}
+.tl__body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+.tl__label {
+  font-weight: 600;
+}
+.tl__detail {
+  font-size: var(--fs-small);
+  color: var(--muted-on-ink);
+  font-family: var(--font-mono);
+}
+@media (max-width: 520px) {
+  .tl__item {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
 }
 .rowactions {
   display: inline-flex;

@@ -17,3 +17,13 @@ export function formatDate(iso: string, locale: string): string {
     year: 'numeric',
   }).format(new Date(iso))
 }
+
+export function formatDateTime(iso: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'fr-FR', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(iso))
+}
