@@ -1,0 +1,38 @@
+# Plugcut
+
+> Plugcut est le rail pour formaliser et exécuter les commissions d'apport d'affaires
+> de particulier à particulier. La personne placée (un freelance, un indépendant, une
+> entreprise) verse en privé à l'apporteur un pourcentage de son TJM, sur une durée
+> négociée. Plugcut vend le contrat, la preuve d'attribution, la collecte récurrente et
+> la discrétion. Ce n'est PAS une mise en relation : la relation existe déjà hors-ligne.
+
+## Le concept
+- N'importe qui peut être apporteur : un chef de projet, un développeur, ou quelqu'un
+  hors tech qui connaît la bonne personne.
+- C'est la personne placée qui paie l'apporteur, jamais le client final, en privé.
+- Rémunération négociée entre les deux (par exemple 10 % du TJM pendant 12 mois).
+- Plugcut formalise et suit l'accord privé, il ne met pas en relation des inconnus.
+
+## Ce que vend le produit
+- Le contrat entre l'apporteur et la personne placée.
+- La preuve d'attribution : qui a introduit qui, horodatée et scellée (empreinte SHA-256).
+- La collecte récurrente de la commission sur le TJM, sur la durée.
+- La discrétion vis-à-vis du client final.
+
+## Comment ça marche
+1. Créer un deal d'apport (qui place qui, chez quel client, gardé discret).
+2. Définir la commission : pourcentage du TJM et durée.
+3. Double signature : l'apporteur et la personne placée signent, ce qui scelle la preuve
+   d'attribution.
+4. Le contrat est généré.
+5. L'échéancier des commissions est suivi et collecté, mois après mois.
+
+## Pour qui
+- Apporteurs : ceux qui placent quelqu'un de leur réseau et veulent sécuriser leur part.
+- Personnes placées : freelances et indépendants qui veulent un cadre propre et discret.
+
+## Liens
+- Accueil: https://plugcut.com/
+- Mentions légales: https://plugcut.com/mentions-legales
+- CGU: https://plugcut.com/cgu
+- Confidentialité: https://plugcut.com/confidentialite

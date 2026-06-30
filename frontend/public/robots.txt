@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /app
+Disallow: /invitation/
+Disallow: /connexion
+Disallow: /inscription
+
+Sitemap: https://plugcut.com/sitemap.xml

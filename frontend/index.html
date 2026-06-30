@@ -2,13 +2,119 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✂️</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✂️</text></svg>" />
+
+    <title>Plugcut · Place un indé, touche ta part. Commissions d'apport entre particuliers</title>
     <meta
       name="description"
-      content="Plugcut — formalise et exécute la commission privée que la personne que tu as placée te verse. Un % de son TJM, sur la durée. Discrètement, avec un vrai contrat."
+      content="Plugcut formalise et exécute la commission privée que la personne que tu as placée te verse. Un pourcentage du TJM, sur la durée. Contrat, preuve d'attribution, collecte récurrente, discrétion."
     />
-    <title>Plugcut — Place. Encaisse ta part.</title>
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#0b0b0d" />
+    <link rel="canonical" href="https://plugcut.com/" />
+    <link rel="alternate" href="https://plugcut.com/" hreflang="fr" />
+    <link rel="alternate" href="https://plugcut.com/" hreflang="x-default" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Plugcut" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:url" content="https://plugcut.com/" />
+    <meta property="og:title" content="Plugcut · Place un indé, touche ta part." />
+    <meta
+      property="og:description"
+      content="Le rail pour formaliser et exécuter les commissions d'apport d'affaires entre particuliers. Contrat, preuve d'attribution, collecte récurrente, discrétion."
+    />
+    <meta property="og:image" content="https://plugcut.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Plugcut · Place un indé, touche ta part." />
+    <meta
+      name="twitter:description"
+      content="Le rail pour formaliser et exécuter les commissions d'apport d'affaires entre particuliers."
+    />
+    <meta name="twitter:image" content="https://plugcut.com/og-image.png" />
+
+    <!-- Structured data (SEO + GEO / answer engines) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://plugcut.com/#org",
+            "name": "Plugcut",
+            "url": "https://plugcut.com/",
+            "logo": "https://plugcut.com/og-image.png",
+            "description": "Plugcut formalise et exécute les commissions d'apport d'affaires entre particuliers."
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://plugcut.com/#website",
+            "url": "https://plugcut.com/",
+            "name": "Plugcut",
+            "inLanguage": "fr-FR",
+            "publisher": { "@id": "https://plugcut.com/#org" }
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "Plugcut",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "Web",
+            "url": "https://plugcut.com/",
+            "description": "Formalise et suit la commission privée que la personne placée verse à l'apporteur : contrat, preuve d'attribution, échéancier de collecte.",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+          },
+          {
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Pourquoi ne pas juste se serrer la main et envoyer une facture ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Parce que sur 10 % d'un TJM pendant un an, l'apporteur a peur de se faire oublier, et la personne placée veut un cadre propre et discret. Plugcut vend la confiance et l'exécution du deal, pas l'intro."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Qui paie la commission ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "La personne placée, jamais le client final. En privé, en toute discrétion."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Est-ce que Plugcut met en relation des inconnus ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Non. La relation existe déjà hors-ligne. Plugcut formalise et suit l'accord, sans faire de mise en relation."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Qui peut être apporteur ?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "N'importe qui : un chef de projet, un développeur, ou quelqu'un de totalement hors tech qui connaît la bonne personne."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
+
+    <!-- ANALYTICS / VERIFICATION PLACEHOLDERS (drop your IDs here later) -->
+    <!-- <meta name="google-site-verification" content="REPLACE_ME" /> -->
+    <!-- Google Analytics / Meta Pixel / etc. go here -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import LegalLayout from '@/features/legal/LegalLayout.vue'
+import { useSeo } from '@/shared/seo'
 
 interface Section {
   heading: string
@@ -13,6 +14,17 @@ const props = defineProps<{ doc: 'notice' | 'terms' | 'privacy' }>()
 
 const { t, tm } = useI18n()
 const sections = computed(() => tm(`legal.${props.doc}.sections`) as Section[])
+
+const PATHS: Record<string, string> = {
+  notice: '/mentions-legales',
+  terms: '/cgu',
+  privacy: '/confidentialite',
+}
+useSeo({
+  title: `${t(`legal.${props.doc}.title`)} · Plugcut`,
+  description: t('legal.demoNote'),
+  path: PATHS[props.doc],
+})
 </script>
 
 <template>

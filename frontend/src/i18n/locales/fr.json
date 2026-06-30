@@ -1,5 +1,9 @@
 {
   "brand": { "name": "Plugcut" },
+  "seo": {
+    "landingTitle": "Plugcut · Place un indé, touche ta part.",
+    "landingDescription": "Formalise et exécute la commission privée que la personne que tu as placée te verse : un pourcentage du TJM, sur la durée. Contrat, preuve d'attribution, collecte récurrente, discrétion."
+  },
   "nav": {
     "how": "Comment ça marche",
     "security": "Ce qu'on sécurise",

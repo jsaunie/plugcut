@@ -1,5 +1,9 @@
 {
   "brand": { "name": "Plugcut" },
+  "seo": {
+    "landingTitle": "Plugcut · Plug someone in, take your cut.",
+    "landingDescription": "Formalize and execute the private commission the person you placed owes you: a percentage of the day rate, over time. Contract, attribution proof, recurring collection, discretion."
+  },
   "nav": {
     "how": "How it works",
     "security": "What we secure",
