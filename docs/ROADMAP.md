@@ -47,7 +47,9 @@ Deal pipeline status: `SENT → IN_DISCUSSION → QUALIFIED → SIGNED → ACTIV
 
 - [x] **Immutable attribution record** — who introduced whom, both parties signed
       (typed name + consent), sealed as a SHA-256 fingerprint over the immutable facts.
-- [ ] **Audit trail** per deal (status changes, acceptances, payments).
+- [x] **Audit trail** per deal — `GET /referrals/{id}/timeline` synthesizes the history
+      (created, acceptances with signer, sealed, activated, payments) from stored
+      timestamps; shown as a "Historique" timeline on the deal detail.
 - [ ] **Dispute mode** — flag, freeze, export an evidence pack.
 
 ## Collection model (decision)
