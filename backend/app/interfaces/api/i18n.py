@@ -35,6 +35,18 @@ MESSAGES: dict[str, dict[str, str]] = {
         "fr": "Mot de passe trop court (8 caractères minimum).",
         "en": "Password is too short (8 characters minimum).",
     },
+    "referral.not_found": {
+        "fr": "Ce deal est introuvable.",
+        "en": "This deal was not found.",
+    },
+    "referral.forbidden": {
+        "fr": "Tu n'as pas accès à ce deal.",
+        "en": "You do not have access to this deal.",
+    },
+    "referral.invalid_terms": {
+        "fr": "Les conditions de commission sont invalides.",
+        "en": "The commission terms are invalid.",
+    },
     "domain.error": {
         "fr": "Une erreur est survenue.",
         "en": "An error occurred.",

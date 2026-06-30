@@ -16,6 +16,9 @@ _STATUS_BY_CODE: dict[str, int] = {
     "identity.invalid_token": 401,
     "identity.invalid_email": 422,
     "identity.weak_password": 422,
+    "referral.not_found": 404,
+    "referral.forbidden": 403,
+    "referral.invalid_terms": 422,
 }
 _DEFAULT_STATUS = 400
 

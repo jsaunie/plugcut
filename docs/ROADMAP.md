@@ -11,12 +11,14 @@ Every feature must reinforce one of: *attribution proof*, *a clean agreement*,
       guards, HTTP client with localized errors.
 - [x] **Landing page** (marketing) — i18n FR/EN, with interactive commission calculator.
 - [ ] **Legal docs** — mentions légales, CGU/CGV, politique de confidentialité (i18n).
-- [ ] **Create referral deal** — referrer, placed person, discreet client reference,
-      TJM (daily rate), commission %, duration, billing frequency.
+- [x] **Create referral deal (API)** — `POST/GET /api/v1/referrals`, owner-scoped,
+      computes monthly/total commission. Persisted (SQLAlchemy + Alembic).
+- [ ] **Create referral deal (UI)** — form in the dashboard.
 - [ ] **Two-sided acceptance** — invite counterparty by link; both accept → attribution
       proof (timestamped, both-party signed).
 - [ ] **Agreement generation** — render the contract (PDF) from the deal.
-- [ ] **Commission schedule** — auto-generate recurring installments from the terms.
+- [x] **Commission schedule (forecast)** — `GET /api/v1/referrals/{id}` returns the
+      generated installments. Persisted installments + paid status still to do.
 - [ ] **Dashboard** — deal pipeline + commissions due / paid / overdue.
 - [ ] **Mark commission paid** — manual, with audit trail.
 

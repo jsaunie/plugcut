@@ -14,9 +14,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.application.identity.errors import InvalidToken
 from app.application.identity.ports import TokenService, UserRepository
 from app.application.identity.use_cases import AuthenticateUser, RegisterUser
+from app.application.referrals.ports import ReferralRepository
+from app.application.referrals.use_cases import (
+    CreateReferral,
+    GetReferralWithSchedule,
+    ListReferrals,
+)
 from app.domain.identity.entities import User
 from app.domain.identity.ports import PasswordHasher
 from app.infrastructure.config import Settings
+from app.infrastructure.persistence.referral_repository import SqlAlchemyReferralRepository
 from app.infrastructure.persistence.repositories import SqlAlchemyUserRepository
 from app.infrastructure.security.jwt_token_service import JwtTokenService
 from app.infrastructure.security.password_hasher import BcryptPasswordHasher
@@ -80,3 +87,27 @@ async def get_current_user(
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+
+def get_referral_repository(
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> ReferralRepository:
+    return SqlAlchemyReferralRepository(session)
+
+
+def get_create_referral(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+) -> CreateReferral:
+    return CreateReferral(referrals, now=lambda: datetime.now(UTC))
+
+
+def get_list_referrals(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+) -> ListReferrals:
+    return ListReferrals(referrals)
+
+
+def get_get_referral(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+) -> GetReferralWithSchedule:
+    return GetReferralWithSchedule(referrals)
