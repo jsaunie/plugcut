@@ -8,6 +8,18 @@ from uuid import UUID
 
 
 @dataclass(frozen=True, slots=True)
+class ReferralStats:
+    total_deals: int
+    active_deals: int
+    pipeline_expected: float
+    monthly_run_rate: float
+    collected: float
+    outstanding: float
+    overdue: float
+    currency: str = "EUR"
+
+
+@dataclass(frozen=True, slots=True)
 class CreateReferralCommand:
     referrer_id: UUID
     placed_person_email: str

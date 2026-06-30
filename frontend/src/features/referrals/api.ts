@@ -1,9 +1,20 @@
 import { apiFetch } from '@/shared/http'
 
-import type { AcceptParty, CreateReferralPayload, Installment, Referral, ReferralDetail } from './types'
+import type {
+  AcceptParty,
+  CreateReferralPayload,
+  Installment,
+  Referral,
+  ReferralDetail,
+  ReferralStats,
+} from './types'
 
 export function listReferrals(): Promise<Referral[]> {
   return apiFetch<Referral[]>('/referrals')
+}
+
+export function getStats(): Promise<ReferralStats> {
+  return apiFetch<ReferralStats>('/referrals/stats')
 }
 
 export function createReferral(payload: CreateReferralPayload): Promise<Referral> {

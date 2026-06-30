@@ -176,6 +176,15 @@
     "back": "Retour",
     "cancel": "Annuler"
   },
+  "stats": {
+    "title": "Statistiques",
+    "pipeline": "Pipeline de commission",
+    "collected": "Encaissé",
+    "outstanding": "Restant dû",
+    "overdue": "dont {amount} en retard",
+    "runRate": "Run-rate / mois",
+    "deals": "{total} deals, {active} actifs"
+  },
   "deals": {
     "list": { "perMonth": "/ mois" },
     "status": {

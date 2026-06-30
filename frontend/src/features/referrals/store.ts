@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 
 import * as api from './api'
-import type { CreateReferralPayload, Referral } from './types'
+import type { CreateReferralPayload, Referral, ReferralStats } from './types'
 
 interface ReferralsState {
   deals: Referral[]
+  stats: ReferralStats | null
   loading: boolean
   loaded: boolean
 }
@@ -12,6 +13,7 @@ interface ReferralsState {
 export const useReferralsStore = defineStore('referrals', {
   state: (): ReferralsState => ({
     deals: [],
+    stats: null,
     loading: false,
     loaded: false,
   }),
@@ -24,6 +26,10 @@ export const useReferralsStore = defineStore('referrals', {
       } finally {
         this.loading = false
       }
+    },
+
+    async fetchStats(): Promise<void> {
+      this.stats = await api.getStats()
     },
 
     async create(payload: CreateReferralPayload): Promise<Referral> {

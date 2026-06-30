@@ -176,6 +176,15 @@
     "back": "Back",
     "cancel": "Cancel"
   },
+  "stats": {
+    "title": "Statistics",
+    "pipeline": "Commission pipeline",
+    "collected": "Collected",
+    "outstanding": "Outstanding",
+    "overdue": "incl. {amount} overdue",
+    "runRate": "Run-rate / month",
+    "deals": "{total} deals, {active} active"
+  },
   "deals": {
     "list": { "perMonth": "/ month" },
     "status": {

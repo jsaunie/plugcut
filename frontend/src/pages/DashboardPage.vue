@@ -12,9 +12,11 @@ import { UiButton } from '@/ui'
 const { t, locale } = useI18n()
 const store = useReferralsStore()
 const deals = computed(() => store.deals)
+const stats = computed(() => store.stats)
 
 onMounted(() => {
   if (!store.loaded) void store.fetchAll()
+  void store.fetchStats()
 })
 
 function money(amount: number, currency: string): string {
@@ -31,6 +33,31 @@ function money(amount: number, currency: string): string {
       </div>
       <UiButton to="/app/deals/nouveau">{{ t('dashboard.newDeal') }}</UiButton>
     </div>
+
+    <section v-if="stats && deals.length" class="stats" :aria-label="t('stats.title')">
+      <div class="kpi kpi--accent">
+        <span class="kpi__label">{{ t('stats.pipeline') }}</span>
+        <strong class="kpi__value">{{ money(stats.pipeline_expected, stats.currency) }}</strong>
+      </div>
+      <div class="kpi">
+        <span class="kpi__label">{{ t('stats.collected') }}</span>
+        <strong class="kpi__value">{{ money(stats.collected, stats.currency) }}</strong>
+      </div>
+      <div class="kpi">
+        <span class="kpi__label">{{ t('stats.outstanding') }}</span>
+        <strong class="kpi__value">{{ money(stats.outstanding, stats.currency) }}</strong>
+        <span v-if="stats.overdue > 0" class="kpi__note kpi__note--danger">
+          {{ t('stats.overdue', { amount: money(stats.overdue, stats.currency) }) }}
+        </span>
+      </div>
+      <div class="kpi">
+        <span class="kpi__label">{{ t('stats.runRate') }}</span>
+        <strong class="kpi__value">{{ money(stats.monthly_run_rate, stats.currency) }}</strong>
+        <span class="kpi__note">
+          {{ t('stats.deals', { total: stats.total_deals, active: stats.active_deals }) }}
+        </span>
+      </div>
+    </section>
 
     <p v-if="store.loading && !deals.length" class="muted">{{ t('common.loading') }}</p>
 
@@ -79,6 +106,45 @@ function money(amount: number, currency: string): string {
 }
 .muted {
   color: var(--muted-on-ink);
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+.kpi {
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+  padding: 1.3rem 1.4rem;
+  background: var(--ink-2);
+  border: 1px solid var(--line-on-ink);
+  border-radius: var(--radius);
+}
+.kpi--accent {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+.kpi__label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+.kpi__value {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.1;
+}
+.kpi__note {
+  font-size: var(--fs-small);
+  color: var(--muted-on-ink);
+}
+.kpi__note--danger {
+  color: var(--danger);
 }
 .empty {
   display: grid;

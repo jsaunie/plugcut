@@ -29,6 +29,7 @@ from app.application.referrals.use_cases import (
     CreateReferral,
     GetAgreement,
     GetReferralByInvitation,
+    GetReferralStats,
     GetReferralWithSchedule,
     ListReferrals,
     QualifyReferral,
@@ -138,6 +139,13 @@ def get_installment_repository(
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> InstallmentRepository:
     return SqlAlchemyInstallmentRepository(session)
+
+
+def get_referral_stats(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+    installments: Annotated[InstallmentRepository, Depends(get_installment_repository)],
+) -> GetReferralStats:
+    return GetReferralStats(referrals, installments)
 
 
 def get_get_referral(

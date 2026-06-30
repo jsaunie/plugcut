@@ -5,10 +5,11 @@ from __future__ import annotations
 import secrets
 from collections.abc import Callable
 from datetime import UTC, datetime
+from decimal import Decimal
 from uuid import UUID, uuid4
 
 from app.application.identity.ports import UserRepository
-from app.application.referrals.dtos import CreateReferralCommand
+from app.application.referrals.dtos import CreateReferralCommand, ReferralStats
 from app.application.referrals.errors import (
     AgreementNotReady,
     InstallmentNotFound,
@@ -24,7 +25,7 @@ from app.application.referrals.ports import (
 from app.domain.billing.entities import CommissionInstallment, CommissionSchedule
 from app.domain.billing.services import CommissionScheduleService
 from app.domain.referrals.entities import Referral
-from app.domain.referrals.enums import ReferralStatus
+from app.domain.referrals.enums import InstallmentStatus, ReferralStatus
 from app.domain.referrals.value_objects import CommissionTerms
 from app.domain.shared.value_objects import Money, Percentage
 
@@ -102,6 +103,62 @@ class ListReferrals:
 
     async def execute(self, referrer_id: UUID) -> list[Referral]:
         return await self._referrals.list_for_referrer(referrer_id)
+
+
+_COMMITTED = {ReferralStatus.SIGNED, ReferralStatus.ACTIVE, ReferralStatus.COMPLETED}
+
+
+class GetReferralStats:
+    """Aggregate KPIs across one referrer's deals: pipeline, run-rate, money flow."""
+
+    def __init__(
+        self,
+        referrals: ReferralRepository,
+        installments: InstallmentRepository,
+        *,
+        now: Callable[[], datetime] = _utc_now,
+    ) -> None:
+        self._referrals = referrals
+        self._installments = installments
+        self._now = now
+
+    async def execute(self, referrer_id: UUID) -> ReferralStats:
+        deals = await self._referrals.list_for_referrer(referrer_id)
+        today = self._now().date()
+
+        active = 0
+        currency = "EUR"
+        pipeline = monthly = collected = outstanding = overdue = Decimal("0")
+
+        for deal in deals:
+            currency = deal.terms.daily_rate.currency
+            monthly_amount = deal.terms.expected_amount_per_period.amount
+            if deal.status is ReferralStatus.ACTIVE:
+                active += 1
+                monthly += monthly_amount
+            if deal.status not in _COMMITTED:
+                continue
+            pipeline += monthly_amount * deal.terms.duration_months
+            for installment in await self._installments.list_for_referral(deal.id):
+                installment.refresh_status(as_of=today)
+                amount = installment.amount_due.amount
+                if installment.status is InstallmentStatus.PAID:
+                    collected += amount
+                else:
+                    outstanding += amount
+                    if installment.status is InstallmentStatus.OVERDUE:
+                        overdue += amount
+
+        return ReferralStats(
+            total_deals=len(deals),
+            active_deals=active,
+            pipeline_expected=float(pipeline),
+            monthly_run_rate=float(monthly),
+            collected=float(collected),
+            outstanding=float(outstanding),
+            overdue=float(overdue),
+            currency=currency,
+        )
 
 
 class GetReferralWithSchedule:

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import asdict
 from typing import Annotated
 from uuid import UUID
 
@@ -14,6 +15,7 @@ from app.application.referrals.use_cases import (
     ActivateReferral,
     CreateReferral,
     GetAgreement,
+    GetReferralStats,
     GetReferralWithSchedule,
     ListReferrals,
     QualifyReferral,
@@ -30,6 +32,7 @@ from app.interfaces.api.deps import (
     get_locale,
     get_qualify_referral,
     get_record_payment,
+    get_referral_stats,
     get_session,
 )
 from app.interfaces.api.referral_schemas import (
@@ -39,6 +42,7 @@ from app.interfaces.api.referral_schemas import (
     ReferralCreateRequest,
     ReferralDetailResponse,
     ReferralResponse,
+    ReferralStatsResponse,
 )
 
 router = APIRouter(prefix="/referrals", tags=["referrals"])
@@ -74,6 +78,15 @@ async def list_referrals(
 ) -> list[ReferralResponse]:
     referrals = await use_case.execute(current_user.id)
     return [ReferralResponse.from_domain(referral) for referral in referrals]
+
+
+@router.get("/stats", response_model=ReferralStatsResponse)
+async def referral_stats(
+    current_user: CurrentUser,
+    use_case: Annotated[GetReferralStats, Depends(get_referral_stats)],
+) -> ReferralStatsResponse:
+    stats = await use_case.execute(current_user.id)
+    return ReferralStatsResponse(**asdict(stats))
 
 
 @router.get("/{referral_id}", response_model=ReferralDetailResponse)

@@ -9,6 +9,7 @@ vi.mock('../api', () => ({
   listReferrals: vi.fn(),
   createReferral: vi.fn(),
   getReferral: vi.fn(),
+  getStats: vi.fn(),
 }))
 
 const mockedApi = vi.mocked(api)
@@ -43,6 +44,22 @@ describe('referrals store', () => {
     expect(store.deals).toHaveLength(1)
     expect(store.loaded).toBe(true)
     expect(store.loading).toBe(false)
+  })
+
+  it('loads stats', async () => {
+    mockedApi.getStats.mockResolvedValue({
+      total_deals: 2,
+      active_deals: 1,
+      pipeline_expected: 12000,
+      monthly_run_rate: 1000,
+      collected: 1000,
+      outstanding: 11000,
+      overdue: 0,
+      currency: 'EUR',
+    })
+    const store = useReferralsStore()
+    await store.fetchStats()
+    expect(store.stats?.pipeline_expected).toBe(12000)
   })
 
   it('prepends a newly created deal', async () => {

@@ -13,6 +13,17 @@ from app.domain.billing.entities import CommissionInstallment, CommissionSchedul
 from app.domain.referrals.entities import Referral
 
 
+class ReferralStatsResponse(BaseModel):
+    total_deals: int
+    active_deals: int
+    pipeline_expected: float
+    monthly_run_rate: float
+    collected: float
+    outstanding: float
+    overdue: float
+    currency: str
+
+
 class ReferralCreateRequest(BaseModel):
     placed_person_email: str
     client_reference: str = Field(min_length=1, max_length=255)

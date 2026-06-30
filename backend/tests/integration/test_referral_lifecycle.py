@@ -154,6 +154,30 @@ class TestGuards:
         assert response.status_code == 403
 
 
+class TestStats:
+    async def test_empty_stats(self, client: AsyncClient) -> None:
+        headers = await _headers(client)
+        response = await client.get("/api/v1/referrals/stats", headers=headers)
+        assert response.status_code == 200
+        body = response.json()
+        assert body["total_deals"] == 0
+        assert body["pipeline_expected"] == 0
+
+    async def test_stats_after_sign_activate_pay(self, client: AsyncClient) -> None:
+        headers = await _headers(client)
+        deal_id = await _sign(client, headers)
+        await client.post(f"/api/v1/referrals/{deal_id}/activate", headers=headers)
+        await client.post(f"/api/v1/referrals/{deal_id}/installments/1/pay", headers=headers)
+
+        body = (await client.get("/api/v1/referrals/stats", headers=headers)).json()
+        assert body["total_deals"] == 1
+        assert body["active_deals"] == 1
+        assert body["pipeline_expected"] == 12000.0
+        assert body["monthly_run_rate"] == 1000.0
+        assert body["collected"] == 1000.0
+        assert body["outstanding"] == 11000.0
+
+
 class TestAgreement:
     async def test_not_ready_before_signed(self, client: AsyncClient) -> None:
         headers = await _headers(client)

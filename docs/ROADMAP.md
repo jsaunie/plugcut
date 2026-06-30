@@ -26,8 +26,10 @@ Every feature must reinforce one of: *attribution proof*, *a clean agreement*,
 - [x] **Commission schedule** — generated on signing and **persisted**
       (`commission_installments` table); `GET /referrals/{id}` returns it with
       due/overdue status refreshed.
-- [x] **Dashboard + deal detail** — lists deals; detail page drives the full lifecycle
-      (qualify / accept / activate / pay installment) and opens the generated contract.
+- [x] **Dashboard + deal detail** — KPI stats row (pipeline, collected, outstanding +
+      overdue, monthly run-rate) backed by `GET /api/v1/referrals/stats`; lists deals;
+      detail page drives the full lifecycle (qualify / sign / invite / activate / pay)
+      and opens the generated contract.
 - [x] **Mark commission paid (API)** — `POST /referrals/{id}/installments/{seq}/pay`,
       idempotent guard (409 if already paid).
 

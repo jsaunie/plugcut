@@ -18,6 +18,17 @@ export interface Referral {
 
 export type AcceptParty = 'referrer' | 'placed'
 
+export interface ReferralStats {
+  total_deals: number
+  active_deals: number
+  pipeline_expected: number
+  monthly_run_rate: number
+  collected: number
+  outstanding: number
+  overdue: number
+  currency: string
+}
+
 export interface Installment {
   sequence: number
   period_start: string
