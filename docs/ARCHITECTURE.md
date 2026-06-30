@@ -82,6 +82,29 @@ no hardcoded user-facing strings).
   (reverse proxy / API gateway) or via middleware (e.g. SlowAPI) on the auth endpoints
   (`/auth/login`, `/auth/register`, `/auth/refresh`) to blunt credential stuffing.
 
+## Documents and collection model
+
+- **Document rendering** lives behind ports: `AgreementRenderer` (the contract) and
+  `InvoiceRenderer` (the monthly commission invoice). Concrete adapters
+  (`HtmlAgreementRenderer`, `HtmlInvoiceRenderer`) are pure string templating, FR/EN,
+  HTML-escaped, with no I/O. They could be swapped for a PDF engine without touching the
+  use cases. Endpoints return `{ "html": ... }` and the SPA opens it in a new tab.
+- **Collection model = system of record (Model A).** Plugcut tracks the schedule, renders
+  the contract and invoices, and marks installments paid. The money flows **peer to peer**
+  between the placed person and the referrer; Plugcut never holds third-party funds, so it
+  carries no payment-services regulatory burden. Managed collection + redistribution
+  (Model B, via a marketplace PSP) is deferred behind the same conceptual port.
+
+## SEO / GEO (frontend)
+
+- Static `<head>` in `index.html` carries the canonical tags, Open Graph / Twitter cards,
+  and a JSON-LD `@graph` (Organization, WebSite, SoftwareApplication, FAQPage) so the
+  initial HTML is legible to search crawlers and generative answer engines.
+- `public/` ships `robots.txt`, `sitemap.xml`, a branded `og-image.png`, and `llms.txt`
+  (a plain-text product summary for LLM answer engines).
+- `src/shared/seo.ts` (`useSeo`) sets per-route title/description/canonical on navigation.
+- Verification + analytics are commented placeholders in `index.html` (drop-in later).
+
 ## Testing strategy
 
 - **Domain** — fast pure unit tests (pytest), covering invariants and the schedule math.

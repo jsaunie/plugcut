@@ -86,24 +86,30 @@ Avoid "AI-looking" output. These are enforced, not suggestions:
 
 ## Status
 
-The MVP is complete and runs end-to-end (backend 77 tests, frontend 20 tests; all gates
-green: pytest + ruff + mypy strict, vitest + vue-tsc + eslint).
+Runs end-to-end (backend 90 tests, frontend 22 tests; all gates green: pytest + ruff +
+mypy strict, vitest + vue-tsc + eslint).
 
 Backend:
-- Domain: `identity` (User), `referrals` (Referral aggregate + state machine +
-  attribution hash), `billing` (commission schedule + installments).
-- Application: auth (register/authenticate/refresh) + referral use-cases
-  (create/list/read, qualify/accept/activate, record payment, agreement).
-- Infrastructure: bcrypt, own JWT (access + refresh), SQLAlchemy async repos, Alembic
-  migrations (users, referrals, commission_installments), HTML agreement renderer.
+- Domain: `identity` (User), `referrals` (Referral aggregate + state machine + two-sided
+  signatures + attribution hash + invitation token), `billing` (schedule + installments).
+- Application: auth (register/authenticate/refresh) + referral use-cases (create, list,
+  read, qualify, accept, activate, record payment, stats, agreement, invoice, invitation
+  view/sign).
+- Infrastructure: bcrypt, own JWT (access + refresh), SQLAlchemy async repos, Alembic,
+  HTML renderers behind ports (`AgreementRenderer`, `InvoiceRenderer`).
 - API under `/api/v1`: `auth/{register,login,refresh,me}`, full `referrals` lifecycle +
-  `installments/{seq}/pay` + `agreement`; CORS; localized FR/EN errors; Swagger at `/docs`.
+  `installments/{seq}/{pay,invoice}` + `agreement` + `stats`, public `invitations/{token}`;
+  CORS; localized FR/EN errors; Swagger at `/docs`.
 
 Frontend (Vue 3 + TS):
-- `src/ui/` design-system package (tokens + UiButton/UiEyebrow/UiCard/UiField/UiTextInput).
-- Landing page; auth (login/register, Pinia store, guards, 401-refresh retry); dashboard
-  (deal list); create-deal form with live preview; deal detail driving the full lifecycle
-  and opening the generated contract; real legal pages. Full FR/EN i18n.
+- `src/ui/` design-system package; landing; auth (Pinia, guards, 401-refresh retry);
+  dashboard with **KPI stats** + deal list; create-deal form; deal detail driving the full
+  lifecycle (qualify / sign-with-name / invite link / activate / pay / contract / invoice);
+  public **invitation signing page**; real legal pages. Full FR/EN i18n.
+- **SEO/GEO**: head meta + JSON-LD, OG image, robots/sitemap/llms.txt, `useSeo` per route,
+  placeholders for Search Console + pixels (see `docs/ARCHITECTURE.md`).
 
-Not built (intentional, post-MVP): real payment rails (Stripe/SEPA), email
-reminders/verification, dispute mode, audit-trail UI. See `docs/ROADMAP.md`.
+Collection model: **system of record (Model A)** — Plugcut renders contract + invoices and
+tracks payment; money flows peer to peer. Managed collection (Model B, marketplace PSP) is
+deferred. Not built (intentional, post-MVP): real payment rails, email reminders, dispute
+mode, audit-trail UI. See `docs/ROADMAP.md`.

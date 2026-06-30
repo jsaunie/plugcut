@@ -32,22 +32,39 @@ Every feature must reinforce one of: *attribution proof*, *a clean agreement*,
       and opens the generated contract.
 - [x] **Mark commission paid (API)** — `POST /referrals/{id}/installments/{seq}/pay`,
       idempotent guard (409 if already paid).
+- [x] **Monthly commission invoice** — HTML invoice per installment behind an
+      `InvoiceRenderer` port (FR/EN), `GET /referrals/{id}/installments/{seq}/invoice`;
+      "Facture" button per row. The document that makes the commission a clean,
+      justifiable expense (system-of-record model, money stays peer to peer).
+- [x] **SEO / GEO foundation** — full `<head>` + JSON-LD (Organization, WebSite,
+      SoftwareApplication, FAQPage), branded OG image, robots.txt, sitemap.xml, llms.txt,
+      per-route `useSeo`. Placeholders ready for Search Console + analytics pixels.
 
 Deal pipeline status: `SENT → IN_DISCUSSION → QUALIFIED → SIGNED → ACTIVE → COMPLETED`
 (plus `CANCELLED`, `DISPUTED`).
 
 ## Differentiators — more than a handshake + invoice
 
-- [ ] **Immutable attribution record** — who introduced whom, hash-chained /
-      tamper-evident, both-party accepted.
+- [x] **Immutable attribution record** — who introduced whom, both parties signed
+      (typed name + consent), sealed as a SHA-256 fingerprint over the immutable facts.
 - [ ] **Audit trail** per deal (status changes, acceptances, payments).
 - [ ] **Dispute mode** — flag, freeze, export an evidence pack.
 
+## Collection model (decision)
+
+- **Now (Model A, in place):** Plugcut is the **system of record**. It generates the
+  contract + invoices, tracks the schedule, and the money flows **peer to peer** between
+  the placed person and the referrer. No regulatory burden. Strengthen with reminders
+  and a payment-proof upload.
+- **Later (Model B):** managed collection + redistribution via a marketplace PSP
+  (Mangopay / Lemonway / Stripe Connect). Plugcut debits, takes its cut, pays out. This
+  is the regulated build; do it once demand for the rail is proven.
+
 ## Later — modeled now, built later
 
-- [ ] Real recurring collection (Stripe Connect / SEPA) behind the payment port.
-- [ ] Email reminders for due commissions.
-- [ ] Real e-signature integration.
+- [ ] Real recurring collection (Model B, marketplace PSP) behind the payment port.
+- [ ] Email reminders for due commissions + payment-proof upload.
+- [ ] Real e-signature integration (qualified signature).
 - [ ] Multi-currency.
 - [ ] Accounting / CSV exports.
 
