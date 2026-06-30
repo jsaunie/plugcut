@@ -9,7 +9,11 @@ from decimal import Decimal
 from uuid import UUID, uuid4
 
 from app.application.identity.ports import UserRepository
-from app.application.referrals.dtos import CreateReferralCommand, ReferralStats
+from app.application.referrals.dtos import (
+    CreateReferralCommand,
+    ReferralStats,
+    TimelineEntry,
+)
 from app.application.referrals.errors import (
     AgreementNotReady,
     InstallmentNotFound,
@@ -160,6 +164,57 @@ class GetReferralStats:
             overdue=float(overdue),
             currency=currency,
         )
+
+
+class GetDealTimeline:
+    """Synthesize the deal's audit trail from its stored timestamps (no event table)."""
+
+    def __init__(
+        self, referrals: ReferralRepository, installments: InstallmentRepository
+    ) -> None:
+        self._referrals = referrals
+        self._installments = installments
+
+    async def execute(self, referral_id: UUID, *, requester_id: UUID) -> list[TimelineEntry]:
+        referral = await _load_owned(self._referrals, referral_id, requester_id)
+        entries: list[TimelineEntry] = [TimelineEntry("created", referral.created_at)]
+
+        if referral.accepted_by_referrer_at is not None:
+            entries.append(
+                TimelineEntry(
+                    "accepted_referrer",
+                    referral.accepted_by_referrer_at,
+                    referral.referrer_signature or "",
+                )
+            )
+        if referral.accepted_by_placed_at is not None:
+            entries.append(
+                TimelineEntry(
+                    "accepted_placed",
+                    referral.accepted_by_placed_at,
+                    referral.placed_signature or "",
+                )
+            )
+        if (
+            referral.attribution_hash is not None
+            and referral.accepted_by_referrer_at is not None
+            and referral.accepted_by_placed_at is not None
+        ):
+            signed_at = max(referral.accepted_by_referrer_at, referral.accepted_by_placed_at)
+            entries.append(TimelineEntry("signed", signed_at))
+        if referral.activated_at is not None:
+            entries.append(TimelineEntry("activated", referral.activated_at))
+
+        for installment in await self._installments.list_for_referral(referral_id):
+            if installment.status is InstallmentStatus.PAID and installment.paid_at is not None:
+                entries.append(
+                    TimelineEntry(
+                        "payment_recorded", installment.paid_at, str(installment.sequence)
+                    )
+                )
+
+        entries.sort(key=lambda entry: entry.at)
+        return entries
 
 
 class GetReferralWithSchedule:
@@ -324,9 +379,12 @@ class RecordInstallmentPayment:
         self,
         referrals: ReferralRepository,
         installments: InstallmentRepository,
+        *,
+        now: Callable[[], datetime] = _utc_now,
     ) -> None:
         self._referrals = referrals
         self._installments = installments
+        self._now = now
 
     async def execute(
         self, referral_id: UUID, sequence: int, *, requester_id: UUID
@@ -335,7 +393,7 @@ class RecordInstallmentPayment:
         installment = await self._installments.get(referral_id, sequence)
         if installment is None:
             raise InstallmentNotFound
-        installment.mark_paid()
+        installment.mark_paid(at=self._now())
         await self._installments.update(referral_id, installment)
         return installment
 

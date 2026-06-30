@@ -47,6 +47,12 @@ class AgreementResponse(BaseModel):
     html: str
 
 
+class TimelineEntryResponse(BaseModel):
+    type: str
+    at: datetime
+    detail: str
+
+
 class ReferralResponse(BaseModel):
     id: UUID
     placed_person_email: str

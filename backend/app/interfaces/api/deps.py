@@ -29,6 +29,7 @@ from app.application.referrals.use_cases import (
     ActivateReferral,
     CreateReferral,
     GetAgreement,
+    GetDealTimeline,
     GetInstallmentInvoice,
     GetReferralByInvitation,
     GetReferralStats,
@@ -209,6 +210,13 @@ def get_sign_invitation(
     users: Annotated[UserRepository, Depends(get_user_repository)],
 ) -> SignByInvitation:
     return SignByInvitation(referrals, installments, users)
+
+
+def get_deal_timeline(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+    installments: Annotated[InstallmentRepository, Depends(get_installment_repository)],
+) -> GetDealTimeline:
+    return GetDealTimeline(referrals, installments)
 
 
 def get_invoice_renderer() -> InvoiceRenderer:

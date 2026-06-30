@@ -15,6 +15,7 @@ from app.application.referrals.use_cases import (
     ActivateReferral,
     CreateReferral,
     GetAgreement,
+    GetDealTimeline,
     GetInstallmentInvoice,
     GetReferralStats,
     GetReferralWithSchedule,
@@ -27,6 +28,7 @@ from app.interfaces.api.deps import (
     get_accept_referral,
     get_activate_referral,
     get_create_referral,
+    get_deal_timeline,
     get_get_agreement,
     get_get_invoice,
     get_get_referral,
@@ -45,6 +47,7 @@ from app.interfaces.api.referral_schemas import (
     ReferralDetailResponse,
     ReferralResponse,
     ReferralStatsResponse,
+    TimelineEntryResponse,
 )
 
 router = APIRouter(prefix="/referrals", tags=["referrals"])
@@ -141,6 +144,18 @@ async def activate_referral(
     referral = await use_case.execute(referral_id, requester_id=current_user.id)
     await session.commit()
     return ReferralResponse.from_domain(referral)
+
+
+@router.get("/{referral_id}/timeline", response_model=list[TimelineEntryResponse])
+async def deal_timeline(
+    referral_id: UUID,
+    current_user: CurrentUser,
+    use_case: Annotated[GetDealTimeline, Depends(get_deal_timeline)],
+) -> list[TimelineEntryResponse]:
+    entries = await use_case.execute(referral_id, requester_id=current_user.id)
+    return [
+        TimelineEntryResponse(type=e.type, at=e.at, detail=e.detail) for e in entries
+    ]
 
 
 @router.get("/{referral_id}/agreement", response_model=AgreementResponse)

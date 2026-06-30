@@ -28,6 +28,7 @@ def _to_domain(model: CommissionInstallmentModel) -> CommissionInstallment:
         actual_days=model.actual_days,
         actual_amount=actual_amount,
         status=InstallmentStatus(model.status),
+        paid_at=model.paid_at,
     )
 
 
@@ -44,6 +45,7 @@ def _to_model(referral_id: UUID, installment: CommissionInstallment) -> Commissi
         actual_days=installment.actual_days,
         actual_amount=installment.actual_amount.amount if installment.actual_amount else None,
         status=installment.status.value,
+        paid_at=installment.paid_at,
     )
 
 

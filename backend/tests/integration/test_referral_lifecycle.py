@@ -229,3 +229,31 @@ class TestInvoice:
         )
         assert response.status_code == 404
         assert response.json()["error"]["code"] == "installment.not_found"
+
+
+class TestTimeline:
+    async def test_timeline_after_full_flow(self, client: AsyncClient) -> None:
+        headers = await _headers(client)
+        deal_id = await _sign(client, headers)
+        await client.post(f"/api/v1/referrals/{deal_id}/activate", headers=headers)
+        await client.post(f"/api/v1/referrals/{deal_id}/installments/1/pay", headers=headers)
+
+        response = await client.get(f"/api/v1/referrals/{deal_id}/timeline", headers=headers)
+        assert response.status_code == 200
+        types = [entry["type"] for entry in response.json()]
+        assert types[0] == "created"
+        for expected in (
+            "accepted_referrer",
+            "accepted_placed",
+            "signed",
+            "activated",
+            "payment_recorded",
+        ):
+            assert expected in types
+
+    async def test_timeline_forbidden_for_others(self, client: AsyncClient) -> None:
+        owner = await _headers(client, "owner@example.com")
+        deal_id = await _create(client, owner)
+        intruder = await _headers(client, "intruder@example.com")
+        response = await client.get(f"/api/v1/referrals/{deal_id}/timeline", headers=intruder)
+        assert response.status_code == 403

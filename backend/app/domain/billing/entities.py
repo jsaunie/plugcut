@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, datetime
 
 from app.domain.referrals.enums import InstallmentStatus
 from app.domain.referrals.value_objects import CommissionTerms
@@ -32,6 +32,7 @@ class CommissionInstallment:
     actual_days: int | None = None
     actual_amount: Money | None = None
     status: InstallmentStatus = InstallmentStatus.PENDING
+    paid_at: datetime | None = None
 
     @property
     def amount_due(self) -> Money:
@@ -45,10 +46,11 @@ class CommissionInstallment:
         self.actual_days = days
         self.actual_amount = terms.commission_for_days(days)
 
-    def mark_paid(self) -> None:
+    def mark_paid(self, *, at: datetime | None = None) -> None:
         if self.status is InstallmentStatus.PAID:
             raise AlreadyPaid
         self.status = InstallmentStatus.PAID
+        self.paid_at = at
 
     def refresh_status(self, *, as_of: date) -> None:
         """Move PENDING -> DUE -> OVERDUE based on the due date. Paid is terminal."""
