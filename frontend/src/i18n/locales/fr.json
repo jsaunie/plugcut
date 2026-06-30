@@ -239,7 +239,8 @@
       "qualify": "Qualifier le deal",
       "activate": "Activer le deal",
       "viewAgreement": "Voir le contrat",
-      "pay": "Régler"
+      "pay": "Régler",
+      "invoice": "Facture"
     },
     "sign": {
       "referrerPrompt": "Signe le deal en tant qu'apporteur.",

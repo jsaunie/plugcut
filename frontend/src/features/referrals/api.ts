@@ -56,3 +56,7 @@ export function payInstallment(id: string, sequence: number): Promise<Installmen
 export function getAgreement(id: string): Promise<{ html: string }> {
   return apiFetch<{ html: string }>(`/referrals/${id}/agreement`)
 }
+
+export function getInstallmentInvoice(id: string, sequence: number): Promise<{ html: string }> {
+  return apiFetch<{ html: string }>(`/referrals/${id}/installments/${sequence}/invoice`)
+}

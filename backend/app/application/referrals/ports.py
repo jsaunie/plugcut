@@ -9,6 +9,13 @@ from uuid import UUID
 from app.domain.billing.entities import CommissionInstallment
 from app.domain.referrals.entities import Referral
 
+__all__ = [
+    "AgreementRenderer",
+    "InstallmentRepository",
+    "InvoiceRenderer",
+    "ReferralRepository",
+]
+
 
 class ReferralRepository(Protocol):
     async def add(self, referral: Referral) -> None: ...
@@ -40,3 +47,16 @@ class AgreementRenderer(Protocol):
     """Renders the referral agreement document (HTML) for a signed deal."""
 
     def render(self, referral: Referral, *, referrer_email: str, locale: str) -> str: ...
+
+
+class InvoiceRenderer(Protocol):
+    """Renders the monthly commission invoice (HTML) for one installment."""
+
+    def render(
+        self,
+        referral: Referral,
+        installment: CommissionInstallment,
+        *,
+        referrer_email: str,
+        locale: str,
+    ) -> str: ...

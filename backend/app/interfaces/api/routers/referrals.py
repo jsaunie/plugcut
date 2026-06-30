@@ -15,6 +15,7 @@ from app.application.referrals.use_cases import (
     ActivateReferral,
     CreateReferral,
     GetAgreement,
+    GetInstallmentInvoice,
     GetReferralStats,
     GetReferralWithSchedule,
     ListReferrals,
@@ -27,6 +28,7 @@ from app.interfaces.api.deps import (
     get_activate_referral,
     get_create_referral,
     get_get_agreement,
+    get_get_invoice,
     get_get_referral,
     get_list_referrals,
     get_locale,
@@ -149,6 +151,20 @@ async def get_agreement(
     locale: Annotated[str, Depends(get_locale)],
 ) -> AgreementResponse:
     html = await use_case.execute(referral_id, requester_id=current_user.id, locale=locale)
+    return AgreementResponse(html=html)
+
+
+@router.get("/{referral_id}/installments/{sequence}/invoice", response_model=AgreementResponse)
+async def get_installment_invoice(
+    referral_id: UUID,
+    sequence: int,
+    current_user: CurrentUser,
+    use_case: Annotated[GetInstallmentInvoice, Depends(get_get_invoice)],
+    locale: Annotated[str, Depends(get_locale)],
+) -> AgreementResponse:
+    html = await use_case.execute(
+        referral_id, sequence, requester_id=current_user.id, locale=locale
+    )
     return AgreementResponse(html=html)
 
 

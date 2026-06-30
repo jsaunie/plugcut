@@ -239,7 +239,8 @@
       "qualify": "Qualify the deal",
       "activate": "Activate the deal",
       "viewAgreement": "View the contract",
-      "pay": "Pay"
+      "pay": "Pay",
+      "invoice": "Invoice"
     },
     "sign": {
       "referrerPrompt": "Sign the deal as the referrer.",

@@ -20,6 +20,7 @@ from app.application.referrals.errors import (
 from app.application.referrals.ports import (
     AgreementRenderer,
     InstallmentRepository,
+    InvoiceRenderer,
     ReferralRepository,
 )
 from app.domain.billing.entities import CommissionInstallment, CommissionSchedule
@@ -285,6 +286,37 @@ class GetAgreement:
         referrer = await self._users.get_by_id(referral.referrer_id)
         referrer_email = referrer.email.value if referrer is not None else ""
         return self._renderer.render(referral, referrer_email=referrer_email, locale=locale)
+
+
+class GetInstallmentInvoice:
+    """Render the monthly commission invoice for one installment of a signed deal."""
+
+    def __init__(
+        self,
+        referrals: ReferralRepository,
+        installments: InstallmentRepository,
+        users: UserRepository,
+        renderer: InvoiceRenderer,
+    ) -> None:
+        self._referrals = referrals
+        self._installments = installments
+        self._users = users
+        self._renderer = renderer
+
+    async def execute(
+        self, referral_id: UUID, sequence: int, *, requester_id: UUID, locale: str
+    ) -> str:
+        referral = await _load_owned(self._referrals, referral_id, requester_id)
+        if referral.status not in _AGREEMENT_READY:
+            raise AgreementNotReady
+        installment = await self._installments.get(referral_id, sequence)
+        if installment is None:
+            raise InstallmentNotFound
+        referrer = await self._users.get_by_id(referral.referrer_id)
+        referrer_email = referrer.email.value if referrer is not None else ""
+        return self._renderer.render(
+            referral, installment, referrer_email=referrer_email, locale=locale
+        )
 
 
 class RecordInstallmentPayment:

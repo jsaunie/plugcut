@@ -8,6 +8,7 @@ import {
   acceptReferral,
   activateReferral,
   getAgreement,
+  getInstallmentInvoice,
   getReferral,
   payInstallment,
   qualifyReferral,
@@ -79,13 +80,25 @@ async function copyLink(): Promise<void> {
   setTimeout(() => (copied.value = false), 2000)
 }
 
+function openHtmlInNewTab(html: string): void {
+  const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }))
+  window.open(url, '_blank')
+  setTimeout(() => URL.revokeObjectURL(url), 30000)
+}
+
 async function openAgreement(): Promise<void> {
   actionError.value = ''
   try {
-    const { html } = await getAgreement(id)
-    const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }))
-    window.open(url, '_blank')
-    setTimeout(() => URL.revokeObjectURL(url), 30000)
+    openHtmlInNewTab((await getAgreement(id)).html)
+  } catch (err) {
+    actionError.value = err instanceof ApiError ? err.message : t('deals.errors.generic')
+  }
+}
+
+async function openInvoice(sequence: number): Promise<void> {
+  actionError.value = ''
+  try {
+    openHtmlInNewTab((await getInstallmentInvoice(id, sequence)).html)
   } catch (err) {
     actionError.value = err instanceof ApiError ? err.message : t('deals.errors.generic')
   }
@@ -206,14 +219,19 @@ onMounted(load)
                 {{ t(`deals.installmentStatus.${row.status}`) }}
               </td>
               <td class="num">
-                <button
-                  v-if="isSigned && row.status !== 'paid'"
-                  class="pay"
-                  :disabled="busy"
-                  @click="pay(row.sequence)"
-                >
-                  {{ t('deals.actions.pay') }}
-                </button>
+                <span v-if="isSigned" class="rowactions">
+                  <button class="rowactions__link" @click="openInvoice(row.sequence)">
+                    {{ t('deals.actions.invoice') }}
+                  </button>
+                  <button
+                    v-if="row.status !== 'paid'"
+                    class="pay"
+                    :disabled="busy"
+                    @click="pay(row.sequence)"
+                  >
+                    {{ t('deals.actions.pay') }}
+                  </button>
+                </span>
               </td>
             </tr>
           </tbody>
@@ -399,6 +417,20 @@ onMounted(load)
 }
 .istatus--overdue {
   color: var(--danger);
+}
+.rowactions {
+  display: inline-flex;
+  gap: 0.6rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+.rowactions__link {
+  font-size: 0.78rem;
+  color: var(--accent-deep);
+  text-decoration: underline;
+}
+.rowactions__link:hover {
+  color: var(--accent);
 }
 .pay {
   padding: 0.3rem 0.8rem;

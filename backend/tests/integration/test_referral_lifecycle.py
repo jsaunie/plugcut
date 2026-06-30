@@ -197,3 +197,35 @@ class TestAgreement:
         html = response.json()["html"]
         assert "Apporteur" in html
         assert "owner@example.com" in html
+
+
+class TestInvoice:
+    async def test_not_ready_before_signed(self, client: AsyncClient) -> None:
+        headers = await _headers(client)
+        deal_id = await _create(client, headers)
+        response = await client.get(
+            f"/api/v1/referrals/{deal_id}/installments/1/invoice", headers=headers
+        )
+        assert response.status_code == 409
+        assert response.json()["error"]["code"] == "agreement.not_ready"
+
+    async def test_invoice_html_after_signing(self, client: AsyncClient) -> None:
+        headers = await _headers(client, "owner@example.com")
+        deal_id = await _sign(client, headers)
+        response = await client.get(
+            f"/api/v1/referrals/{deal_id}/installments/1/invoice",
+            headers={**headers, "Accept-Language": "fr"},
+        )
+        assert response.status_code == 200
+        html = response.json()["html"]
+        assert "Facture de commission" in html
+        assert "owner@example.com" in html
+
+    async def test_missing_installment_is_404(self, client: AsyncClient) -> None:
+        headers = await _headers(client)
+        deal_id = await _sign(client, headers)
+        response = await client.get(
+            f"/api/v1/referrals/{deal_id}/installments/99/invoice", headers=headers
+        )
+        assert response.status_code == 404
+        assert response.json()["error"]["code"] == "installment.not_found"

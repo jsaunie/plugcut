@@ -21,6 +21,7 @@ from app.application.identity.use_cases import (
 from app.application.referrals.ports import (
     AgreementRenderer,
     InstallmentRepository,
+    InvoiceRenderer,
     ReferralRepository,
 )
 from app.application.referrals.use_cases import (
@@ -28,6 +29,7 @@ from app.application.referrals.use_cases import (
     ActivateReferral,
     CreateReferral,
     GetAgreement,
+    GetInstallmentInvoice,
     GetReferralByInvitation,
     GetReferralStats,
     GetReferralWithSchedule,
@@ -40,6 +42,7 @@ from app.domain.identity.entities import User
 from app.domain.identity.ports import PasswordHasher
 from app.infrastructure.agreements.html_renderer import HtmlAgreementRenderer
 from app.infrastructure.config import Settings
+from app.infrastructure.invoices.html_renderer import HtmlInvoiceRenderer
 from app.infrastructure.persistence.installment_repository import (
     SqlAlchemyInstallmentRepository,
 )
@@ -206,6 +209,19 @@ def get_sign_invitation(
     users: Annotated[UserRepository, Depends(get_user_repository)],
 ) -> SignByInvitation:
     return SignByInvitation(referrals, installments, users)
+
+
+def get_invoice_renderer() -> InvoiceRenderer:
+    return HtmlInvoiceRenderer()
+
+
+def get_get_invoice(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+    installments: Annotated[InstallmentRepository, Depends(get_installment_repository)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    renderer: Annotated[InvoiceRenderer, Depends(get_invoice_renderer)],
+) -> GetInstallmentInvoice:
+    return GetInstallmentInvoice(referrals, installments, users, renderer)
 
 
 def get_locale(
