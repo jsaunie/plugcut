@@ -9,10 +9,10 @@
     "start": "Commencer"
   },
   "hero": {
-    "badge": "Apport d'affaires — de particulier à particulier",
+    "badge": "Apport d'affaires, de particulier à particulier",
     "title1": "Tu l'as branché.",
     "title2": "Prends ta part.",
-    "subtitle": "Tu as placé un freelance, un indé, une boîte ? Plugcut formalise et exécute la commission privée qu'on te verse — un pourcentage du TJM, sur la durée. Discrètement, avec un vrai contrat.",
+    "subtitle": "Tu as placé un freelance, un indé, une boîte ? Plugcut formalise et exécute la commission privée qu'on te verse : un pourcentage du TJM, sur la durée. Discrètement, avec un vrai contrat.",
     "ctaPrimary": "Créer mon premier deal",
     "ctaSecondary": "Voir comment ça marche",
     "note": "La relation existe déjà. Plugcut sécurise l'accord, pas la mise en relation.",
@@ -45,7 +45,7 @@
       {
         "n": "01",
         "title": "Crée le deal",
-        "desc": "Qui place qui, chez quel client — gardé discret vis-à-vis du client final."
+        "desc": "Qui place qui, chez quel client. Gardé discret vis-à-vis du client final."
       },
       {
         "n": "02",
@@ -71,7 +71,7 @@
   },
   "pillars": {
     "eyebrow": "La vraie valeur",
-    "title": "Ce que Plugcut sécurise — et que la poignée de main ne sécurise pas.",
+    "title": "Ce que Plugcut sécurise, là où une poignée de main ne suffit pas.",
     "items": [
       {
         "title": "Un vrai contrat",
@@ -83,7 +83,7 @@
       },
       {
         "title": "Collecte récurrente",
-        "desc": "Ta commission prélevée automatiquement sur le TJM, mois après mois — sans relancer."
+        "desc": "Ta commission prélevée automatiquement sur le TJM, mois après mois, sans relancer."
       },
       {
         "title": "Discrétion totale",
@@ -110,7 +110,7 @@
     "items": [
       {
         "q": "Pourquoi ne pas juste se serrer la main et envoyer une facture ?",
-        "a": "Parce que sur 10 % d'un TJM pendant un an, l'apporteur a peur de se faire oublier, et la personne placée veut un cadre propre et discret. Plugcut vend la confiance et l'exécution du deal — pas l'intro."
+        "a": "Parce que sur 10 % d'un TJM pendant un an, l'apporteur a peur de se faire oublier, et la personne placée veut un cadre propre et discret. Plugcut vend la confiance et l'exécution du deal, pas l'intro."
       },
       {
         "q": "Qui paie la commission ?",
@@ -118,7 +118,7 @@
       },
       {
         "q": "Est-ce que Plugcut met en relation des inconnus ?",
-        "a": "Non. La relation existe déjà hors-ligne. On formalise et on suit l'accord — on ne fait pas de matching."
+        "a": "Non. La relation existe déjà hors-ligne. On formalise et on suit l'accord. On ne fait pas de matching."
       },
       {
         "q": "Qui peut être apporteur ?",
@@ -140,6 +140,30 @@
     "privacy": "Confidentialité",
     "rights": "Tous droits réservés.",
     "disclaimer": "Projet de démonstration."
+  },
+  "auth": {
+    "loginTitle": "Se connecter",
+    "loginSubtitle": "Accède à tes deals et au suivi de tes commissions.",
+    "registerTitle": "Créer un compte",
+    "registerSubtitle": "Mets ton premier apport sur un rail propre en deux minutes.",
+    "email": "Email",
+    "password": "Mot de passe",
+    "emailPlaceholder": "toi@exemple.com",
+    "passwordHint": "8 caractères minimum.",
+    "submitLogin": "Se connecter",
+    "submitRegister": "Créer mon compte",
+    "toRegister": "Pas encore de compte ?",
+    "toRegisterLink": "Créer un compte",
+    "toLogin": "Déjà un compte ?",
+    "toLoginLink": "Se connecter",
+    "logout": "Se déconnecter",
+    "errors": {
+      "emailRequired": "Email requis.",
+      "emailInvalid": "Adresse email invalide.",
+      "passwordRequired": "Mot de passe requis.",
+      "passwordTooShort": "8 caractères minimum.",
+      "generic": "Une erreur est survenue. Réessaie."
+    }
   },
   "placeholder": {
     "back": "Retour à l'accueil",

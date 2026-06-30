@@ -2,6 +2,8 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { UiEyebrow } from '@/ui'
+
 const { locale } = useI18n()
 
 // Same shape as the backend domain: monthly cut = TJM x days x rate, total = monthly x months.
@@ -27,7 +29,7 @@ const fmt = (value: number) => currency.value.format(value)
   <section id="calculateur" class="section calc">
     <div class="container calc__inner">
       <header class="calc__head">
-        <p class="eyebrow calc__eyebrow">{{ $t('calc.eyebrow') }}</p>
+        <UiEyebrow tone="accent" class="calc__eyebrow">{{ $t('calc.eyebrow') }}</UiEyebrow>
         <h2 class="calc__title">{{ $t('calc.title') }}</h2>
         <p class="calc__subtitle">{{ $t('calc.subtitle') }}</p>
       </header>
@@ -87,7 +89,6 @@ const fmt = (value: number) => currency.value.format(value)
   max-width: 30ch;
 }
 .calc__eyebrow {
-  color: var(--accent-deep);
   margin-bottom: 1rem;
 }
 .calc__title {

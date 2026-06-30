@@ -9,10 +9,10 @@
     "start": "Get started"
   },
   "hero": {
-    "badge": "Business referrals — person to person",
+    "badge": "Business referrals, person to person",
     "title1": "You plugged them in.",
     "title2": "Take your cut.",
-    "subtitle": "Placed a freelancer, an indie, a company? Plugcut formalizes and executes the private commission they owe you — a percentage of the daily rate, over time. Discreetly, with a real contract.",
+    "subtitle": "Placed a freelancer, an indie, a company? Plugcut formalizes and executes the private commission they owe you: a percentage of the daily rate, over time. Discreetly, with a real contract.",
     "ctaPrimary": "Create my first deal",
     "ctaSecondary": "See how it works",
     "note": "The relationship already exists. Plugcut secures the agreement, not the intro.",
@@ -45,7 +45,7 @@
       {
         "n": "01",
         "title": "Create the deal",
-        "desc": "Who placed whom, at which client — kept discreet from the end client."
+        "desc": "Who placed whom, at which client. Kept discreet from the end client."
       },
       {
         "n": "02",
@@ -55,7 +55,7 @@
       {
         "n": "03",
         "title": "Two-sided acceptance",
-        "desc": "Both parties accept the terms. That's your attribution proof — timestamped and sealed."
+        "desc": "Both parties accept the terms. That is your attribution proof, timestamped and sealed."
       },
       {
         "n": "04",
@@ -71,11 +71,11 @@
   },
   "pillars": {
     "eyebrow": "The real value",
-    "title": "What Plugcut secures — that a handshake never could.",
+    "title": "What Plugcut secures, where a handshake falls short.",
     "items": [
       {
         "title": "A real contract",
-        "desc": "The written agreement between you and the placed person. Not a promise — a document."
+        "desc": "The written agreement between you and the placed person. Not a promise, a document."
       },
       {
         "title": "Attribution proof",
@@ -83,7 +83,7 @@
       },
       {
         "title": "Recurring collection",
-        "desc": "Your commission pulled automatically from the day rate, month after month — no chasing."
+        "desc": "Your commission pulled automatically from the day rate, month after month, no chasing."
       },
       {
         "title": "Total discretion",
@@ -110,7 +110,7 @@
     "items": [
       {
         "q": "Why not just shake hands and send an invoice?",
-        "a": "Because on 10% of a day rate for a year, the referrer fears being forgotten, and the placed person wants a clean, discreet frame. Plugcut sells trust and execution of the deal — not the intro."
+        "a": "Because on 10% of a day rate for a year, the referrer fears being forgotten, and the placed person wants a clean, discreet frame. Plugcut sells trust and execution of the deal, not the intro."
       },
       {
         "q": "Who pays the commission?",
@@ -118,7 +118,7 @@
       },
       {
         "q": "Does Plugcut match strangers?",
-        "a": "No. The relationship already exists offline. We formalize and track the agreement — we don't do matching."
+        "a": "No. The relationship already exists offline. We formalize and track the agreement. We do not do matching."
       },
       {
         "q": "Who can be a referrer?",
@@ -140,6 +140,30 @@
     "privacy": "Privacy",
     "rights": "All rights reserved.",
     "disclaimer": "Demonstration project."
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "loginSubtitle": "Access your deals and track your commissions.",
+    "registerTitle": "Create an account",
+    "registerSubtitle": "Put your first referral on a clean rail in two minutes.",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "you@example.com",
+    "passwordHint": "8 characters minimum.",
+    "submitLogin": "Log in",
+    "submitRegister": "Create my account",
+    "toRegister": "No account yet?",
+    "toRegisterLink": "Create an account",
+    "toLogin": "Already have an account?",
+    "toLoginLink": "Log in",
+    "logout": "Log out",
+    "errors": {
+      "emailRequired": "Email is required.",
+      "emailInvalid": "Invalid email address.",
+      "passwordRequired": "Password is required.",
+      "passwordTooShort": "8 characters minimum.",
+      "generic": "Something went wrong. Please try again."
+    }
   },
   "placeholder": {
     "back": "Back to home",

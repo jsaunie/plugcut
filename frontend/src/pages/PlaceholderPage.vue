@@ -2,6 +2,7 @@
 import { RouterLink } from 'vue-router'
 
 import LangSwitch from '@/components/shared/LangSwitch.vue'
+import { UiButton } from '@/ui'
 
 defineProps<{ titleKey: string }>()
 </script>
@@ -19,7 +20,7 @@ defineProps<{ titleKey: string }>()
       <span class="ph__scissors" aria-hidden="true">✂</span>
       <h1 class="ph__title">{{ $t(titleKey) }}</h1>
       <p class="ph__soon">{{ $t('placeholder.soon') }}</p>
-      <RouterLink to="/" class="btn btn--accent">← {{ $t('placeholder.back') }}</RouterLink>
+      <UiButton to="/">← {{ $t('placeholder.back') }}</UiButton>
     </main>
   </div>
 </template>

@@ -59,6 +59,20 @@ ports defined inward. Bounded contexts:
 Money is always `Decimal` via the `Money` value object (cents, rounded) — never float.
 Value objects enforce invariants in `__post_init__`, so an invalid instance can't exist.
 
+## Design & copy rules (hard requirements)
+
+Avoid "AI-looking" output. These are enforced, not suggestions:
+
+- **No em dashes (—)** in any user-facing copy. Use commas, periods, colons, parentheses,
+  or rephrase. (Code comments are exempt but prefer to avoid them too.)
+- **No "pastille" badges** — no small colored/glowing dot chips prefixing labels. Eyebrows
+  are plain mono uppercase text.
+- **No cramped titles** — large multi-line headings use line-height ≈ 1.02–1.08 (the type
+  scale in `frontend/src/ui/tokens.css` encodes per-size line-heights). Never 0.98 on
+  multi-line display text.
+- Reusable UI lives in the **`frontend/src/ui/` design-system package** (tokens + components
+  + tests). Landing and app screens compose those, not ad-hoc markup.
+
 ## Conventions
 
 - **Domain errors carry a stable `code`** (e.g. `"money.currency_mismatch"`) so the API

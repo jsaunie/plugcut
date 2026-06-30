@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { UiButton, UiEyebrow } from '@/ui'
 </script>
 
 <template>
@@ -7,10 +7,9 @@ import { RouterLink } from 'vue-router'
     <div class="hero__glow" aria-hidden="true" />
     <div class="container hero__inner">
       <div class="hero__copy">
-        <p class="eyebrow hero__badge rise" style="animation-delay: 0.05s">
-          <span class="hero__badge-dot" aria-hidden="true" />
+        <UiEyebrow class="hero__badge rise" style="animation-delay: 0.05s">
           {{ $t('hero.badge') }}
-        </p>
+        </UiEyebrow>
 
         <h1 class="hero__title">
           <span class="rise" style="animation-delay: 0.12s">{{ $t('hero.title1') }}</span>
@@ -24,10 +23,12 @@ import { RouterLink } from 'vue-router'
         </p>
 
         <div class="hero__actions rise" style="animation-delay: 0.42s">
-          <RouterLink to="/inscription" class="btn btn--accent">
+          <UiButton to="/inscription" size="lg">
             {{ $t('hero.ctaPrimary') }} <span aria-hidden="true">→</span>
-          </RouterLink>
-          <a href="#how" class="btn btn--ghost">{{ $t('hero.ctaSecondary') }}</a>
+          </UiButton>
+          <UiButton href="#how" variant="ghost" size="lg">
+            {{ $t('hero.ctaSecondary') }}
+          </UiButton>
         </div>
 
         <p class="hero__note rise" style="animation-delay: 0.52s">
@@ -105,18 +106,7 @@ import { RouterLink } from 'vue-router'
   align-items: center;
 }
 .hero__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  color: var(--muted-on-ink);
   margin-bottom: 1.8rem;
-}
-.hero__badge-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 4px rgba(216, 255, 54, 0.18);
 }
 .hero__title {
   font-size: clamp(3rem, 8vw, 5.6rem);

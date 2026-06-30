@@ -3,6 +3,7 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
 import LangSwitch from '@/components/shared/LangSwitch.vue'
+import { UiButton } from '@/ui'
 
 const scrolled = ref(false)
 const onScroll = () => (scrolled.value = window.scrollY > 12)
@@ -29,9 +30,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
       <div class="hdr__actions">
         <LangSwitch />
         <RouterLink to="/connexion" class="hdr__login">{{ $t('nav.login') }}</RouterLink>
-        <RouterLink to="/inscription" class="btn btn--accent hdr__start">
-          {{ $t('nav.start') }}
-        </RouterLink>
+        <UiButton to="/inscription" class="hdr__start">{{ $t('nav.start') }}</UiButton>
       </div>
     </div>
   </header>

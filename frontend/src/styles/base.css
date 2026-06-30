@@ -1,38 +1,9 @@
 /* ============================================================================
-   Plugcut design system — "fintech-noir éditorial" with a receipt/coupon motif.
-   Deep ink backgrounds, warm receipt-paper sections, acid-lime accent = "la part".
+   Global reset, element defaults, and a few layout helpers.
+   Design tokens live in src/ui/tokens.css; reusable components in src/ui/.
    ============================================================================ */
 
-:root {
-  /* Palette */
-  --ink: #0b0b0d;
-  --ink-2: #141417;
-  --ink-3: #1d1d22;
-  --paper: #f1ece0;
-  --paper-2: #e7e0d0;
-  --accent: #d8ff36; /* acid lime — the "cut" / money */
-  --accent-deep: #b4e000;
-  --accent-ink: #0b0b0d;
-
-  --text-on-ink: #ece8dd;
-  --muted-on-ink: rgba(236, 232, 221, 0.58);
-  --line-on-ink: rgba(236, 232, 221, 0.16);
-
-  --text-on-paper: #16140f;
-  --muted-on-paper: rgba(22, 20, 15, 0.62);
-  --line-on-paper: rgba(22, 20, 15, 0.18);
-
-  /* Type */
-  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
-  --font-body: 'Hanken Grotesk', system-ui, sans-serif;
-  --font-mono: 'Space Mono', ui-monospace, monospace;
-
-  /* Rhythm */
-  --maxw: 1180px;
-  --gutter: clamp(1.25rem, 4vw, 3rem);
-  --radius: 18px;
-  --section-pad: clamp(4.5rem, 9vw, 8rem);
-}
+@import '../ui/tokens.css';
 
 *,
 *::before,
@@ -52,7 +23,7 @@ body {
   color: var(--text-on-ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  line-height: 1.5;
+  line-height: var(--lh-body);
 }
 
 a {
@@ -68,6 +39,13 @@ button {
   color: inherit;
 }
 
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
 ::selection {
   background: var(--accent);
   color: var(--accent-ink);
@@ -78,8 +56,9 @@ h2,
 h3 {
   font-family: var(--font-display);
   font-weight: 700;
-  line-height: 0.98;
+  line-height: var(--lh-display);
   letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
 /* ---- Layout helpers ---- */
@@ -92,52 +71,6 @@ h3 {
 
 .section {
   padding-block: var(--section-pad);
-}
-
-.eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-}
-
-/* ---- Buttons ---- */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0.85rem 1.4rem;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.98rem;
-  transition:
-    transform 0.18s ease,
-    background 0.18s ease,
-    color 0.18s ease,
-    box-shadow 0.18s ease;
-  will-change: transform;
-}
-.btn:hover {
-  transform: translateY(-2px);
-}
-.btn--accent {
-  background: var(--accent);
-  color: var(--accent-ink);
-  box-shadow: 0 0 0 0 rgba(216, 255, 54, 0.5);
-}
-.btn--accent:hover {
-  box-shadow: 0 10px 30px -8px rgba(216, 255, 54, 0.55);
-}
-.btn--ghost {
-  border: 1px solid var(--line-on-ink);
-  color: var(--text-on-ink);
-}
-.btn--ghost:hover {
-  border-color: var(--text-on-ink);
-}
-.btn--dark {
-  background: var(--ink);
-  color: var(--text-on-ink);
 }
 
 /* ---- Perforated "cut" divider ---- */
@@ -175,7 +108,7 @@ h3 {
   }
 }
 .rise {
-  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: rise 0.7s var(--ease-out) both;
 }
 
 @media (prefers-reduced-motion: reduce) {

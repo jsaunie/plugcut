@@ -2,6 +2,8 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { UiCard, UiEyebrow } from '@/ui'
+
 interface Pillar {
   title: string
   desc: string
@@ -16,16 +18,16 @@ const glyphs = ['§', '✶', '↻', '◐']
   <section id="security" class="section pillars">
     <div class="container">
       <header class="pillars__head">
-        <p class="eyebrow pillars__eyebrow">{{ $t('pillars.eyebrow') }}</p>
+        <UiEyebrow tone="paper" class="pillars__eyebrow">{{ $t('pillars.eyebrow') }}</UiEyebrow>
         <h2 class="pillars__title">{{ $t('pillars.title') }}</h2>
       </header>
 
       <div class="pillars__grid">
-        <article v-for="(pillar, i) in pillars" :key="pillar.title" class="pillar">
+        <UiCard v-for="(pillar, i) in pillars" :key="pillar.title" tone="paper" hover class="pillar">
           <span class="pillar__glyph" aria-hidden="true">{{ glyphs[i] }}</span>
           <h3 class="pillar__title">{{ pillar.title }}</h3>
           <p class="pillar__desc">{{ pillar.desc }}</p>
-        </article>
+        </UiCard>
       </div>
     </div>
   </section>
@@ -41,8 +43,6 @@ const glyphs = ['§', '✶', '↻', '◐']
   margin-bottom: 3.2rem;
 }
 .pillars__eyebrow {
-  color: var(--text-on-paper);
-  opacity: 0.7;
   margin-bottom: 1rem;
 }
 .pillars__title {
@@ -52,19 +52,6 @@ const glyphs = ['§', '✶', '↻', '◐']
   display: grid;
   gap: 1.4rem;
   grid-template-columns: 1fr;
-}
-.pillar {
-  padding: 1.9rem 1.7rem 2rem;
-  background: rgba(255, 255, 255, 0.4);
-  border: 1px solid var(--line-on-paper);
-  border-radius: var(--radius);
-  transition:
-    transform 0.25s ease,
-    border-color 0.25s ease;
-}
-.pillar:hover {
-  transform: translateY(-4px);
-  border-color: var(--text-on-paper);
 }
 .pillar__glyph {
   display: inline-flex;

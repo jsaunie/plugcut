@@ -2,6 +2,8 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { UiEyebrow } from '@/ui'
+
 interface QA {
   q: string
   a: string
@@ -15,7 +17,7 @@ const items = computed(() => tm('faq.items') as QA[])
   <section id="faq" class="section faq">
     <div class="container faq__inner">
       <header class="faq__head">
-        <p class="eyebrow faq__eyebrow">{{ $t('faq.eyebrow') }}</p>
+        <UiEyebrow tone="accent" class="faq__eyebrow">{{ $t('faq.eyebrow') }}</UiEyebrow>
         <h2 class="faq__title">{{ $t('faq.title') }}</h2>
       </header>
 
@@ -38,7 +40,6 @@ const items = computed(() => tm('faq.items') as QA[])
   gap: 2.5rem;
 }
 .faq__eyebrow {
-  color: var(--accent-deep);
   margin-bottom: 1rem;
 }
 .faq__title {

@@ -2,6 +2,8 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { UiEyebrow } from '@/ui'
+
 interface Step {
   n: string
   title: string
@@ -16,7 +18,7 @@ const steps = computed(() => tm('how.steps') as Step[])
   <section id="how" class="section">
     <div class="container">
       <header class="how__head">
-        <p class="eyebrow how__eyebrow">{{ $t('how.eyebrow') }}</p>
+        <UiEyebrow tone="accent" class="how__eyebrow">{{ $t('how.eyebrow') }}</UiEyebrow>
         <h2 class="how__title">{{ $t('how.title') }}</h2>
       </header>
 
@@ -37,7 +39,6 @@ const steps = computed(() => tm('how.steps') as Step[])
   margin-bottom: 3.5rem;
 }
 .how__eyebrow {
-  color: var(--accent-deep);
   margin-bottom: 1rem;
 }
 .how__title {
