@@ -18,6 +18,16 @@ const props = withDefaults(
 
 const tag = computed(() => (props.to ? RouterLink : props.href ? 'a' : 'button'))
 const isInteractiveLink = computed(() => Boolean(props.to || props.href))
+
+// Bind only the attribute that matches the rendered tag. Passing both `to` and
+// an undefined `href` to RouterLink lets the undefined href fall through and
+// clobber the href RouterLink computes, leaving the anchor with no href (not
+// keyboard-navigable, no open-in-new-tab).
+const linkBindings = computed(() => {
+  if (props.to) return { to: props.to }
+  if (props.href) return { href: props.href }
+  return {}
+})
 </script>
 
 <template>
@@ -25,8 +35,7 @@ const isInteractiveLink = computed(() => Boolean(props.to || props.href))
     :is="tag"
     class="ui-btn"
     :class="[`ui-btn--${variant}`, `ui-btn--${size}`, { 'ui-btn--block': block }]"
-    :to="to"
-    :href="href"
+    v-bind="linkBindings"
     :type="isInteractiveLink ? undefined : type"
     :disabled="!isInteractiveLink && (disabled || loading)"
     :aria-busy="loading || undefined"
