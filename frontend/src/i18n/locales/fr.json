@@ -10,7 +10,37 @@
     "calculator": "Simulateur",
     "faq": "FAQ",
     "login": "Se connecter",
-    "start": "Commencer"
+    "start": "Commencer",
+    "deals": "Deals",
+    "contacts": "Contacts"
+  },
+  "contacts": {
+    "title": "Tes contacts",
+    "lead": "Ton carnet de réseau privé : les personnes et entreprises que tu peux placer, ou qui peuvent te placer.",
+    "add": "Ajouter un contact",
+    "empty": "Aucun contact pour l'instant. Ajoute la première personne de ton réseau.",
+    "kind": { "person": "Personne", "company": "Entreprise" },
+    "form": {
+      "newTitle": "Nouveau contact",
+      "editTitle": "Modifier le contact",
+      "fullName": "Nom complet",
+      "headline": "Titre / activité",
+      "headlinePlaceholder": "Dev freelance, coach, agence…",
+      "company": "Entreprise",
+      "location": "Localisation",
+      "email": "Email",
+      "phone": "Téléphone",
+      "linkedin": "Profil LinkedIn",
+      "tags": "Tags",
+      "tagsPlaceholder": "séparés par des virgules",
+      "notes": "Notes",
+      "save": "Enregistrer",
+      "delete": "Supprimer"
+    },
+    "errors": {
+      "nameRequired": "Le nom est requis.",
+      "generic": "Une action a échoué. Réessaie."
+    }
   },
   "hero": {
     "badge": "Apport d'affaires, de particulier à particulier",

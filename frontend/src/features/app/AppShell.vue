@@ -37,6 +37,18 @@ function logout(): void {
         <RouterLink to="/app" class="app__wordmark">
           <span>Plug</span><span class="app__cut">cut</span>
         </RouterLink>
+        <nav class="app__nav">
+          <RouterLink to="/app" class="app__navlink" exact-active-class="app__navlink--active">
+            {{ t('nav.deals') }}
+          </RouterLink>
+          <RouterLink
+            to="/app/contacts"
+            class="app__navlink"
+            active-class="app__navlink--active"
+          >
+            {{ t('nav.contacts') }}
+          </RouterLink>
+        </nav>
         <div class="app__user">
           <span v-if="auth.user" class="app__email">{{ auth.user.email }}</span>
           <UiButton variant="ghost" @click="logout">{{ t('auth.logout') }}</UiButton>
@@ -70,6 +82,30 @@ function logout(): void {
 }
 .app__cut {
   color: var(--accent);
+}
+.app__nav {
+  display: none;
+  gap: 1.4rem;
+  margin-right: auto;
+  margin-left: 2rem;
+}
+.app__navlink {
+  font-size: 0.95rem;
+  color: var(--muted-on-ink);
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+}
+.app__navlink:hover {
+  color: var(--text-on-ink);
+}
+.app__navlink--active {
+  color: var(--text-on-ink);
+  border-bottom-color: var(--accent);
+}
+@media (min-width: 720px) {
+  .app__nav {
+    display: flex;
+  }
 }
 .app__user {
   display: flex;

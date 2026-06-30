@@ -10,7 +10,37 @@
     "calculator": "Calculator",
     "faq": "FAQ",
     "login": "Log in",
-    "start": "Get started"
+    "start": "Get started",
+    "deals": "Deals",
+    "contacts": "Contacts"
+  },
+  "contacts": {
+    "title": "Your contacts",
+    "lead": "Your private network address book: the people and companies you can place, or who can place you.",
+    "add": "Add a contact",
+    "empty": "No contacts yet. Add the first person in your network.",
+    "kind": { "person": "Person", "company": "Company" },
+    "form": {
+      "newTitle": "New contact",
+      "editTitle": "Edit contact",
+      "fullName": "Full name",
+      "headline": "Title / activity",
+      "headlinePlaceholder": "Freelance dev, coach, agency…",
+      "company": "Company",
+      "location": "Location",
+      "email": "Email",
+      "phone": "Phone",
+      "linkedin": "LinkedIn profile",
+      "tags": "Tags",
+      "tagsPlaceholder": "comma-separated",
+      "notes": "Notes",
+      "save": "Save",
+      "delete": "Delete"
+    },
+    "errors": {
+      "nameRequired": "Name is required.",
+      "generic": "An action failed. Please try again."
+    }
   },
   "hero": {
     "badge": "Business referrals, person to person",

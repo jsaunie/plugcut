@@ -35,6 +35,24 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/DealDetailPage.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/app/contacts',
+    name: 'contacts',
+    component: () => import('@/pages/ContactsPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/app/contacts/nouveau',
+    name: 'contact-create',
+    component: () => import('@/pages/ContactFormPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/app/contacts/:id',
+    name: 'contact-edit',
+    component: () => import('@/pages/ContactFormPage.vue'),
+    meta: { requiresAuth: true },
+  },
   // Public signing page for the placed person (token is the credential, no account).
   {
     path: '/invitation/:token',
