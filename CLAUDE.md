@@ -86,21 +86,24 @@ Avoid "AI-looking" output. These are enforced, not suggestions:
 
 ## Status
 
-Backend is runnable end-to-end (57 tests, ruff + mypy strict clean):
+The MVP is complete and runs end-to-end (backend 77 tests, frontend 20 tests; all gates
+green: pytest + ruff + mypy strict, vitest + vue-tsc + eslint).
 
-- Domain: `referrals` (Referral aggregate + attribution), `billing` (commission schedule
-  service), `identity` (User).
-- Application: `RegisterUser` / `AuthenticateUser` use-cases behind ports.
-- Infrastructure: bcrypt hashing, own JWT tokens, SQLAlchemy async repos, Alembic
-  migrations (initial `users` table).
-- API: `POST /api/v1/auth/{register,login}`, `GET /api/v1/auth/me` (Bearer), `/health`,
-  localized (FR/EN) error responses, live Swagger at `/docs`.
+Backend:
+- Domain: `identity` (User), `referrals` (Referral aggregate + state machine +
+  attribution hash), `billing` (commission schedule + installments).
+- Application: auth (register/authenticate/refresh) + referral use-cases
+  (create/list/read, qualify/accept/activate, record payment, agreement).
+- Infrastructure: bcrypt, own JWT (access + refresh), SQLAlchemy async repos, Alembic
+  migrations (users, referrals, commission_installments), HTML agreement renderer.
+- API under `/api/v1`: `auth/{register,login,refresh,me}`, full `referrals` lifecycle +
+  `installments/{seq}/pay` + `agreement`; CORS; localized FR/EN errors; Swagger at `/docs`.
 
-Frontend: Vue 3 app scaffolded; **landing page complete** (hero, how-it-works, pillars,
-interactive commission calculator, FAQ, CTA, footer) with full FR/EN i18n and a working
-language switch. Placeholder routes exist for `/inscription`, `/connexion`, and the legal
-pages.
+Frontend (Vue 3 + TS):
+- `src/ui/` design-system package (tokens + UiButton/UiEyebrow/UiCard/UiField/UiTextInput).
+- Landing page; auth (login/register, Pinia store, guards, 401-refresh retry); dashboard
+  (deal list); create-deal form with live preview; deal detail driving the full lifecycle
+  and opening the generated contract; real legal pages. Full FR/EN i18n.
 
-Not yet built: the referrals/billing **API + persistence** (only the domain exists for
-those), agreement PDF generation, the **auth UI** + **legal document pages** (currently
-placeholders), and the authenticated dashboard. Next milestones in `docs/ROADMAP.md`.
+Not built (intentional, post-MVP): real payment rails (Stripe/SEPA), email
+reminders/verification, dispute mode, audit-trail UI. See `docs/ROADMAP.md`.
