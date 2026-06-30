@@ -114,27 +114,8 @@ import { UiButton, UiEyebrow } from '@/ui'
   flex-direction: column;
 }
 .hero__title-cut {
-  position: relative;
   width: fit-content;
   color: var(--accent);
-}
-.hero__title-cut::after {
-  content: '';
-  position: absolute;
-  left: -2%;
-  right: -2%;
-  top: 52%;
-  height: 3px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  animation: cut-strike 0.6s cubic-bezier(0.65, 0, 0.35, 1) 0.9s both;
-  opacity: 0.55;
-}
-@keyframes cut-strike {
-  to {
-    transform: scaleX(1);
-  }
 }
 .hero__subtitle {
   margin-top: 1.6rem;
