@@ -23,6 +23,18 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/DashboardPage.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/app/deals/nouveau',
+    name: 'deal-create',
+    component: () => import('@/pages/CreateDealPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/app/deals/:id',
+    name: 'deal-detail',
+    component: () => import('@/pages/DealDetailPage.vue'),
+    meta: { requiresAuth: true },
+  },
   // Legal documents (content built in a later milestone).
   {
     path: '/mentions-legales',

@@ -13,13 +13,15 @@ Every feature must reinforce one of: *attribution proof*, *a clean agreement*,
 - [ ] **Legal docs** — mentions légales, CGU/CGV, politique de confidentialité (i18n).
 - [x] **Create referral deal (API)** — `POST/GET /api/v1/referrals`, owner-scoped,
       computes monthly/total commission. Persisted (SQLAlchemy + Alembic).
-- [ ] **Create referral deal (UI)** — form in the dashboard.
+- [x] **Create referral deal (UI)** — dashboard lists deals, create form with live
+      commission preview, deal detail page with the full schedule.
 - [ ] **Two-sided acceptance** — invite counterparty by link; both accept → attribution
       proof (timestamped, both-party signed).
 - [ ] **Agreement generation** — render the contract (PDF) from the deal.
 - [x] **Commission schedule (forecast)** — `GET /api/v1/referrals/{id}` returns the
       generated installments. Persisted installments + paid status still to do.
-- [ ] **Dashboard** — deal pipeline + commissions due / paid / overdue.
+- [x] **Dashboard (v1)** — lists deals with monthly commission + status. Pipeline
+      actions (accept/activate/pay) still to come.
 - [ ] **Mark commission paid** — manual, with audit trail.
 
 Deal pipeline status: `SENT → IN_DISCUSSION → QUALIFIED → SIGNED → ACTIVE → COMPLETED`

@@ -1,106 +1,86 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink } from 'vue-router'
 
-import { useAuthStore } from '@/features/auth/store'
-import { ApiError } from '@/shared/http'
+import AppShell from '@/features/app/AppShell.vue'
+import DealStatus from '@/features/referrals/DealStatus.vue'
+import { useReferralsStore } from '@/features/referrals/store'
+import { formatCurrency } from '@/shared/format'
 import { UiButton } from '@/ui'
 
-const { t } = useI18n()
-const router = useRouter()
-const auth = useAuthStore()
+const { t, locale } = useI18n()
+const store = useReferralsStore()
+const deals = computed(() => store.deals)
 
-onMounted(async () => {
-  if (!auth.user) {
-    try {
-      await auth.fetchMe()
-    } catch (err) {
-      // Token invalid or expired: drop it and bounce to login.
-      if (err instanceof ApiError) {
-        auth.logout()
-        await router.push('/connexion')
-      }
-    }
-  }
+onMounted(() => {
+  if (!store.loaded) void store.fetchAll()
 })
 
-function logout(): void {
-  auth.logout()
-  router.push('/')
+function money(amount: number, currency: string): string {
+  return formatCurrency(amount, currency, locale.value)
 }
 </script>
 
 <template>
-  <div class="dash">
-    <header class="dash__head">
-      <div class="container dash__head-inner">
-        <RouterLink to="/" class="dash__wordmark">
-          <span>Plug</span><span class="dash__cut">cut</span>
-        </RouterLink>
-        <div class="dash__user">
-          <span v-if="auth.user" class="dash__email">{{ auth.user.email }}</span>
-          <UiButton variant="ghost" @click="logout">{{ t('auth.logout') }}</UiButton>
-        </div>
+  <AppShell>
+    <div class="head">
+      <div>
+        <h1 class="head__title">{{ t('dashboard.title') }}</h1>
+        <p class="head__lead">{{ t('dashboard.lead') }}</p>
       </div>
-    </header>
+      <UiButton to="/app/deals/nouveau">{{ t('dashboard.newDeal') }}</UiButton>
+    </div>
 
-    <main class="container dash__main">
-      <h1 class="dash__title">{{ t('dashboard.title') }}</h1>
-      <p class="dash__lead">{{ t('dashboard.lead') }}</p>
-      <div class="dash__empty">
-        <span class="dash__empty-glyph" aria-hidden="true">✂</span>
-        <p>{{ t('dashboard.empty') }}</p>
-        <UiButton disabled>{{ t('dashboard.newDeal') }}</UiButton>
-      </div>
-    </main>
-  </div>
+    <p v-if="store.loading && !deals.length" class="muted">{{ t('common.loading') }}</p>
+
+    <div v-else-if="!deals.length" class="empty">
+      <span class="empty__glyph" aria-hidden="true">✂</span>
+      <p>{{ t('dashboard.empty') }}</p>
+      <UiButton to="/app/deals/nouveau">{{ t('dashboard.newDeal') }}</UiButton>
+    </div>
+
+    <ul v-else class="deals">
+      <li v-for="deal in deals" :key="deal.id">
+        <RouterLink :to="`/app/deals/${deal.id}`" class="deal">
+          <div class="deal__main">
+            <span class="deal__client">{{ deal.client_reference }}</span>
+            <span class="deal__placed">{{ deal.placed_person_email }}</span>
+          </div>
+          <div class="deal__meta">
+            <span class="deal__amount">
+              {{ money(deal.monthly_expected, deal.currency) }}
+              <span class="deal__per">{{ t('deals.list.perMonth') }}</span>
+            </span>
+            <DealStatus :status="deal.status" />
+          </div>
+        </RouterLink>
+      </li>
+    </ul>
+  </AppShell>
 </template>
 
 <style scoped>
-.dash {
-  min-height: 100vh;
-}
-.dash__head {
-  border-bottom: 1px solid var(--line-on-ink);
-}
-.dash__head-inner {
+.head {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-start;
   justify-content: space-between;
-  height: 72px;
+  margin-bottom: 2.5rem;
 }
-.dash__wordmark {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 1.4rem;
-  letter-spacing: -0.03em;
-}
-.dash__cut {
-  color: var(--accent);
-}
-.dash__user {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-.dash__email {
-  font-family: var(--font-mono);
-  font-size: var(--fs-small);
-  color: var(--muted-on-ink);
-}
-.dash__main {
-  padding-block: clamp(2.5rem, 6vw, 4.5rem);
-}
-.dash__title {
+.head__title {
   font-size: var(--fs-display-lg);
 }
-.dash__lead {
-  margin: 0.8rem 0 2.5rem;
+.head__lead {
+  margin-top: 0.7rem;
   color: var(--muted-on-ink);
   max-width: 50ch;
 }
-.dash__empty {
+.muted {
+  color: var(--muted-on-ink);
+}
+.empty {
   display: grid;
   justify-items: start;
   gap: 1rem;
@@ -109,7 +89,55 @@ function logout(): void {
   border-radius: var(--radius);
   color: var(--muted-on-ink);
 }
-.dash__empty-glyph {
+.empty__glyph {
   font-size: 1.8rem;
+}
+.deals {
+  list-style: none;
+  display: grid;
+  gap: 0.9rem;
+}
+.deal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.3rem 1.5rem;
+  background: var(--ink-2);
+  border: 1px solid var(--line-on-ink);
+  border-radius: var(--radius);
+  transition:
+    border-color var(--dur) ease,
+    transform var(--dur) ease;
+}
+.deal:hover {
+  border-color: var(--text-on-ink);
+  transform: translateY(-2px);
+}
+.deal__main {
+  display: grid;
+  gap: 0.2rem;
+}
+.deal__client {
+  font-weight: 600;
+}
+.deal__placed {
+  font-size: var(--fs-small);
+  color: var(--muted-on-ink);
+}
+.deal__meta {
+  display: flex;
+  align-items: center;
+  gap: 1.3rem;
+}
+.deal__amount {
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+.deal__per {
+  font-weight: 400;
+  color: var(--muted-on-ink);
+  font-size: var(--fs-small);
 }
 </style>

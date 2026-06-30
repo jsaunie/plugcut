@@ -148,7 +148,7 @@
     "registerSubtitle": "Put your first referral on a clean rail in two minutes.",
     "email": "Email",
     "password": "Password",
-    "emailPlaceholder": "you@example.com",
+    "emailPlaceholder": "you{'@'}example.com",
     "passwordHint": "8 characters minimum.",
     "submitLogin": "Log in",
     "submitRegister": "Create my account",
@@ -170,6 +170,56 @@
     "lead": "Track your referrals, commissions due, and contracts, all in one place.",
     "empty": "No deals yet. Create your first referral agreement.",
     "newDeal": "Create a deal"
+  },
+  "common": {
+    "loading": "Loading…",
+    "back": "Back",
+    "cancel": "Cancel"
+  },
+  "deals": {
+    "list": { "perMonth": "/ month" },
+    "status": {
+      "sent": "Sent",
+      "in_discussion": "In discussion",
+      "qualified": "Qualified",
+      "signed": "Signed",
+      "active": "Active",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "disputed": "Disputed"
+    },
+    "create": {
+      "title": "New deal",
+      "subtitle": "Set who you placed and your commission terms.",
+      "placedEmail": "Placed person's email",
+      "clientRef": "Client reference (kept discreet)",
+      "dailyRate": "Placed day rate (€)",
+      "commissionRate": "Your commission (%)",
+      "durationMonths": "Duration (months)",
+      "daysPerPeriod": "Days billed / month",
+      "submit": "Create the deal",
+      "previewMonthly": "Your cut / month",
+      "previewTotal": "Total over the duration",
+      "previewNote": "Indicative estimate, based on the days entered."
+    },
+    "detail": {
+      "dailyRate": "Placed day rate",
+      "commission": "Your commission",
+      "duration": "Duration",
+      "monthsUnit": "months",
+      "monthly": "Your cut / month",
+      "total": "Total over the duration",
+      "attribution": "Attribution proof",
+      "attributionNone": "Attribution is sealed once both parties sign the deal.",
+      "schedule": "Commission schedule",
+      "period": "Period",
+      "due": "Due",
+      "amount": "Amount"
+    },
+    "errors": {
+      "clientRequired": "Client reference is required.",
+      "generic": "Could not create the deal. Please try again."
+    }
   },
   "placeholder": {
     "back": "Back to home",

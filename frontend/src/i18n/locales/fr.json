@@ -148,7 +148,7 @@
     "registerSubtitle": "Mets ton premier apport sur un rail propre en deux minutes.",
     "email": "Email",
     "password": "Mot de passe",
-    "emailPlaceholder": "toi@exemple.com",
+    "emailPlaceholder": "toi{'@'}exemple.com",
     "passwordHint": "8 caractères minimum.",
     "submitLogin": "Se connecter",
     "submitRegister": "Créer mon compte",
@@ -170,6 +170,56 @@
     "lead": "Suis tes apports, tes commissions dues et tes contrats, au même endroit.",
     "empty": "Aucun deal pour l'instant. Crée ton premier accord d'apport.",
     "newDeal": "Créer un deal"
+  },
+  "common": {
+    "loading": "Chargement…",
+    "back": "Retour",
+    "cancel": "Annuler"
+  },
+  "deals": {
+    "list": { "perMonth": "/ mois" },
+    "status": {
+      "sent": "Envoyé",
+      "in_discussion": "En discussion",
+      "qualified": "Qualifié",
+      "signed": "Signé",
+      "active": "Actif",
+      "completed": "Terminé",
+      "cancelled": "Annulé",
+      "disputed": "En litige"
+    },
+    "create": {
+      "title": "Nouveau deal",
+      "subtitle": "Définis qui tu as placé et les conditions de ta commission.",
+      "placedEmail": "Email de la personne placée",
+      "clientRef": "Référence client (gardée discrète)",
+      "dailyRate": "TJM placé (€)",
+      "commissionRate": "Ta commission (%)",
+      "durationMonths": "Durée (mois)",
+      "daysPerPeriod": "Jours facturés / mois",
+      "submit": "Créer le deal",
+      "previewMonthly": "Ta part / mois",
+      "previewTotal": "Total sur la durée",
+      "previewNote": "Estimation indicative, basée sur les jours saisis."
+    },
+    "detail": {
+      "dailyRate": "TJM placé",
+      "commission": "Ta commission",
+      "duration": "Durée",
+      "monthsUnit": "mois",
+      "monthly": "Ta part / mois",
+      "total": "Total sur la durée",
+      "attribution": "Preuve d'attribution",
+      "attributionNone": "L'attribution sera scellée une fois le deal signé par les deux parties.",
+      "schedule": "Échéancier des commissions",
+      "period": "Période",
+      "due": "Échéance",
+      "amount": "Montant"
+    },
+    "errors": {
+      "clientRequired": "Référence client requise.",
+      "generic": "Impossible de créer le deal. Réessaie."
+    }
   },
   "placeholder": {
     "back": "Retour à l'accueil",
