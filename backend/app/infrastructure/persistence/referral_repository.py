@@ -38,6 +38,14 @@ def _to_domain(model: ReferralModel) -> Referral:
         invitation_token=model.invitation_token,
         referrer_signature=model.referrer_signature,
         placed_signature=model.placed_signature,
+        disputed_at=model.disputed_at,
+        dispute_reason=model.dispute_reason,
+        disputed_by=model.disputed_by,
+        status_before_dispute=(
+            ReferralStatus(model.status_before_dispute)
+            if model.status_before_dispute is not None
+            else None
+        ),
     )
 
 
@@ -62,6 +70,14 @@ def _apply_to_model(model: ReferralModel, referral: Referral) -> ReferralModel:
     model.invitation_token = referral.invitation_token
     model.referrer_signature = referral.referrer_signature
     model.placed_signature = referral.placed_signature
+    model.disputed_at = referral.disputed_at
+    model.dispute_reason = referral.dispute_reason
+    model.disputed_by = referral.disputed_by
+    model.status_before_dispute = (
+        referral.status_before_dispute.value
+        if referral.status_before_dispute is not None
+        else None
+    )
     return model
 
 

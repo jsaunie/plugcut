@@ -16,6 +16,7 @@ from app.application.referrals.dtos import (
 )
 from app.application.referrals.errors import (
     AgreementNotReady,
+    DealFrozen,
     InstallmentNotFound,
     InvitationNotFound,
     ReferralForbidden,
@@ -23,6 +24,7 @@ from app.application.referrals.errors import (
 )
 from app.application.referrals.ports import (
     AgreementRenderer,
+    EvidenceRenderer,
     InstallmentRepository,
     InvoiceRenderer,
     ReferralRepository,
@@ -181,6 +183,53 @@ class GetReferralStats:
         )
 
 
+def _synthesize_timeline(
+    referral: Referral, installments: list[CommissionInstallment]
+) -> list[TimelineEntry]:
+    """Build the deal's audit trail from its stored timestamps (no event table)."""
+    entries: list[TimelineEntry] = [TimelineEntry("created", referral.created_at)]
+
+    if referral.accepted_by_referrer_at is not None:
+        entries.append(
+            TimelineEntry(
+                "accepted_referrer",
+                referral.accepted_by_referrer_at,
+                referral.referrer_signature or "",
+            )
+        )
+    if referral.accepted_by_placed_at is not None:
+        entries.append(
+            TimelineEntry(
+                "accepted_placed",
+                referral.accepted_by_placed_at,
+                referral.placed_signature or "",
+            )
+        )
+    if (
+        referral.attribution_hash is not None
+        and referral.accepted_by_referrer_at is not None
+        and referral.accepted_by_placed_at is not None
+    ):
+        signed_at = max(referral.accepted_by_referrer_at, referral.accepted_by_placed_at)
+        entries.append(TimelineEntry("signed", signed_at))
+    if referral.activated_at is not None:
+        entries.append(TimelineEntry("activated", referral.activated_at))
+
+    for installment in installments:
+        if installment.status is InstallmentStatus.PAID and installment.paid_at is not None:
+            entries.append(
+                TimelineEntry("payment_recorded", installment.paid_at, str(installment.sequence))
+            )
+
+    if referral.disputed_at is not None:
+        entries.append(
+            TimelineEntry("disputed", referral.disputed_at, referral.dispute_reason or "")
+        )
+
+    entries.sort(key=lambda entry: entry.at)
+    return entries
+
+
 class GetDealTimeline:
     """Synthesize the deal's audit trail from its stored timestamps (no event table)."""
 
@@ -192,44 +241,8 @@ class GetDealTimeline:
 
     async def execute(self, referral_id: UUID, *, requester_id: UUID) -> list[TimelineEntry]:
         referral = await _load_visible(self._referrals, referral_id, requester_id)
-        entries: list[TimelineEntry] = [TimelineEntry("created", referral.created_at)]
-
-        if referral.accepted_by_referrer_at is not None:
-            entries.append(
-                TimelineEntry(
-                    "accepted_referrer",
-                    referral.accepted_by_referrer_at,
-                    referral.referrer_signature or "",
-                )
-            )
-        if referral.accepted_by_placed_at is not None:
-            entries.append(
-                TimelineEntry(
-                    "accepted_placed",
-                    referral.accepted_by_placed_at,
-                    referral.placed_signature or "",
-                )
-            )
-        if (
-            referral.attribution_hash is not None
-            and referral.accepted_by_referrer_at is not None
-            and referral.accepted_by_placed_at is not None
-        ):
-            signed_at = max(referral.accepted_by_referrer_at, referral.accepted_by_placed_at)
-            entries.append(TimelineEntry("signed", signed_at))
-        if referral.activated_at is not None:
-            entries.append(TimelineEntry("activated", referral.activated_at))
-
-        for installment in await self._installments.list_for_referral(referral_id):
-            if installment.status is InstallmentStatus.PAID and installment.paid_at is not None:
-                entries.append(
-                    TimelineEntry(
-                        "payment_recorded", installment.paid_at, str(installment.sequence)
-                    )
-                )
-
-        entries.sort(key=lambda entry: entry.at)
-        return entries
+        installments = await self._installments.list_for_referral(referral_id)
+        return _synthesize_timeline(referral, installments)
 
 
 class GetReferralWithSchedule:
@@ -358,6 +371,63 @@ class GetAgreement:
         return self._renderer.render(referral, referrer_email=referrer_email, locale=locale)
 
 
+class DisputeReferral:
+    """Either party flags and freezes a live deal, stating a reason."""
+
+    def __init__(
+        self, referrals: ReferralRepository, *, now: Callable[[], datetime] = _utc_now
+    ) -> None:
+        self._referrals = referrals
+        self._now = now
+
+    async def execute(self, referral_id: UUID, *, requester_id: UUID, reason: str) -> Referral:
+        referral = await _load_visible(self._referrals, referral_id, requester_id)
+        referral.dispute(at=self._now(), reason=reason, by=requester_id)
+        await self._referrals.save(referral)
+        return referral
+
+
+class ResolveDispute:
+    """Lift a dispute and restore the deal to its prior status. Either party may resolve."""
+
+    def __init__(self, referrals: ReferralRepository) -> None:
+        self._referrals = referrals
+
+    async def execute(self, referral_id: UUID, *, requester_id: UUID) -> Referral:
+        referral = await _load_visible(self._referrals, referral_id, requester_id)
+        referral.resolve_dispute()
+        await self._referrals.save(referral)
+        return referral
+
+
+class GetDisputeEvidence:
+    """Render the evidence pack: parties, terms, attribution proof, and full timeline."""
+
+    def __init__(
+        self,
+        referrals: ReferralRepository,
+        installments: InstallmentRepository,
+        users: UserRepository,
+        renderer: EvidenceRenderer,
+    ) -> None:
+        self._referrals = referrals
+        self._installments = installments
+        self._users = users
+        self._renderer = renderer
+
+    async def execute(self, referral_id: UUID, *, requester_id: UUID, locale: str) -> str:
+        referral = await _load_visible(self._referrals, referral_id, requester_id)
+        if referral.attribution_hash is None:
+            raise AgreementNotReady
+        installments = await self._installments.list_for_referral(referral_id)
+        timeline = _synthesize_timeline(referral, installments)
+        referrer = await self._users.get_by_id(referral.referrer_id)
+        referrer_email = referrer.email.value if referrer is not None else ""
+        return self._renderer.render(
+            referral, referrer_email=referrer_email, timeline=timeline, locale=locale
+        )
+
+
 class GetInstallmentInvoice:
     """Render the monthly commission invoice for one installment of a signed deal."""
 
@@ -404,7 +474,9 @@ class RecordInstallmentPayment:
     async def execute(
         self, referral_id: UUID, sequence: int, *, requester_id: UUID
     ) -> CommissionInstallment:
-        await _load_owned(self._referrals, referral_id, requester_id)
+        referral = await _load_owned(self._referrals, referral_id, requester_id)
+        if referral.is_frozen:
+            raise DealFrozen
         installment = await self._installments.get(referral_id, sequence)
         if installment is None:
             raise InstallmentNotFound

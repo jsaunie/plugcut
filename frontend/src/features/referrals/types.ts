@@ -15,6 +15,8 @@ export interface Referral {
   created_at: string
   monthly_expected: number
   total_expected: number
+  dispute_reason?: string | null
+  disputed_at?: string | null
 }
 
 export type AcceptParty = 'referrer' | 'placed'

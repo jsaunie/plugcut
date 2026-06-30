@@ -7,12 +7,15 @@ import AppShell from '@/features/app/AppShell.vue'
 import {
   acceptReferral,
   activateReferral,
+  disputeReferral,
   getAgreement,
   getDealTimeline,
+  getEvidencePack,
   getInstallmentInvoice,
   getReferral,
   payInstallment,
   qualifyReferral,
+  resolveDispute,
 } from '@/features/referrals/api'
 import DealStatus from '@/features/referrals/DealStatus.vue'
 import type { ReferralDetail, TimelineEntry } from '@/features/referrals/types'
@@ -32,9 +35,13 @@ const actionError = ref('')
 const busy = ref(false)
 const signatureName = ref('')
 const copied = ref(false)
+const disputeReason = ref('')
+const showDisputeForm = ref(false)
 
-const signedStates = ['signed', 'active', 'completed']
+// A disputed deal is still sealed (just frozen), so it reads as signed for display.
+const signedStates = ['signed', 'active', 'completed', 'disputed']
 const isReferrer = computed(() => deal.value?.role !== 'placed')
+const isFrozen = computed(() => deal.value?.status === 'disputed')
 const canQualify = computed(
   () => isReferrer.value && ['sent', 'in_discussion'].includes(deal.value?.status ?? ''),
 )
@@ -46,6 +53,9 @@ const canSignReferrer = computed(
 )
 const canActivate = computed(() => isReferrer.value && deal.value?.status === 'signed')
 const isSigned = computed(() => signedStates.includes(deal.value?.status ?? ''))
+// Either party can raise a dispute on a sealed, live deal; both can see the evidence pack.
+const canDispute = computed(() => isSigned.value && !isFrozen.value)
+const hasEvidence = computed(() => Boolean(deal.value?.attribution_hash))
 const showInvite = computed(
   () => isReferrer.value && !isSigned.value && Boolean(deal.value?.invitation_token),
 )
@@ -95,6 +105,15 @@ const qualify = () => run(() => qualifyReferral(id))
 const signReferrer = () => run(() => acceptReferral(id, 'referrer', signatureName.value))
 const activate = () => run(() => activateReferral(id))
 const pay = (sequence: number) => run(() => payInstallment(id, sequence))
+const resolve = () => run(() => resolveDispute(id))
+
+async function submitDispute(): Promise<void> {
+  await run(() => disputeReferral(id, disputeReason.value))
+  if (!actionError.value) {
+    disputeReason.value = ''
+    showDisputeForm.value = false
+  }
+}
 
 async function copyLink(): Promise<void> {
   await navigator.clipboard.writeText(inviteUrl.value)
@@ -121,6 +140,15 @@ async function openInvoice(sequence: number): Promise<void> {
   actionError.value = ''
   try {
     openHtmlInNewTab((await getInstallmentInvoice(id, sequence)).html)
+  } catch (err) {
+    actionError.value = err instanceof ApiError ? err.message : t('deals.errors.generic')
+  }
+}
+
+async function openEvidence(): Promise<void> {
+  actionError.value = ''
+  try {
+    openHtmlInNewTab((await getEvidencePack(id)).html)
   } catch (err) {
     actionError.value = err instanceof ApiError ? err.message : t('deals.errors.generic')
   }
@@ -155,6 +183,19 @@ onMounted(load)
         </div>
       </header>
 
+      <div v-if="isFrozen" class="freeze" role="alert">
+        <div class="freeze__body">
+          <p class="freeze__title">{{ t('deals.dispute.frozenTitle') }}</p>
+          <p v-if="deal.dispute_reason" class="freeze__reason">{{ deal.dispute_reason }}</p>
+        </div>
+        <div class="freeze__actions">
+          <UiButton variant="ghost" @click="openEvidence">
+            {{ t('deals.dispute.evidence') }}
+          </UiButton>
+          <UiButton :loading="busy" @click="resolve">{{ t('deals.dispute.resolve') }}</UiButton>
+        </div>
+      </div>
+
       <section class="actions">
         <h2 class="section-title">{{ t('deals.actions.title') }}</h2>
         <div class="actions__row">
@@ -167,7 +208,37 @@ onMounted(load)
           <UiButton v-if="isSigned" variant="ghost" @click="openAgreement">
             {{ t('deals.actions.viewAgreement') }}
           </UiButton>
+          <UiButton v-if="hasEvidence && !isFrozen" variant="ghost" @click="openEvidence">
+            {{ t('deals.dispute.evidence') }}
+          </UiButton>
+          <UiButton
+            v-if="canDispute"
+            variant="ghost"
+            @click="showDisputeForm = !showDisputeForm"
+          >
+            {{ t('deals.dispute.raise') }}
+          </UiButton>
         </div>
+
+        <form
+          v-if="showDisputeForm && canDispute"
+          class="sign"
+          @submit.prevent="submitDispute"
+        >
+          <p class="sign__prompt">{{ t('deals.dispute.prompt') }}</p>
+          <div class="sign__row">
+            <UiField :label="t('deals.dispute.reasonLabel')" for-id="dreason">
+              <UiTextInput
+                id="dreason"
+                v-model="disputeReason"
+                :placeholder="t('deals.dispute.reasonPlaceholder')"
+              />
+            </UiField>
+            <UiButton type="submit" :loading="busy" :disabled="!disputeReason.trim()">
+              {{ t('deals.dispute.submit') }}
+            </UiButton>
+          </div>
+        </form>
 
         <form v-if="canSignReferrer" class="sign" @submit.prevent="signReferrer">
           <p class="sign__prompt">{{ t('deals.sign.referrerPrompt') }}</p>
@@ -249,7 +320,7 @@ onMounted(load)
                     {{ t('deals.actions.invoice') }}
                   </button>
                   <button
-                    v-if="isReferrer && row.status !== 'paid'"
+                    v-if="isReferrer && !isFrozen && row.status !== 'paid'"
                     class="pay"
                     :disabled="busy"
                     @click="pay(row.sequence)"
@@ -337,6 +408,32 @@ onMounted(load)
 .role--placed {
   background: var(--ink-3);
   color: var(--muted-on-ink);
+}
+.freeze {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2.2rem;
+  padding: 1.1rem 1.3rem;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  background: rgba(255, 92, 92, 0.08);
+}
+.freeze__title {
+  font-weight: 700;
+  color: var(--danger);
+}
+.freeze__reason {
+  margin-top: 0.3rem;
+  color: var(--text-on-ink);
+  font-size: var(--fs-small);
+}
+.freeze__actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
 }
 .actions {
   margin-bottom: 2.5rem;

@@ -86,30 +86,36 @@ Avoid "AI-looking" output. These are enforced, not suggestions:
 
 ## Status
 
-Runs end-to-end (backend 90 tests, frontend 22 tests; all gates green: pytest + ruff +
+Runs end-to-end (backend 120 tests, frontend 25 tests; all gates green: pytest + ruff +
 mypy strict, vitest + vue-tsc + eslint).
 
 Backend:
 - Domain: `identity` (User), `referrals` (Referral aggregate + state machine + two-sided
-  signatures + attribution hash + invitation token), `billing` (schedule + installments).
+  signatures + attribution hash + invitation token + dispute freeze/resolve), `billing`
+  (schedule + installments).
 - Application: auth (register/authenticate/refresh) + referral use-cases (create, list,
   read, qualify, accept, activate, record payment, stats, agreement, invoice, invitation
-  view/sign).
+  view/sign, dispute, resolve dispute, evidence pack). Reads are owner-or-placed scoped
+  (`_load_visible`); mutations are referrer-scoped (`_load_owned`).
 - Infrastructure: bcrypt, own JWT (access + refresh), SQLAlchemy async repos, Alembic,
-  HTML renderers behind ports (`AgreementRenderer`, `InvoiceRenderer`).
+  HTML renderers behind ports (`AgreementRenderer`, `InvoiceRenderer`, `EvidenceRenderer`).
 - API under `/api/v1`: `auth/{register,login,refresh,me}`, full `referrals` lifecycle +
-  `installments/{seq}/{pay,invoice}` + `agreement` + `stats`, public `invitations/{token}`;
-  CORS; localized FR/EN errors; Swagger at `/docs`.
+  `installments/{seq}/{pay,invoice}` + `agreement` + `stats` + `dispute` +
+  `dispute/resolve` + `evidence`, public `invitations/{token}`; CORS; localized FR/EN
+  errors; Swagger at `/docs`.
 
 Frontend (Vue 3 + TS):
 - `src/ui/` design-system package; landing; auth (Pinia, guards, 401-refresh retry);
-  dashboard with **KPI stats** + deal list; create-deal form; deal detail driving the full
-  lifecycle (qualify / sign-with-name / invite link / activate / pay / contract / invoice);
-  public **invitation signing page**; real legal pages. Full FR/EN i18n.
+  dashboard with **KPI stats** + deal list (each deal tagged with the viewer's role);
+  create-deal form (with a "from your network" contact picker); deal detail driving the
+  full lifecycle (qualify / sign-with-name / invite link / activate / pay / contract /
+  invoice / **dispute + resolve + evidence pack**); contacts CRM (search + tag filter,
+  PDF import); public **invitation signing page**; real legal pages. Full FR/EN i18n.
 - **SEO/GEO**: head meta + JSON-LD, OG image, robots/sitemap/llms.txt, `useSeo` per route,
   placeholders for Search Console + pixels (see `docs/ARCHITECTURE.md`).
 
 Collection model: **system of record (Model A)** — Plugcut renders contract + invoices and
 tracks payment; money flows peer to peer. Managed collection (Model B, marketplace PSP) is
-deferred. Not built (intentional, post-MVP): real payment rails, email reminders, dispute
-mode, audit-trail UI. See `docs/ROADMAP.md`.
+deferred. **Bidirectional**: a user can owe or be owed; either party can raise a dispute
+that freezes the deal until resolved. Not built (intentional, post-MVP): real payment
+rails, email reminders, real e-signature. See `docs/ROADMAP.md`.

@@ -43,6 +43,10 @@ class SignInvitationRequest(BaseModel):
     signature: str = Field(min_length=1, max_length=120)
 
 
+class DisputeRequest(BaseModel):
+    reason: str = Field(min_length=1, max_length=1000)
+
+
 class AgreementResponse(BaseModel):
     html: str
 
@@ -70,6 +74,8 @@ class ReferralResponse(BaseModel):
     created_at: datetime
     monthly_expected: float
     total_expected: float
+    dispute_reason: str | None
+    disputed_at: datetime | None
 
     @classmethod
     def from_domain(cls, referral: Referral, viewer_id: UUID) -> ReferralResponse:
@@ -93,6 +99,8 @@ class ReferralResponse(BaseModel):
             created_at=referral.created_at,
             monthly_expected=float(monthly.amount),
             total_expected=float(monthly.amount) * referral.terms.duration_months,
+            dispute_reason=referral.dispute_reason,
+            disputed_at=referral.disputed_at,
         )
 
 

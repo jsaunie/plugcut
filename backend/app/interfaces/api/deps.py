@@ -28,6 +28,7 @@ from app.application.identity.use_cases import (
 )
 from app.application.referrals.ports import (
     AgreementRenderer,
+    EvidenceRenderer,
     InstallmentRepository,
     InvoiceRenderer,
     ReferralRepository,
@@ -36,8 +37,10 @@ from app.application.referrals.use_cases import (
     AcceptReferral,
     ActivateReferral,
     CreateReferral,
+    DisputeReferral,
     GetAgreement,
     GetDealTimeline,
+    GetDisputeEvidence,
     GetInstallmentInvoice,
     GetReferralByInvitation,
     GetReferralStats,
@@ -45,6 +48,7 @@ from app.application.referrals.use_cases import (
     ListReferrals,
     QualifyReferral,
     RecordInstallmentPayment,
+    ResolveDispute,
     SignByInvitation,
 )
 from app.domain.identity.entities import User
@@ -52,6 +56,7 @@ from app.domain.identity.ports import PasswordHasher
 from app.infrastructure.agreements.html_renderer import HtmlAgreementRenderer
 from app.infrastructure.config import Settings
 from app.infrastructure.contacts.pdf_importer import PdfContactImporter
+from app.infrastructure.evidence.html_renderer import HtmlEvidenceRenderer
 from app.infrastructure.invoices.html_renderer import HtmlInvoiceRenderer
 from app.infrastructure.persistence.contact_repository import SqlAlchemyContactRepository
 from app.infrastructure.persistence.installment_repository import (
@@ -227,6 +232,31 @@ def get_get_agreement(
     renderer: Annotated[AgreementRenderer, Depends(get_agreement_renderer)],
 ) -> GetAgreement:
     return GetAgreement(referrals, users, renderer)
+
+
+def get_evidence_renderer() -> EvidenceRenderer:
+    return HtmlEvidenceRenderer()
+
+
+def get_dispute_referral(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+) -> DisputeReferral:
+    return DisputeReferral(referrals)
+
+
+def get_resolve_dispute(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+) -> ResolveDispute:
+    return ResolveDispute(referrals)
+
+
+def get_dispute_evidence(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+    installments: Annotated[InstallmentRepository, Depends(get_installment_repository)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    renderer: Annotated[EvidenceRenderer, Depends(get_evidence_renderer)],
+) -> GetDisputeEvidence:
+    return GetDisputeEvidence(referrals, installments, users, renderer)
 
 
 def get_invitation_view(

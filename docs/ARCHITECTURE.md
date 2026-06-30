@@ -84,11 +84,18 @@ no hardcoded user-facing strings).
 
 ## Documents and collection model
 
-- **Document rendering** lives behind ports: `AgreementRenderer` (the contract) and
-  `InvoiceRenderer` (the monthly commission invoice). Concrete adapters
-  (`HtmlAgreementRenderer`, `HtmlInvoiceRenderer`) are pure string templating, FR/EN,
-  HTML-escaped, with no I/O. They could be swapped for a PDF engine without touching the
-  use cases. Endpoints return `{ "html": ... }` and the SPA opens it in a new tab.
+- **Document rendering** lives behind ports: `AgreementRenderer` (the contract),
+  `InvoiceRenderer` (the monthly commission invoice), and `EvidenceRenderer` (the dispute
+  evidence pack). Concrete adapters (`HtmlAgreementRenderer`, `HtmlInvoiceRenderer`,
+  `HtmlEvidenceRenderer`) are pure string templating, FR/EN, HTML-escaped, with no I/O.
+  They could be swapped for a PDF engine without touching the use cases. Endpoints return
+  `{ "html": ... }` and the SPA opens it in a new tab.
+- **Dispute mode is a freeze, not a new branch of the state machine.** Either party may
+  `dispute()` a live deal with a reason; the aggregate records the prior status and moves
+  to `DISPUTED`. While disputed the deal `is_frozen`: lifecycle moves raise
+  `IllegalStateTransition` (no outgoing transitions from `DISPUTED`) and payments raise
+  `referral.frozen`. `resolve_dispute()` restores the saved prior status. The evidence
+  pack reuses the same timeline synthesis as the audit trail, so the two never diverge.
 - **Collection model = system of record (Model A).** Plugcut tracks the schedule, renders
   the contract and invoices, and marks installments paid. The money flows **peer to peer**
   between the placed person and the referrer; Plugcut never holds third-party funds, so it

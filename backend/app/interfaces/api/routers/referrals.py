@@ -14,14 +14,17 @@ from app.application.referrals.use_cases import (
     AcceptReferral,
     ActivateReferral,
     CreateReferral,
+    DisputeReferral,
     GetAgreement,
     GetDealTimeline,
+    GetDisputeEvidence,
     GetInstallmentInvoice,
     GetReferralStats,
     GetReferralWithSchedule,
     ListReferrals,
     QualifyReferral,
     RecordInstallmentPayment,
+    ResolveDispute,
 )
 from app.interfaces.api.deps import (
     CurrentUser,
@@ -29,6 +32,8 @@ from app.interfaces.api.deps import (
     get_activate_referral,
     get_create_referral,
     get_deal_timeline,
+    get_dispute_evidence,
+    get_dispute_referral,
     get_get_agreement,
     get_get_invoice,
     get_get_referral,
@@ -37,11 +42,13 @@ from app.interfaces.api.deps import (
     get_qualify_referral,
     get_record_payment,
     get_referral_stats,
+    get_resolve_dispute,
     get_session,
 )
 from app.interfaces.api.referral_schemas import (
     AcceptReferralRequest,
     AgreementResponse,
+    DisputeRequest,
     InstallmentResponse,
     ReferralCreateRequest,
     ReferralDetailResponse,
@@ -156,6 +163,44 @@ async def deal_timeline(
     return [
         TimelineEntryResponse(type=e.type, at=e.at, detail=e.detail) for e in entries
     ]
+
+
+@router.post("/{referral_id}/dispute", response_model=ReferralResponse)
+async def dispute_referral(
+    referral_id: UUID,
+    payload: DisputeRequest,
+    current_user: CurrentUser,
+    use_case: Annotated[DisputeReferral, Depends(get_dispute_referral)],
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> ReferralResponse:
+    referral = await use_case.execute(
+        referral_id, requester_id=current_user.id, reason=payload.reason
+    )
+    await session.commit()
+    return ReferralResponse.from_domain(referral, current_user.id)
+
+
+@router.post("/{referral_id}/dispute/resolve", response_model=ReferralResponse)
+async def resolve_dispute(
+    referral_id: UUID,
+    current_user: CurrentUser,
+    use_case: Annotated[ResolveDispute, Depends(get_resolve_dispute)],
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> ReferralResponse:
+    referral = await use_case.execute(referral_id, requester_id=current_user.id)
+    await session.commit()
+    return ReferralResponse.from_domain(referral, current_user.id)
+
+
+@router.get("/{referral_id}/evidence", response_model=AgreementResponse)
+async def get_dispute_evidence_pack(
+    referral_id: UUID,
+    current_user: CurrentUser,
+    use_case: Annotated[GetDisputeEvidence, Depends(get_dispute_evidence)],
+    locale: Annotated[str, Depends(get_locale)],
+) -> AgreementResponse:
+    html = await use_case.execute(referral_id, requester_id=current_user.id, locale=locale)
+    return AgreementResponse(html=html)
 
 
 @router.get("/{referral_id}/agreement", response_model=AgreementResponse)

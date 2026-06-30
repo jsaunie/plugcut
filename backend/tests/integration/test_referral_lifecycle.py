@@ -257,3 +257,97 @@ class TestTimeline:
         intruder = await _headers(client, "intruder@example.com")
         response = await client.get(f"/api/v1/referrals/{deal_id}/timeline", headers=intruder)
         assert response.status_code == 403
+
+
+class TestDispute:
+    async def test_dispute_freezes_then_resolve_restores(self, client: AsyncClient) -> None:
+        headers = await _headers(client, "owner@example.com")
+        deal_id = await _sign(client, headers)
+        await client.post(f"/api/v1/referrals/{deal_id}/activate", headers=headers)
+
+        disputed = await client.post(
+            f"/api/v1/referrals/{deal_id}/dispute",
+            json={"reason": "Le paiement de mars manque."},
+            headers=headers,
+        )
+        assert disputed.status_code == 200
+        body = disputed.json()
+        assert body["status"] == "disputed"
+        assert body["dispute_reason"] == "Le paiement de mars manque."
+
+        # Frozen: paying an installment is refused.
+        frozen = await client.post(
+            f"/api/v1/referrals/{deal_id}/installments/1/pay", headers=headers
+        )
+        assert frozen.status_code == 409
+        assert frozen.json()["error"]["code"] == "referral.frozen"
+
+        resolved = await client.post(
+            f"/api/v1/referrals/{deal_id}/dispute/resolve", headers=headers
+        )
+        assert resolved.status_code == 200
+        assert resolved.json()["status"] == "active"
+        assert resolved.json()["dispute_reason"] is None
+
+        # Unfrozen: paying works again.
+        paid = await client.post(
+            f"/api/v1/referrals/{deal_id}/installments/1/pay", headers=headers
+        )
+        assert paid.status_code == 200
+        assert paid.json()["status"] == "paid"
+
+    async def test_dispute_requires_a_reason(self, client: AsyncClient) -> None:
+        headers = await _headers(client)
+        deal_id = await _sign(client, headers)
+        response = await client.post(
+            f"/api/v1/referrals/{deal_id}/dispute", json={"reason": "  "}, headers=headers
+        )
+        assert response.status_code == 422
+
+    async def test_dispute_shows_in_timeline(self, client: AsyncClient) -> None:
+        headers = await _headers(client)
+        deal_id = await _sign(client, headers)
+        await client.post(
+            f"/api/v1/referrals/{deal_id}/dispute",
+            json={"reason": "désaccord"},
+            headers=headers,
+        )
+        timeline = await client.get(f"/api/v1/referrals/{deal_id}/timeline", headers=headers)
+        types = [entry["type"] for entry in timeline.json()]
+        assert "disputed" in types
+
+    async def test_evidence_pack_after_signing(self, client: AsyncClient) -> None:
+        headers = await _headers(client, "owner@example.com")
+        deal_id = await _sign(client, headers)
+        await client.post(
+            f"/api/v1/referrals/{deal_id}/dispute",
+            json={"reason": "facture impayée"},
+            headers=headers,
+        )
+        response = await client.get(
+            f"/api/v1/referrals/{deal_id}/evidence",
+            headers={**headers, "Accept-Language": "fr"},
+        )
+        assert response.status_code == 200
+        html = response.json()["html"]
+        assert "Dossier de preuve" in html
+        assert "facture impayée" in html
+        assert "owner@example.com" in html
+
+    async def test_evidence_not_ready_before_signed(self, client: AsyncClient) -> None:
+        headers = await _headers(client)
+        deal_id = await _create(client, headers)
+        response = await client.get(f"/api/v1/referrals/{deal_id}/evidence", headers=headers)
+        assert response.status_code == 409
+        assert response.json()["error"]["code"] == "agreement.not_ready"
+
+    async def test_dispute_forbidden_for_others(self, client: AsyncClient) -> None:
+        owner = await _headers(client, "owner@example.com")
+        deal_id = await _sign(client, owner)
+        intruder = await _headers(client, "intruder@example.com")
+        response = await client.post(
+            f"/api/v1/referrals/{deal_id}/dispute",
+            json={"reason": "pas mon deal"},
+            headers=intruder,
+        )
+        assert response.status_code == 403

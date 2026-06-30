@@ -3,14 +3,18 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import Protocol
+from typing import TYPE_CHECKING, Protocol
 from uuid import UUID
 
 from app.domain.billing.entities import CommissionInstallment
 from app.domain.referrals.entities import Referral
 
+if TYPE_CHECKING:
+    from app.application.referrals.dtos import TimelineEntry
+
 __all__ = [
     "AgreementRenderer",
+    "EvidenceRenderer",
     "InstallmentRepository",
     "InvoiceRenderer",
     "ReferralRepository",
@@ -60,5 +64,18 @@ class InvoiceRenderer(Protocol):
         installment: CommissionInstallment,
         *,
         referrer_email: str,
+        locale: str,
+    ) -> str: ...
+
+
+class EvidenceRenderer(Protocol):
+    """Renders the dispute evidence pack (HTML): parties, terms, proof, and timeline."""
+
+    def render(
+        self,
+        referral: Referral,
+        *,
+        referrer_email: str,
+        timeline: list[TimelineEntry],
         locale: str,
     ) -> str: ...

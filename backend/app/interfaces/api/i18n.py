@@ -71,6 +71,14 @@ MESSAGES: dict[str, dict[str, str]] = {
         "fr": "La signature est requise.",
         "en": "A signature is required.",
     },
+    "referral.frozen": {
+        "fr": "Ce deal est gelé suite à un litige. Lève le litige pour continuer.",
+        "en": "This deal is frozen by a dispute. Resolve the dispute to continue.",
+    },
+    "referral.dispute_reason_required": {
+        "fr": "Indique le motif du litige.",
+        "en": "State the reason for the dispute.",
+    },
     "contact.not_found": {
         "fr": "Ce contact est introuvable.",
         "en": "This contact was not found.",

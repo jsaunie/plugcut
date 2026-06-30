@@ -315,8 +315,19 @@
         "accepted_placed": "Signed by the placed person",
         "signed": "Agreement sealed (attribution)",
         "activated": "Deal activated",
-        "payment_recorded": "Payment recorded (installment {n})"
+        "payment_recorded": "Payment recorded (installment {n})",
+        "disputed": "Dispute raised"
       }
+    },
+    "dispute": {
+      "raise": "Raise a dispute",
+      "prompt": "Describe the disagreement. The deal stays frozen until the dispute is resolved.",
+      "reasonLabel": "Dispute reason",
+      "reasonPlaceholder": "E.g. the March commission was not paid.",
+      "submit": "Freeze the deal",
+      "frozenTitle": "Deal frozen by a dispute",
+      "resolve": "Resolve the dispute",
+      "evidence": "Evidence pack"
     },
     "errors": {
       "clientRequired": "Client reference is required.",

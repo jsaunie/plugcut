@@ -315,8 +315,19 @@
         "accepted_placed": "Signé par la personne placée",
         "signed": "Accord scellé (attribution)",
         "activated": "Deal activé",
-        "payment_recorded": "Paiement enregistré (échéance {n})"
+        "payment_recorded": "Paiement enregistré (échéance {n})",
+        "disputed": "Litige déclaré"
       }
+    },
+    "dispute": {
+      "raise": "Signaler un litige",
+      "prompt": "Décris le désaccord. Le deal est gelé tant que le litige n'est pas levé.",
+      "reasonLabel": "Motif du litige",
+      "reasonPlaceholder": "Ex : la commission de mars n'a pas été versée.",
+      "submit": "Geler le deal",
+      "frozenTitle": "Deal gelé suite à un litige",
+      "resolve": "Lever le litige",
+      "evidence": "Dossier de preuve"
     },
     "errors": {
       "clientRequired": "Référence client requise.",

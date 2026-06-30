@@ -65,6 +65,10 @@ class ReferralModel(Base):
     )
     referrer_signature: Mapped[str | None] = mapped_column(String(120), nullable=True)
     placed_signature: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    disputed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    dispute_reason: Mapped[str | None] = mapped_column(String(1000), nullable=True)
+    disputed_by: Mapped[UUID | None] = mapped_column(Uuid, nullable=True)
+    status_before_dispute: Mapped[str | None] = mapped_column(String(20), nullable=True)
 
 
 class CommissionInstallmentModel(Base):

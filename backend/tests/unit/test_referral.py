@@ -83,8 +83,51 @@ class TestLifecycle:
     def test_can_dispute_a_live_deal(self) -> None:
         referral = make_referral()
         bring_to_signed(referral)
-        referral.dispute()
+        raiser = uuid4()
+        referral.dispute(
+            at=datetime(2026, 3, 1, tzinfo=UTC), reason="Le paiement de mars manque.", by=raiser
+        )
         assert referral.status is ReferralStatus.DISPUTED
+        assert referral.is_frozen
+        assert referral.dispute_reason == "Le paiement de mars manque."
+        assert referral.disputed_by == raiser
+        assert referral.status_before_dispute is ReferralStatus.SIGNED
+
+    def test_dispute_requires_a_reason(self) -> None:
+        referral = make_referral()
+        bring_to_signed(referral)
+        with pytest.raises(InvariantViolation):
+            referral.dispute(at=datetime(2026, 3, 1, tzinfo=UTC), reason="   ", by=uuid4())
+
+    def test_cannot_dispute_a_cancelled_deal(self) -> None:
+        referral = make_referral()
+        referral.cancel()
+        with pytest.raises(IllegalStateTransition):
+            referral.dispute(at=datetime(2026, 3, 1, tzinfo=UTC), reason="too late", by=uuid4())
+
+    def test_resolving_restores_the_prior_status(self) -> None:
+        referral = make_referral()
+        bring_to_signed(referral)
+        referral.activate(at=datetime(2026, 2, 1, tzinfo=UTC))
+        referral.dispute(at=datetime(2026, 3, 1, tzinfo=UTC), reason="dispute", by=uuid4())
+        referral.resolve_dispute()
+        assert referral.status is ReferralStatus.ACTIVE
+        assert not referral.is_frozen
+        assert referral.dispute_reason is None
+        assert referral.status_before_dispute is None
+
+    def test_cannot_resolve_a_deal_that_is_not_disputed(self) -> None:
+        referral = make_referral()
+        bring_to_signed(referral)
+        with pytest.raises(IllegalStateTransition):
+            referral.resolve_dispute()
+
+    def test_frozen_deal_blocks_lifecycle_moves(self) -> None:
+        referral = make_referral()
+        bring_to_signed(referral)
+        referral.dispute(at=datetime(2026, 3, 1, tzinfo=UTC), reason="frozen", by=uuid4())
+        with pytest.raises(IllegalStateTransition):
+            referral.activate(at=datetime(2026, 3, 2, tzinfo=UTC))
 
 
 class TestAttribution:

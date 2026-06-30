@@ -50,7 +50,13 @@ Deal pipeline status: `SENT → IN_DISCUSSION → QUALIFIED → SIGNED → ACTIV
 - [x] **Audit trail** per deal — `GET /referrals/{id}/timeline` synthesizes the history
       (created, acceptances with signer, sealed, activated, payments) from stored
       timestamps; shown as a "Historique" timeline on the deal detail.
-- [ ] **Dispute mode** — flag, freeze, export an evidence pack.
+- [x] **Dispute mode** — either party flags a sealed deal with a reason, which freezes it
+      (no lifecycle moves, no payments) until resolved. The freeze records the prior status
+      and lifts back to it on resolution. A downloadable **evidence pack** (HTML, behind an
+      `EvidenceRenderer` port, FR/EN) bundles parties, terms, the sealed attribution hash,
+      both signatures, the dispute reason, and the full timeline. The dispute shows on the
+      audit trail. `POST /referrals/{id}/dispute`, `POST /referrals/{id}/dispute/resolve`,
+      `GET /referrals/{id}/evidence`.
 
 ## Network address book (contacts)
 

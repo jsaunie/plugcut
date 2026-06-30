@@ -65,3 +65,18 @@ export function getInstallmentInvoice(id: string, sequence: number): Promise<{ h
 export function getDealTimeline(id: string): Promise<TimelineEntry[]> {
   return apiFetch<TimelineEntry[]>(`/referrals/${id}/timeline`)
 }
+
+export function disputeReferral(id: string, reason: string): Promise<Referral> {
+  return apiFetch<Referral>(`/referrals/${id}/dispute`, {
+    method: 'POST',
+    body: JSON.stringify({ reason }),
+  })
+}
+
+export function resolveDispute(id: string): Promise<Referral> {
+  return apiFetch<Referral>(`/referrals/${id}/dispute/resolve`, { method: 'POST' })
+}
+
+export function getEvidencePack(id: string): Promise<{ html: string }> {
+  return apiFetch<{ html: string }>(`/referrals/${id}/evidence`)
+}

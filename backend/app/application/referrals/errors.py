@@ -23,3 +23,9 @@ class AgreementNotReady(DomainError):
 
 class InvitationNotFound(DomainError):
     code = "invitation.not_found"
+
+
+class DealFrozen(DomainError):
+    """The deal is under dispute and frozen, so this action is not allowed."""
+
+    code = "referral.frozen"

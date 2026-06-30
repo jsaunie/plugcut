@@ -17,6 +17,13 @@ from app.domain.referrals.enums import ReferralStatus
 from app.domain.referrals.value_objects import CommissionTerms, SignatureRequired
 from app.domain.shared.errors import IllegalStateTransition, InvariantViolation
 
+
+class DisputeReasonRequired(InvariantViolation):
+    """A dispute was raised without stating a reason."""
+
+    code = "referral.dispute_reason_required"
+
+
 # Allowed forward transitions. CANCELLED/DISPUTED are reachable from any live state.
 _TRANSITIONS: dict[ReferralStatus, set[ReferralStatus]] = {
     ReferralStatus.SENT: {ReferralStatus.IN_DISCUSSION, ReferralStatus.QUALIFIED},
@@ -52,6 +59,10 @@ class Referral:
     invitation_token: str | None = None
     referrer_signature: str | None = None
     placed_signature: str | None = None
+    disputed_at: datetime | None = None
+    dispute_reason: str | None = None
+    disputed_by: UUID | None = None
+    status_before_dispute: ReferralStatus | None = None
 
     def __post_init__(self) -> None:
         if not self.client_reference.strip():
@@ -106,10 +117,36 @@ class Referral:
             raise IllegalStateTransition(f"cannot cancel from {self.status.value}")
         self.status = ReferralStatus.CANCELLED
 
-    def dispute(self) -> None:
+    @property
+    def is_frozen(self) -> bool:
+        """A disputed deal is frozen: no further lifecycle moves or payments."""
+        return self.status is ReferralStatus.DISPUTED
+
+    def dispute(self, *, at: datetime, reason: str, by: UUID) -> None:
+        """Flag and freeze the deal. Either party may raise a dispute on a live deal.
+
+        The prior status is recorded so the freeze can be lifted back to it.
+        """
         if self.status not in _LIVE:
             raise IllegalStateTransition(f"cannot dispute from {self.status.value}")
+        cleaned = reason.strip()
+        if not cleaned:
+            raise DisputeReasonRequired
+        self.status_before_dispute = self.status
         self.status = ReferralStatus.DISPUTED
+        self.disputed_at = at
+        self.dispute_reason = cleaned
+        self.disputed_by = by
+
+    def resolve_dispute(self) -> None:
+        """Lift the freeze and restore the deal to the status it held before."""
+        if self.status is not ReferralStatus.DISPUTED:
+            raise IllegalStateTransition(f"cannot resolve a {self.status.value} deal")
+        self.status = self.status_before_dispute or ReferralStatus.ACTIVE
+        self.status_before_dispute = None
+        self.disputed_at = None
+        self.dispute_reason = None
+        self.disputed_by = None
 
     def _compute_attribution_hash(self, *, signed_at: datetime) -> str:
         """Tamper-evident fingerprint of the immutable facts of who introduced whom.
