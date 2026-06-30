@@ -79,6 +79,9 @@ function money(amount: number, currency: string): string {
               {{ money(deal.monthly_expected, deal.currency) }}
               <span class="deal__per">{{ t('deals.list.perMonth') }}</span>
             </span>
+            <span class="deal__role" :class="`deal__role--${deal.role}`">
+              {{ t(`deals.role.${deal.role}`) }}
+            </span>
             <DealStatus :status="deal.status" />
           </div>
         </RouterLink>
@@ -205,5 +208,21 @@ function money(amount: number, currency: string): string {
   font-weight: 400;
   color: var(--muted-on-ink);
   font-size: var(--fs-small);
+}
+.deal__role {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.22rem 0.55rem;
+  border-radius: var(--radius-pill);
+}
+.deal__role--referrer {
+  background: rgba(216, 255, 54, 0.14);
+  color: var(--accent-deep);
+}
+.deal__role--placed {
+  background: var(--ink-3);
+  color: var(--muted-on-ink);
 }
 </style>

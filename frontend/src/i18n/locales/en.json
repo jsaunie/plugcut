@@ -231,6 +231,7 @@
   },
   "deals": {
     "list": { "perMonth": "/ month" },
+    "role": { "referrer": "You earn", "placed": "You pay" },
     "status": {
       "sent": "Sent",
       "in_discussion": "In discussion",

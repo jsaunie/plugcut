@@ -7,6 +7,7 @@ export interface Referral {
   commission_rate: number
   duration_months: number
   status: string
+  role: 'referrer' | 'placed'
   accepted_by_referrer: boolean
   accepted_by_placed: boolean
   invitation_token: string | null

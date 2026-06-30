@@ -231,6 +231,7 @@
   },
   "deals": {
     "list": { "perMonth": "/ mois" },
+    "role": { "referrer": "Tu touches", "placed": "Tu paies" },
     "status": {
       "sent": "Envoyé",
       "in_discussion": "En discussion",

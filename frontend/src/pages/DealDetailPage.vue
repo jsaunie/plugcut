@@ -34,13 +34,21 @@ const signatureName = ref('')
 const copied = ref(false)
 
 const signedStates = ['signed', 'active', 'completed']
-const canQualify = computed(() => ['sent', 'in_discussion'].includes(deal.value?.status ?? ''))
-const canSignReferrer = computed(
-  () => deal.value?.status === 'qualified' && !deal.value?.accepted_by_referrer,
+const isReferrer = computed(() => deal.value?.role !== 'placed')
+const canQualify = computed(
+  () => isReferrer.value && ['sent', 'in_discussion'].includes(deal.value?.status ?? ''),
 )
-const canActivate = computed(() => deal.value?.status === 'signed')
+const canSignReferrer = computed(
+  () =>
+    isReferrer.value &&
+    deal.value?.status === 'qualified' &&
+    !deal.value?.accepted_by_referrer,
+)
+const canActivate = computed(() => isReferrer.value && deal.value?.status === 'signed')
 const isSigned = computed(() => signedStates.includes(deal.value?.status ?? ''))
-const showInvite = computed(() => !isSigned.value && Boolean(deal.value?.invitation_token))
+const showInvite = computed(
+  () => isReferrer.value && !isSigned.value && Boolean(deal.value?.invitation_token),
+)
 const inviteUrl = computed(() =>
   deal.value?.invitation_token
     ? `${window.location.origin}/invitation/${deal.value.invitation_token}`
@@ -141,7 +149,10 @@ onMounted(load)
           <h1 class="dealhead__title">{{ deal.client_reference }}</h1>
           <p class="dealhead__placed">{{ deal.placed_person_email }}</p>
         </div>
-        <DealStatus :status="deal.status" />
+        <div class="dealhead__meta">
+          <span class="role" :class="`role--${deal.role}`">{{ t(`deals.role.${deal.role}`) }}</span>
+          <DealStatus :status="deal.status" />
+        </div>
       </header>
 
       <section class="actions">
@@ -238,7 +249,7 @@ onMounted(load)
                     {{ t('deals.actions.invoice') }}
                   </button>
                   <button
-                    v-if="row.status !== 'paid'"
+                    v-if="isReferrer && row.status !== 'paid'"
                     class="pay"
                     :disabled="busy"
                     @click="pay(row.sequence)"
@@ -304,6 +315,28 @@ onMounted(load)
   color: var(--muted-on-ink);
   font-family: var(--font-mono);
   font-size: var(--fs-small);
+}
+.dealhead__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.role {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-pill);
+}
+.role--referrer {
+  background: rgba(216, 255, 54, 0.14);
+  color: var(--accent-deep);
+}
+.role--placed {
+  background: var(--ink-3);
+  color: var(--muted-on-ink);
 }
 .actions {
   margin-bottom: 2.5rem;
