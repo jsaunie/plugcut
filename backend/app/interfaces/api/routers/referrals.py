@@ -10,18 +10,28 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.referrals.dtos import CreateReferralCommand
 from app.application.referrals.use_cases import (
+    AcceptReferral,
+    ActivateReferral,
     CreateReferral,
     GetReferralWithSchedule,
     ListReferrals,
+    QualifyReferral,
+    RecordInstallmentPayment,
 )
 from app.interfaces.api.deps import (
     CurrentUser,
+    get_accept_referral,
+    get_activate_referral,
     get_create_referral,
     get_get_referral,
     get_list_referrals,
+    get_qualify_referral,
+    get_record_payment,
     get_session,
 )
 from app.interfaces.api.referral_schemas import (
+    AcceptReferralRequest,
+    InstallmentResponse,
     ReferralCreateRequest,
     ReferralDetailResponse,
     ReferralResponse,
@@ -70,3 +80,55 @@ async def get_referral(
 ) -> ReferralDetailResponse:
     referral, schedule = await use_case.execute(referral_id, requester_id=current_user.id)
     return ReferralDetailResponse.from_domain_with_schedule(referral, schedule)
+
+
+@router.post("/{referral_id}/qualify", response_model=ReferralResponse)
+async def qualify_referral(
+    referral_id: UUID,
+    current_user: CurrentUser,
+    use_case: Annotated[QualifyReferral, Depends(get_qualify_referral)],
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> ReferralResponse:
+    referral = await use_case.execute(referral_id, requester_id=current_user.id)
+    await session.commit()
+    return ReferralResponse.from_domain(referral)
+
+
+@router.post("/{referral_id}/accept", response_model=ReferralResponse)
+async def accept_referral(
+    referral_id: UUID,
+    payload: AcceptReferralRequest,
+    current_user: CurrentUser,
+    use_case: Annotated[AcceptReferral, Depends(get_accept_referral)],
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> ReferralResponse:
+    referral = await use_case.execute(
+        referral_id, requester_id=current_user.id, party=payload.party
+    )
+    await session.commit()
+    return ReferralResponse.from_domain(referral)
+
+
+@router.post("/{referral_id}/activate", response_model=ReferralResponse)
+async def activate_referral(
+    referral_id: UUID,
+    current_user: CurrentUser,
+    use_case: Annotated[ActivateReferral, Depends(get_activate_referral)],
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> ReferralResponse:
+    referral = await use_case.execute(referral_id, requester_id=current_user.id)
+    await session.commit()
+    return ReferralResponse.from_domain(referral)
+
+
+@router.post("/{referral_id}/installments/{sequence}/pay", response_model=InstallmentResponse)
+async def pay_installment(
+    referral_id: UUID,
+    sequence: int,
+    current_user: CurrentUser,
+    use_case: Annotated[RecordInstallmentPayment, Depends(get_record_payment)],
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> InstallmentResponse:
+    installment = await use_case.execute(referral_id, sequence, requester_id=current_user.id)
+    await session.commit()
+    return InstallmentResponse.from_domain(installment)

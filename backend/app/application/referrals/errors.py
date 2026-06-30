@@ -11,3 +11,7 @@ class ReferralNotFound(DomainError):
 
 class ReferralForbidden(DomainError):
     code = "referral.forbidden"
+
+
+class InstallmentNotFound(DomainError):
+    code = "installment.not_found"

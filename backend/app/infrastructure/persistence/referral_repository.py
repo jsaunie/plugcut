@@ -66,6 +66,10 @@ class SqlAlchemyReferralRepository:
     async def add(self, referral: Referral) -> None:
         self._session.add(_apply_to_model(ReferralModel(), referral))
 
+    async def save(self, referral: Referral) -> None:
+        """Upsert by primary key (insert on create, update on lifecycle change)."""
+        await self._session.merge(_apply_to_model(ReferralModel(), referral))
+
     async def get(self, referral_id: UUID) -> Referral | None:
         model = await self._session.get(ReferralModel, referral_id)
         return _to_domain(model) if model is not None else None

@@ -14,15 +14,22 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.application.identity.errors import InvalidToken
 from app.application.identity.ports import TokenService, UserRepository
 from app.application.identity.use_cases import AuthenticateUser, RegisterUser
-from app.application.referrals.ports import ReferralRepository
+from app.application.referrals.ports import InstallmentRepository, ReferralRepository
 from app.application.referrals.use_cases import (
+    AcceptReferral,
+    ActivateReferral,
     CreateReferral,
     GetReferralWithSchedule,
     ListReferrals,
+    QualifyReferral,
+    RecordInstallmentPayment,
 )
 from app.domain.identity.entities import User
 from app.domain.identity.ports import PasswordHasher
 from app.infrastructure.config import Settings
+from app.infrastructure.persistence.installment_repository import (
+    SqlAlchemyInstallmentRepository,
+)
 from app.infrastructure.persistence.referral_repository import SqlAlchemyReferralRepository
 from app.infrastructure.persistence.repositories import SqlAlchemyUserRepository
 from app.infrastructure.security.jwt_token_service import JwtTokenService
@@ -107,7 +114,40 @@ def get_list_referrals(
     return ListReferrals(referrals)
 
 
+def get_installment_repository(
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> InstallmentRepository:
+    return SqlAlchemyInstallmentRepository(session)
+
+
 def get_get_referral(
     referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+    installments: Annotated[InstallmentRepository, Depends(get_installment_repository)],
 ) -> GetReferralWithSchedule:
-    return GetReferralWithSchedule(referrals)
+    return GetReferralWithSchedule(referrals, installments)
+
+
+def get_qualify_referral(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+) -> QualifyReferral:
+    return QualifyReferral(referrals)
+
+
+def get_accept_referral(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+    installments: Annotated[InstallmentRepository, Depends(get_installment_repository)],
+) -> AcceptReferral:
+    return AcceptReferral(referrals, installments)
+
+
+def get_activate_referral(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+) -> ActivateReferral:
+    return ActivateReferral(referrals)
+
+
+def get_record_payment(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+    installments: Annotated[InstallmentRepository, Depends(get_installment_repository)],
+) -> RecordInstallmentPayment:
+    return RecordInstallmentPayment(referrals, installments)

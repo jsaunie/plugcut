@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from decimal import Decimal
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -20,6 +21,10 @@ class ReferralCreateRequest(BaseModel):
     duration_months: int = Field(gt=0, le=120)
     days_per_period: int = Field(default=20, ge=1, le=31)
     currency: str = Field(default="EUR", min_length=3, max_length=3)
+
+
+class AcceptReferralRequest(BaseModel):
+    party: Literal["referrer", "placed"]
 
 
 class ReferralResponse(BaseModel):

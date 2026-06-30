@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from uuid import UUID
 
-from sqlalchemy import Boolean, DateTime, Integer, Numeric, String, Uuid
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, Numeric, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.infrastructure.persistence.database import Base
@@ -49,3 +49,21 @@ class ReferralModel(Base):
     )
     activated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     attribution_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
+
+class CommissionInstallmentModel(Base):
+    __tablename__ = "commission_installments"
+
+    referral_id: Mapped[UUID] = mapped_column(
+        Uuid, ForeignKey("referrals.id", ondelete="CASCADE"), primary_key=True
+    )
+    sequence: Mapped[int] = mapped_column(Integer, primary_key=True)
+    period_start: Mapped[date] = mapped_column(Date)
+    period_end: Mapped[date] = mapped_column(Date)
+    due_date: Mapped[date] = mapped_column(Date)
+    expected_days: Mapped[int] = mapped_column(Integer)
+    expected_amount: Mapped[Decimal] = mapped_column(Numeric(12, 2))
+    currency: Mapped[str] = mapped_column(String(3))
+    actual_days: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    actual_amount: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), nullable=True)
+    status: Mapped[str] = mapped_column(String(20))

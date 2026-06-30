@@ -19,6 +19,9 @@ _STATUS_BY_CODE: dict[str, int] = {
     "referral.not_found": 404,
     "referral.forbidden": 403,
     "referral.invalid_terms": 422,
+    "installment.not_found": 404,
+    "installment.already_paid": 409,
+    "domain.illegal_state_transition": 409,
 }
 _DEFAULT_STATUS = 400
 

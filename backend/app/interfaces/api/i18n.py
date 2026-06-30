@@ -47,6 +47,18 @@ MESSAGES: dict[str, dict[str, str]] = {
         "fr": "Les conditions de commission sont invalides.",
         "en": "The commission terms are invalid.",
     },
+    "installment.not_found": {
+        "fr": "Cette échéance est introuvable.",
+        "en": "This installment was not found.",
+    },
+    "installment.already_paid": {
+        "fr": "Cette échéance est déjà réglée.",
+        "en": "This installment is already paid.",
+    },
+    "domain.illegal_state_transition": {
+        "fr": "Cette action n'est pas possible à ce stade du deal.",
+        "en": "This action is not allowed at this stage of the deal.",
+    },
     "domain.error": {
         "fr": "Une erreur est survenue.",
         "en": "An error occurred.",
