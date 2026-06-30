@@ -45,6 +45,7 @@ export interface Installment {
   due_date: string
   expected_amount: number
   status: string
+  last_reminded_at?: string | null
 }
 
 export interface ReferralDetail extends Referral {

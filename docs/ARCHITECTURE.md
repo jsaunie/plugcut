@@ -90,6 +90,14 @@ no hardcoded user-facing strings).
   `HtmlEvidenceRenderer`) are pure string templating, FR/EN, HTML-escaped, with no I/O.
   They could be swapped for a PDF engine without touching the use cases. Endpoints return
   `{ "html": ... }` and the SPA opens it in a new tab.
+- **Outbound email is two ports, not one.** `ReminderEmailRenderer` builds a localized,
+  escaped `EmailMessage` (content concern); `EmailSender` transports it (delivery concern).
+  Infrastructure provides `HtmlReminderEmailRenderer`, plus `ResendEmailSender` (HTTP API,
+  failures wrapped in `email.delivery_failed`) and a `LoggingEmailSender` fallback. The
+  wiring picks the sender from config: Resend when `PLUGCUT_RESEND_API_KEY` is set,
+  otherwise the logging fallback, so the app runs end to end with no key and no real mail.
+  The domain never imports either; the use case (`SendInstallmentReminder`) depends only
+  on the ports.
 - **Dispute mode is a freeze, not a new branch of the state machine.** Either party may
   `dispute()` a live deal with a reason; the aggregate records the prior status and moves
   to `DISPUTED`. While disputed the deal `is_frozen`: lifecycle moves raise

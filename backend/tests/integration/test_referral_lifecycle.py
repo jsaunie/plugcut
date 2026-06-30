@@ -8,8 +8,20 @@ from pathlib import Path
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 
+from app.application.notifications.ports import EmailMessage
 from app.infrastructure.config import Settings
+from app.interfaces.api.deps import get_email_sender
 from app.main import create_app
+
+
+class _CapturingSender:
+    """Test double for the EmailSender port; records what would be sent."""
+
+    def __init__(self) -> None:
+        self.outbox: list[EmailMessage] = []
+
+    async def send(self, message: EmailMessage) -> None:
+        self.outbox.append(message)
 
 PAYLOAD = {
     "placed_person_email": "dev@example.com",
@@ -349,5 +361,97 @@ class TestDispute:
             f"/api/v1/referrals/{deal_id}/dispute",
             json={"reason": "pas mon deal"},
             headers=intruder,
+        )
+        assert response.status_code == 403
+
+
+@pytest_asyncio.fixture
+async def reminder_ctx(
+    tmp_path: Path,
+) -> AsyncIterator[tuple[AsyncClient, _CapturingSender]]:
+    """A client whose email sender is a capturing double (no real mail)."""
+    settings = Settings(
+        jwt_secret="x" * 48,
+        database_url=f"sqlite+aiosqlite:///{tmp_path / 'test.db'}",
+        auto_create_schema=True,
+    )
+    app = create_app(settings)
+    await app.state.database.create_all()
+    sender = _CapturingSender()
+    app.dependency_overrides[get_email_sender] = lambda: sender
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        yield ac, sender
+    await app.state.database.dispose()
+
+
+class TestReminders:
+    async def test_reminder_sends_email_and_records_timestamp(
+        self, reminder_ctx: tuple[AsyncClient, _CapturingSender]
+    ) -> None:
+        client, sender = reminder_ctx
+        headers = await _headers(client, "owner@example.com")
+        deal_id = await _sign(client, headers)
+
+        response = await client.post(
+            f"/api/v1/referrals/{deal_id}/installments/1/remind", headers=headers
+        )
+        assert response.status_code == 200
+        assert response.json()["last_reminded_at"] is not None
+        assert len(sender.outbox) == 1
+        assert sender.outbox[0].to == "dev@example.com"
+
+    async def test_reminder_blocked_when_already_paid(
+        self, reminder_ctx: tuple[AsyncClient, _CapturingSender]
+    ) -> None:
+        client, sender = reminder_ctx
+        headers = await _headers(client)
+        deal_id = await _sign(client, headers)
+        await client.post(f"/api/v1/referrals/{deal_id}/activate", headers=headers)
+        await client.post(f"/api/v1/referrals/{deal_id}/installments/1/pay", headers=headers)
+
+        response = await client.post(
+            f"/api/v1/referrals/{deal_id}/installments/1/remind", headers=headers
+        )
+        assert response.status_code == 409
+        assert response.json()["error"]["code"] == "installment.nothing_to_remind"
+        assert sender.outbox == []
+
+    async def test_reminder_appears_in_timeline(
+        self, reminder_ctx: tuple[AsyncClient, _CapturingSender]
+    ) -> None:
+        client, _ = reminder_ctx
+        headers = await _headers(client)
+        deal_id = await _sign(client, headers)
+        await client.post(f"/api/v1/referrals/{deal_id}/installments/1/remind", headers=headers)
+        timeline = await client.get(f"/api/v1/referrals/{deal_id}/timeline", headers=headers)
+        types = [entry["type"] for entry in timeline.json()]
+        assert "reminder_sent" in types
+
+    async def test_reminder_blocked_when_frozen(
+        self, reminder_ctx: tuple[AsyncClient, _CapturingSender]
+    ) -> None:
+        client, sender = reminder_ctx
+        headers = await _headers(client)
+        deal_id = await _sign(client, headers)
+        await client.post(
+            f"/api/v1/referrals/{deal_id}/dispute", json={"reason": "litige"}, headers=headers
+        )
+        response = await client.post(
+            f"/api/v1/referrals/{deal_id}/installments/1/remind", headers=headers
+        )
+        assert response.status_code == 409
+        assert response.json()["error"]["code"] == "referral.frozen"
+        assert sender.outbox == []
+
+    async def test_reminder_forbidden_for_non_owner(
+        self, reminder_ctx: tuple[AsyncClient, _CapturingSender]
+    ) -> None:
+        client, _ = reminder_ctx
+        owner = await _headers(client, "owner@example.com")
+        deal_id = await _sign(client, owner)
+        intruder = await _headers(client, "intruder@example.com")
+        response = await client.post(
+            f"/api/v1/referrals/{deal_id}/installments/1/remind", headers=intruder
         )
         assert response.status_code == 403

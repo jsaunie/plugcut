@@ -86,7 +86,7 @@ Avoid "AI-looking" output. These are enforced, not suggestions:
 
 ## Status
 
-Runs end-to-end (backend 120 tests, frontend 25 tests; all gates green: pytest + ruff +
+Runs end-to-end (backend 130 tests, frontend 25 tests; all gates green: pytest + ruff +
 mypy strict, vitest + vue-tsc + eslint).
 
 Backend:
@@ -98,9 +98,11 @@ Backend:
   view/sign, dispute, resolve dispute, evidence pack). Reads are owner-or-placed scoped
   (`_load_visible`); mutations are referrer-scoped (`_load_owned`).
 - Infrastructure: bcrypt, own JWT (access + refresh), SQLAlchemy async repos, Alembic,
-  HTML renderers behind ports (`AgreementRenderer`, `InvoiceRenderer`, `EvidenceRenderer`).
+  HTML renderers behind ports (`AgreementRenderer`, `InvoiceRenderer`, `EvidenceRenderer`,
+  `ReminderEmailRenderer`), email transport behind an `EmailSender` port (Resend adapter +
+  logging fallback when no API key).
 - API under `/api/v1`: `auth/{register,login,refresh,me}`, full `referrals` lifecycle +
-  `installments/{seq}/{pay,invoice}` + `agreement` + `stats` + `dispute` +
+  `installments/{seq}/{pay,invoice,remind}` + `agreement` + `stats` + `dispute` +
   `dispute/resolve` + `evidence`, public `invitations/{token}`; CORS; localized FR/EN
   errors; Swagger at `/docs`.
 
@@ -109,13 +111,16 @@ Frontend (Vue 3 + TS):
   dashboard with **KPI stats** + deal list (each deal tagged with the viewer's role);
   create-deal form (with a "from your network" contact picker); deal detail driving the
   full lifecycle (qualify / sign-with-name / invite link / activate / pay / contract /
-  invoice / **dispute + resolve + evidence pack**); contacts CRM (search + tag filter,
-  PDF import); public **invitation signing page**; real legal pages. Full FR/EN i18n.
+  invoice / **dispute + resolve + evidence pack** / **payment reminder email**); contacts
+  CRM (search + tag filter, PDF import); public **invitation signing page**; real legal
+  pages. Full FR/EN i18n.
 - **SEO/GEO**: head meta + JSON-LD, OG image, robots/sitemap/llms.txt, `useSeo` per route,
   placeholders for Search Console + pixels (see `docs/ARCHITECTURE.md`).
 
 Collection model: **system of record (Model A)** — Plugcut renders contract + invoices and
 tracks payment; money flows peer to peer. Managed collection (Model B, marketplace PSP) is
 deferred. **Bidirectional**: a user can owe or be owed; either party can raise a dispute
-that freezes the deal until resolved. Not built (intentional, post-MVP): real payment
-rails, email reminders, real e-signature. See `docs/ROADMAP.md`.
+that freezes the deal until resolved. Payment reminders are sent via **Resend** behind an
+`EmailSender` port (logging fallback when `PLUGCUT_RESEND_API_KEY` is unset, so no real
+mail in the demo). Not built (intentional, post-MVP): real payment rails (Model B),
+payment-proof upload, real e-signature. See `docs/ROADMAP.md`.

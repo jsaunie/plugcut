@@ -25,6 +25,7 @@ from app.application.referrals.use_cases import (
     QualifyReferral,
     RecordInstallmentPayment,
     ResolveDispute,
+    SendInstallmentReminder,
 )
 from app.interfaces.api.deps import (
     CurrentUser,
@@ -43,6 +44,7 @@ from app.interfaces.api.deps import (
     get_record_payment,
     get_referral_stats,
     get_resolve_dispute,
+    get_send_reminder,
     get_session,
 )
 from app.interfaces.api.referral_schemas import (
@@ -237,5 +239,21 @@ async def pay_installment(
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> InstallmentResponse:
     installment = await use_case.execute(referral_id, sequence, requester_id=current_user.id)
+    await session.commit()
+    return InstallmentResponse.from_domain(installment)
+
+
+@router.post("/{referral_id}/installments/{sequence}/remind", response_model=InstallmentResponse)
+async def remind_installment(
+    referral_id: UUID,
+    sequence: int,
+    current_user: CurrentUser,
+    use_case: Annotated[SendInstallmentReminder, Depends(get_send_reminder)],
+    locale: Annotated[str, Depends(get_locale)],
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> InstallmentResponse:
+    installment = await use_case.execute(
+        referral_id, sequence, requester_id=current_user.id, locale=locale
+    )
     await session.commit()
     return InstallmentResponse.from_domain(installment)

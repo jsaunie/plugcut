@@ -9,6 +9,7 @@ from decimal import Decimal
 from uuid import UUID, uuid4
 
 from app.application.identity.ports import UserRepository
+from app.application.notifications.ports import EmailSender, ReminderEmailRenderer
 from app.application.referrals.dtos import (
     CreateReferralCommand,
     ReferralStats,
@@ -29,7 +30,11 @@ from app.application.referrals.ports import (
     InvoiceRenderer,
     ReferralRepository,
 )
-from app.domain.billing.entities import CommissionInstallment, CommissionSchedule
+from app.domain.billing.entities import (
+    CommissionInstallment,
+    CommissionSchedule,
+    NothingToRemind,
+)
 from app.domain.billing.services import CommissionScheduleService
 from app.domain.referrals.entities import Referral
 from app.domain.referrals.enums import InstallmentStatus, ReferralStatus
@@ -219,6 +224,12 @@ def _synthesize_timeline(
         if installment.status is InstallmentStatus.PAID and installment.paid_at is not None:
             entries.append(
                 TimelineEntry("payment_recorded", installment.paid_at, str(installment.sequence))
+            )
+        if installment.last_reminded_at is not None:
+            entries.append(
+                TimelineEntry(
+                    "reminder_sent", installment.last_reminded_at, str(installment.sequence)
+                )
             )
 
     if referral.disputed_at is not None:
@@ -481,6 +492,54 @@ class RecordInstallmentPayment:
         if installment is None:
             raise InstallmentNotFound
         installment.mark_paid(at=self._now())
+        await self._installments.update(referral_id, installment)
+        return installment
+
+
+class SendInstallmentReminder:
+    """Email the placed person a reminder to settle one due or overdue installment.
+
+    Only the referrer (who is owed) can send it, and not while the deal is frozen by a
+    dispute. The send is recorded on the installment so the UI and audit trail can show it.
+    """
+
+    def __init__(
+        self,
+        referrals: ReferralRepository,
+        installments: InstallmentRepository,
+        users: UserRepository,
+        renderer: ReminderEmailRenderer,
+        sender: EmailSender,
+        *,
+        now: Callable[[], datetime] = _utc_now,
+    ) -> None:
+        self._referrals = referrals
+        self._installments = installments
+        self._users = users
+        self._renderer = renderer
+        self._sender = sender
+        self._now = now
+
+    async def execute(
+        self, referral_id: UUID, sequence: int, *, requester_id: UUID, locale: str
+    ) -> CommissionInstallment:
+        referral = await _load_owned(self._referrals, referral_id, requester_id)
+        if referral.is_frozen:
+            raise DealFrozen
+        installment = await self._installments.get(referral_id, sequence)
+        if installment is None:
+            raise InstallmentNotFound
+        now = self._now()
+        installment.refresh_status(as_of=now.date())
+        if installment.status is InstallmentStatus.PAID:
+            raise NothingToRemind
+        referrer = await self._users.get_by_id(referral.referrer_id)
+        referrer_email = referrer.email.value if referrer is not None else ""
+        message = self._renderer.render(
+            referral, installment, referrer_email=referrer_email, locale=locale
+        )
+        await self._sender.send(message)
+        installment.mark_reminded(at=now)
         await self._installments.update(referral_id, installment)
         return installment
 

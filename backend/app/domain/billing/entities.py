@@ -15,6 +15,12 @@ class AlreadyPaid(IllegalStateTransition):
     code = "installment.already_paid"
 
 
+class NothingToRemind(IllegalStateTransition):
+    """A reminder was requested for an installment that is already settled."""
+
+    code = "installment.nothing_to_remind"
+
+
 @dataclass(slots=True)
 class CommissionInstallment:
     """One recurring commission owed for a billing period.
@@ -33,6 +39,7 @@ class CommissionInstallment:
     actual_amount: Money | None = None
     status: InstallmentStatus = InstallmentStatus.PENDING
     paid_at: datetime | None = None
+    last_reminded_at: datetime | None = None
 
     @property
     def amount_due(self) -> Money:
@@ -51,6 +58,12 @@ class CommissionInstallment:
             raise AlreadyPaid
         self.status = InstallmentStatus.PAID
         self.paid_at = at
+
+    def mark_reminded(self, *, at: datetime) -> None:
+        """Record that a payment reminder was sent. Pointless once paid."""
+        if self.status is InstallmentStatus.PAID:
+            raise NothingToRemind
+        self.last_reminded_at = at
 
     def refresh_status(self, *, as_of: date) -> None:
         """Move PENDING -> DUE -> OVERDUE based on the due date. Paid is terminal."""

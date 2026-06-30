@@ -148,6 +148,7 @@ class InstallmentResponse(BaseModel):
     due_date: date
     expected_amount: float
     status: str
+    last_reminded_at: datetime | None
 
     @classmethod
     def from_domain(cls, installment: CommissionInstallment) -> InstallmentResponse:
@@ -158,6 +159,7 @@ class InstallmentResponse(BaseModel):
             due_date=installment.due_date,
             expected_amount=float(installment.expected_amount.amount),
             status=installment.status.value,
+            last_reminded_at=installment.last_reminded_at,
         )
 
 

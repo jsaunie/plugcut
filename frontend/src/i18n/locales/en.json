@@ -284,7 +284,10 @@
       "activate": "Activate the deal",
       "viewAgreement": "View the contract",
       "pay": "Pay",
-      "invoice": "Invoice"
+      "invoice": "Invoice",
+      "remind": "Send reminder",
+      "remindAgain": "Remind again",
+      "remindedOn": "Reminded on {date}"
     },
     "sign": {
       "referrerPrompt": "Sign the deal as the referrer.",
@@ -316,6 +319,7 @@
         "signed": "Agreement sealed (attribution)",
         "activated": "Deal activated",
         "payment_recorded": "Payment recorded (installment {n})",
+        "reminder_sent": "Reminder sent (installment {n})",
         "disputed": "Dispute raised"
       }
     },

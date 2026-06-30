@@ -284,7 +284,10 @@
       "activate": "Activer le deal",
       "viewAgreement": "Voir le contrat",
       "pay": "Régler",
-      "invoice": "Facture"
+      "invoice": "Facture",
+      "remind": "Relancer",
+      "remindAgain": "Relancer à nouveau",
+      "remindedOn": "Relancé le {date}"
     },
     "sign": {
       "referrerPrompt": "Signe le deal en tant qu'apporteur.",
@@ -316,6 +319,7 @@
         "signed": "Accord scellé (attribution)",
         "activated": "Deal activé",
         "payment_recorded": "Paiement enregistré (échéance {n})",
+        "reminder_sent": "Relance envoyée (échéance {n})",
         "disputed": "Litige déclaré"
       }
     },

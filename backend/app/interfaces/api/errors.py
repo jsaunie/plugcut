@@ -21,6 +21,8 @@ _STATUS_BY_CODE: dict[str, int] = {
     "referral.invalid_terms": 422,
     "installment.not_found": 404,
     "installment.already_paid": 409,
+    "installment.nothing_to_remind": 409,
+    "email.delivery_failed": 502,
     "domain.illegal_state_transition": 409,
     "agreement.not_ready": 409,
     "invitation.not_found": 404,

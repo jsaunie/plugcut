@@ -15,6 +15,7 @@ import {
   getReferral,
   payInstallment,
   qualifyReferral,
+  remindInstallment,
   resolveDispute,
 } from '@/features/referrals/api'
 import DealStatus from '@/features/referrals/DealStatus.vue'
@@ -105,6 +106,7 @@ const qualify = () => run(() => qualifyReferral(id))
 const signReferrer = () => run(() => acceptReferral(id, 'referrer', signatureName.value))
 const activate = () => run(() => activateReferral(id))
 const pay = (sequence: number) => run(() => payInstallment(id, sequence))
+const remind = (sequence: number) => run(() => remindInstallment(id, sequence))
 const resolve = () => run(() => resolveDispute(id))
 
 async function submitDispute(): Promise<void> {
@@ -318,6 +320,15 @@ onMounted(load)
                 <span v-if="isSigned" class="rowactions">
                   <button class="rowactions__link" @click="openInvoice(row.sequence)">
                     {{ t('deals.actions.invoice') }}
+                  </button>
+                  <button
+                    v-if="isReferrer && !isFrozen && row.status !== 'paid'"
+                    class="rowactions__link"
+                    :disabled="busy"
+                    :title="row.last_reminded_at ? t('deals.actions.remindedOn', { date: day(row.last_reminded_at) }) : ''"
+                    @click="remind(row.sequence)"
+                  >
+                    {{ row.last_reminded_at ? t('deals.actions.remindAgain') : t('deals.actions.remind') }}
                   </button>
                   <button
                     v-if="isReferrer && !isFrozen && row.status !== 'paid'"

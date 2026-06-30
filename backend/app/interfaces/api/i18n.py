@@ -55,6 +55,14 @@ MESSAGES: dict[str, dict[str, str]] = {
         "fr": "Cette échéance est déjà réglée.",
         "en": "This installment is already paid.",
     },
+    "installment.nothing_to_remind": {
+        "fr": "Cette échéance est déjà réglée, aucune relance à envoyer.",
+        "en": "This installment is already paid, nothing to remind.",
+    },
+    "email.delivery_failed": {
+        "fr": "L'email n'a pas pu être envoyé. Réessaie plus tard.",
+        "en": "The email could not be sent. Please try again later.",
+    },
     "domain.illegal_state_transition": {
         "fr": "Cette action n'est pas possible à ce stade du deal.",
         "en": "This action is not allowed at this stage of the deal.",

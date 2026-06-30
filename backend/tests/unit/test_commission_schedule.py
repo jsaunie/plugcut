@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import UTC, date, datetime
 from decimal import Decimal
 
 import pytest
 
+from app.domain.billing.entities import NothingToRemind
 from app.domain.billing.services import CommissionScheduleService
 from app.domain.referrals.enums import InstallmentStatus
 from app.domain.referrals.value_objects import CommissionTerms, InvalidTerms
@@ -103,3 +104,21 @@ class TestInstallmentLifecycle:
         )
         schedule.installments[0].mark_paid()
         assert schedule.outstanding(as_of=date(2026, 1, 10)) == Money(Decimal("1000"))
+
+    def test_mark_reminded_records_the_timestamp(self) -> None:
+        schedule = CommissionScheduleService().generate(
+            make_terms(duration_months=1), start_date=date(2026, 1, 1)
+        )
+        installment = schedule.installments[0]
+        moment = datetime(2026, 2, 10, tzinfo=UTC)
+        installment.mark_reminded(at=moment)
+        assert installment.last_reminded_at == moment
+
+    def test_cannot_remind_a_paid_installment(self) -> None:
+        schedule = CommissionScheduleService().generate(
+            make_terms(duration_months=1), start_date=date(2026, 1, 1)
+        )
+        installment = schedule.installments[0]
+        installment.mark_paid()
+        with pytest.raises(NothingToRemind):
+            installment.mark_reminded(at=datetime(2026, 2, 10, tzinfo=UTC))

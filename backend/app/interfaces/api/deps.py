@@ -26,6 +26,7 @@ from app.application.identity.use_cases import (
     RefreshAccessToken,
     RegisterUser,
 )
+from app.application.notifications.ports import EmailSender, ReminderEmailRenderer
 from app.application.referrals.ports import (
     AgreementRenderer,
     EvidenceRenderer,
@@ -49,6 +50,7 @@ from app.application.referrals.use_cases import (
     QualifyReferral,
     RecordInstallmentPayment,
     ResolveDispute,
+    SendInstallmentReminder,
     SignByInvitation,
 )
 from app.domain.identity.entities import User
@@ -56,6 +58,9 @@ from app.domain.identity.ports import PasswordHasher
 from app.infrastructure.agreements.html_renderer import HtmlAgreementRenderer
 from app.infrastructure.config import Settings
 from app.infrastructure.contacts.pdf_importer import PdfContactImporter
+from app.infrastructure.email.logging_sender import LoggingEmailSender
+from app.infrastructure.email.reminder_renderer import HtmlReminderEmailRenderer
+from app.infrastructure.email.resend_sender import ResendEmailSender
 from app.infrastructure.evidence.html_renderer import HtmlEvidenceRenderer
 from app.infrastructure.invoices.html_renderer import HtmlInvoiceRenderer
 from app.infrastructure.persistence.contact_repository import SqlAlchemyContactRepository
@@ -220,6 +225,29 @@ def get_record_payment(
     installments: Annotated[InstallmentRepository, Depends(get_installment_repository)],
 ) -> RecordInstallmentPayment:
     return RecordInstallmentPayment(referrals, installments)
+
+
+def get_email_sender(
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> EmailSender:
+    """Resend when an API key is set, otherwise a logging fallback (no real mail)."""
+    if settings.email_enabled:
+        return ResendEmailSender(settings.resend_api_key, settings.email_from)
+    return LoggingEmailSender()
+
+
+def get_reminder_renderer() -> ReminderEmailRenderer:
+    return HtmlReminderEmailRenderer()
+
+
+def get_send_reminder(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+    installments: Annotated[InstallmentRepository, Depends(get_installment_repository)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    renderer: Annotated[ReminderEmailRenderer, Depends(get_reminder_renderer)],
+    sender: Annotated[EmailSender, Depends(get_email_sender)],
+) -> SendInstallmentReminder:
+    return SendInstallmentReminder(referrals, installments, users, renderer, sender)
 
 
 def get_agreement_renderer() -> AgreementRenderer:

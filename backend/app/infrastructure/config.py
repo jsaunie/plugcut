@@ -29,6 +29,16 @@ class Settings(BaseSettings):
 
     default_locale: str = "fr"
 
+    # Email (Resend). Leave the API key empty to fall back to a logging sender that
+    # never sends real mail (the demo default). Set PLUGCUT_RESEND_API_KEY +
+    # PLUGCUT_EMAIL_FROM to send through Resend.
+    resend_api_key: str = ""
+    email_from: str = "Plugcut <onboarding@resend.dev>"
+
+    @property
+    def email_enabled(self) -> bool:
+        return bool(self.resend_api_key)
+
 
 @lru_cache
 def get_settings() -> Settings:

@@ -89,7 +89,14 @@ agency, anyone).
 ## Later — modeled now, built later
 
 - [ ] Real recurring collection (Model B, marketplace PSP) behind the payment port.
-- [ ] Email reminders for due commissions + payment-proof upload.
+- [x] **Email reminders for due commissions** — the referrer sends a localized
+      payment-reminder email to the placed person for an unpaid installment. Transport is
+      behind an `EmailSender` port: **Resend** when `PLUGCUT_RESEND_API_KEY` is set,
+      otherwise a logging fallback so the demo runs without sending real mail. The body is
+      built by a `ReminderEmailRenderer` port (FR/EN, escaped). The send is recorded on the
+      installment (`last_reminded_at`) and shows on the audit trail.
+      `POST /referrals/{id}/installments/{seq}/remind`.
+- [ ] Payment-proof upload (file behind a `FileStorage` port, attached to an installment).
 - [ ] Real e-signature integration (qualified signature).
 - [ ] Multi-currency.
 - [ ] Accounting / CSV exports.
