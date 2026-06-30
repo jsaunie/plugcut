@@ -45,8 +45,9 @@ strings.
 ## Deployment (read `docs/DEPLOY.md`)
 
 SPA on **Vercel** (static, `frontend/vercel.json` declares the build and rewrites `/api/*`
-to the API host), FastAPI as a long-lived container (`backend/Dockerfile`, portable to
-Render / Railway / Fly) on **Supabase Postgres**. The container runs `alembic upgrade head`
+to the API host), FastAPI as a long-lived container (`backend/Dockerfile`) on
+**DigitalOcean App Platform** (spec in `.do/app.yaml`; the image is portable to Railway /
+Fly / Render too), data on **Supabase Postgres**. The container runs `alembic upgrade head`
 on boot, then serves on `$PORT`; production sets `PLUGCUT_AUTO_CREATE_SCHEMA=false` so
 Alembic owns the schema. Local dev stays on SQLite. The engine adds pooler-safe settings
 (`pool_pre_ping`, asyncpg `statement_cache_size=0`) only for Postgres URLs.

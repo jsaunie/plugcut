@@ -1,0 +1,43 @@
+# DigitalOcean App Platform spec for the Plugcut API.
+# Deploy with: doctl apps create --spec .do/app.yaml
+# (or paste it in the dashboard: Apps > Create > "Import from App Spec").
+#
+# Builds backend/Dockerfile, runs Alembic migrations then uvicorn on $PORT (DO sets
+# PORT=8080). Schema is owned by Alembic; the image forces PLUGCUT_AUTO_CREATE_SCHEMA=false.
+# Secrets (JWT, database URL) are set in the dashboard or with `doctl`, never committed.
+name: plugcut-api
+region: fra
+services:
+  - name: api
+    source_dir: /backend
+    dockerfile_path: backend/Dockerfile
+    github:
+      repo: jsaunie/plugcut
+      branch: main
+      deploy_on_push: true
+    http_port: 8080
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 20
+    envs:
+      - key: PLUGCUT_JWT_SECRET
+        scope: RUN_TIME
+        type: SECRET
+      - key: PLUGCUT_DATABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+      - key: PLUGCUT_CORS_ORIGINS
+        scope: RUN_TIME
+        value: '["https://REPLACE-WITH-YOUR-APP.vercel.app"]'
+      - key: PLUGCUT_DEFAULT_LOCALE
+        scope: RUN_TIME
+        value: fr
+      # Optional: real reminder emails. Leave unset to use the logging fallback.
+      # - key: PLUGCUT_RESEND_API_KEY
+      #   scope: RUN_TIME
+      #   type: SECRET
+      # - key: PLUGCUT_EMAIL_FROM
+      #   scope: RUN_TIME
+      #   value: Plugcut <no-reply@your-domain>

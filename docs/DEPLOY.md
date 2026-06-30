@@ -1,10 +1,10 @@
 # Deploying Plugcut
 
 Topology: the SPA is a static build on **Vercel**; the FastAPI API runs as a long-lived
-container on a Python-friendly host (**Render** free tier shown here, but the `Dockerfile`
-is portable to Railway / Fly / Cloud Run); data lives in **Supabase Postgres**. The SPA
-calls same-origin `/api/...`, and Vercel rewrites those to the API host, so there is no
-CORS in the browser and the API URL stays hidden.
+container on **DigitalOcean App Platform** (the `Dockerfile` is portable to Railway / Fly /
+Render / Cloud Run too); data lives in **Supabase Postgres**. The SPA calls same-origin
+`/api/...`, and Vercel rewrites those to the API host, so there is no CORS in the browser
+and the API URL stays hidden.
 
 ```
 Browser ──▶ Vercel (static SPA)
@@ -34,28 +34,44 @@ the deployed environment.
 The schema is created by Alembic on the API container's first boot (`alembic upgrade head`
 runs from an empty database and builds every table). No SQL to run by hand.
 
-## 2. API — Render (or any container host)
+## 2. API — DigitalOcean App Platform
 
-The image is defined by `backend/Dockerfile` (migrates, then serves on `$PORT`).
+The image is defined by `backend/Dockerfile` (migrates, then serves on `$PORT`; DO sets
+`PORT=8080`). A ready App Spec lives at `.do/app.yaml`.
 
-On Render: New ▸ **Web Service** ▸ connect this repo.
-- Root directory: `backend`
-- Runtime: **Docker** (Render auto-detects the `Dockerfile`)
+Always-on (no sleep), ~5 USD/month for the smallest instance (`basic-xxs`).
+
+**Option A: from the App Spec (reproducible)**
+```bash
+doctl apps create --spec .do/app.yaml
+# then set the secrets:
+doctl apps update <app-id> --spec .do/app.yaml   # after editing CORS origin
+```
+Set `PLUGCUT_JWT_SECRET` and `PLUGCUT_DATABASE_URL` as encrypted env vars in the dashboard
+(they are marked `type: SECRET` in the spec, so their values are not in git).
+
+**Option B: from the dashboard (simplest)**
+Apps ▸ Create App ▸ connect this GitHub repo ▸
+- **Source Directory: `/backend`** (DO auto-detects the `Dockerfile` inside it)
+- Resource type: **Web Service**, HTTP port **8080**, health check path **`/health`**
 - Environment variables:
-  - `PLUGCUT_JWT_SECRET` — generate with `openssl rand -hex 32`
-  - `PLUGCUT_DATABASE_URL` — the Supabase asyncpg URI from step 1
-  - `PLUGCUT_CORS_ORIGINS` — `["https://<your-app>.vercel.app"]` (defence in depth; the
-    browser hits Vercel same-origin, but set it in case the API is called directly)
+  - `PLUGCUT_JWT_SECRET` — `openssl rand -hex 32` (mark as Secret)
+  - `PLUGCUT_DATABASE_URL` — the Supabase asyncpg URI from step 1 (mark as Secret)
+  - `PLUGCUT_CORS_ORIGINS` — `["https://<your-app>.vercel.app"]`
   - `PLUGCUT_DEFAULT_LOCALE` — `fr`
-  - `PLUGCUT_RESEND_API_KEY` / `PLUGCUT_EMAIL_FROM` — optional, to send real reminder mail
+  - `PLUGCUT_RESEND_API_KEY` / `PLUGCUT_EMAIL_FROM` — optional, for real reminder mail
   - `PLUGCUT_AUTO_CREATE_SCHEMA` — leave unset; the image forces it `false` (Alembic owns
-    the schema in production)
+    the schema)
 
-Deploy. Note the service URL, e.g. `https://plugcut-api.onrender.com`.
+Deploy. Note the app URL, e.g. `https://plugcut-api-xxxxx.ondigitalocean.app`.
 
-Same image runs elsewhere unchanged:
-- **Railway**: New Project ▸ Deploy from repo ▸ set root to `backend` ▸ add the same vars.
-- **Fly.io**: `cd backend && fly launch --dockerfile Dockerfile` ▸ `fly secrets set ...`.
+The same `backend/Dockerfile` runs unchanged on other hosts if you ever switch:
+- **Railway**: New Project ▸ Deploy from repo ▸ root `backend` ▸ same env vars (always-on,
+  ~5 USD/mo).
+- **Fly.io**: `cd backend && fly launch --dockerfile Dockerfile` ▸ `fly secrets set ...`
+  (free tier can stay always-on).
+- **Render**: Web Service ▸ Docker ▸ root `backend`. Note the free tier sleeps after 15 min
+  (slow first request); a paid instance removes it.
 
 ## 3. SPA — Vercel
 
