@@ -79,7 +79,7 @@
     "items": [
       {
         "title": "A real contract",
-        "desc": "The written agreement between you and the placed person. Not a promise, a document."
+        "desc": "The written, signed agreement between you and the placed person. A clean frame, not a promise."
       },
       {
         "title": "Attribution proof",
@@ -87,7 +87,7 @@
       },
       {
         "title": "Recurring collection",
-        "desc": "Your commission pulled automatically from the day rate, month after month, no chasing."
+        "desc": "Your commission tracked and invoiced against the day rate, month after month. A clear schedule, nothing slips."
       },
       {
         "title": "Total discretion",
@@ -127,6 +127,10 @@
       {
         "q": "Who can be a referrer?",
         "a": "Anyone. A project lead, a developer, or someone entirely outside tech who knows the right person."
+      },
+      {
+        "q": "What about the accounting side?",
+        "a": "Plugcut gives you the contract, the attribution proof, and the invoices to frame the commission cleanly between both parties. For the exact tax treatment, check with your accountant: we provide the frame, not the advice."
       }
     ]
   },

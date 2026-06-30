@@ -79,7 +79,7 @@
     "items": [
       {
         "title": "Un vrai contrat",
-        "desc": "L'accord écrit entre toi et la personne placée. Pas une promesse, un document."
+        "desc": "L'accord écrit et signé entre toi et la personne placée. Un cadre propre, pas une promesse."
       },
       {
         "title": "Preuve d'attribution",
@@ -87,7 +87,7 @@
       },
       {
         "title": "Collecte récurrente",
-        "desc": "Ta commission prélevée automatiquement sur le TJM, mois après mois, sans relancer."
+        "desc": "Ta commission suivie et facturée sur le TJM, mois après mois. Un échéancier clair, tu n'oublies rien."
       },
       {
         "title": "Discrétion totale",
@@ -127,6 +127,10 @@
       {
         "q": "Qui peut être apporteur ?",
         "a": "N'importe qui. Un chef de projet, un développeur, ou quelqu'un de totalement hors tech qui connaît la bonne personne."
+      },
+      {
+        "q": "Et côté compta, comment ça se passe ?",
+        "a": "Plugcut te donne le contrat, la preuve d'attribution et les factures pour cadrer proprement la commission entre les deux parties. Pour le traitement fiscal précis, vois avec ton comptable : on fournit le cadre, pas le conseil."
       }
     ]
   },
