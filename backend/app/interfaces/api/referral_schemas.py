@@ -27,6 +27,10 @@ class AcceptReferralRequest(BaseModel):
     party: Literal["referrer", "placed"]
 
 
+class AgreementResponse(BaseModel):
+    html: str
+
+
 class ReferralResponse(BaseModel):
     id: UUID
     placed_person_email: str

@@ -59,6 +59,10 @@ MESSAGES: dict[str, dict[str, str]] = {
         "fr": "Cette action n'est pas possible à ce stade du deal.",
         "en": "This action is not allowed at this stage of the deal.",
     },
+    "agreement.not_ready": {
+        "fr": "Le contrat sera disponible une fois le deal signé.",
+        "en": "The agreement is available once the deal is signed.",
+    },
     "domain.error": {
         "fr": "Une erreur est survenue.",
         "en": "An error occurred.",

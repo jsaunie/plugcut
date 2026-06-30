@@ -13,6 +13,7 @@ from app.application.referrals.use_cases import (
     AcceptReferral,
     ActivateReferral,
     CreateReferral,
+    GetAgreement,
     GetReferralWithSchedule,
     ListReferrals,
     QualifyReferral,
@@ -23,14 +24,17 @@ from app.interfaces.api.deps import (
     get_accept_referral,
     get_activate_referral,
     get_create_referral,
+    get_get_agreement,
     get_get_referral,
     get_list_referrals,
+    get_locale,
     get_qualify_referral,
     get_record_payment,
     get_session,
 )
 from app.interfaces.api.referral_schemas import (
     AcceptReferralRequest,
+    AgreementResponse,
     InstallmentResponse,
     ReferralCreateRequest,
     ReferralDetailResponse,
@@ -119,6 +123,17 @@ async def activate_referral(
     referral = await use_case.execute(referral_id, requester_id=current_user.id)
     await session.commit()
     return ReferralResponse.from_domain(referral)
+
+
+@router.get("/{referral_id}/agreement", response_model=AgreementResponse)
+async def get_agreement(
+    referral_id: UUID,
+    current_user: CurrentUser,
+    use_case: Annotated[GetAgreement, Depends(get_get_agreement)],
+    locale: Annotated[str, Depends(get_locale)],
+) -> AgreementResponse:
+    html = await use_case.execute(referral_id, requester_id=current_user.id, locale=locale)
+    return AgreementResponse(html=html)
 
 
 @router.post("/{referral_id}/installments/{sequence}/pay", response_model=InstallmentResponse)

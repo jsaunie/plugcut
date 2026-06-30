@@ -14,11 +14,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.application.identity.errors import InvalidToken
 from app.application.identity.ports import TokenService, UserRepository
 from app.application.identity.use_cases import AuthenticateUser, RegisterUser
-from app.application.referrals.ports import InstallmentRepository, ReferralRepository
+from app.application.referrals.ports import (
+    AgreementRenderer,
+    InstallmentRepository,
+    ReferralRepository,
+)
 from app.application.referrals.use_cases import (
     AcceptReferral,
     ActivateReferral,
     CreateReferral,
+    GetAgreement,
     GetReferralWithSchedule,
     ListReferrals,
     QualifyReferral,
@@ -26,6 +31,7 @@ from app.application.referrals.use_cases import (
 )
 from app.domain.identity.entities import User
 from app.domain.identity.ports import PasswordHasher
+from app.infrastructure.agreements.html_renderer import HtmlAgreementRenderer
 from app.infrastructure.config import Settings
 from app.infrastructure.persistence.installment_repository import (
     SqlAlchemyInstallmentRepository,
@@ -34,6 +40,7 @@ from app.infrastructure.persistence.referral_repository import SqlAlchemyReferra
 from app.infrastructure.persistence.repositories import SqlAlchemyUserRepository
 from app.infrastructure.security.jwt_token_service import JwtTokenService
 from app.infrastructure.security.password_hasher import BcryptPasswordHasher
+from app.interfaces.api.i18n import resolve_locale
 
 _bearer = HTTPBearer(auto_error=False)
 
@@ -151,3 +158,22 @@ def get_record_payment(
     installments: Annotated[InstallmentRepository, Depends(get_installment_repository)],
 ) -> RecordInstallmentPayment:
     return RecordInstallmentPayment(referrals, installments)
+
+
+def get_agreement_renderer() -> AgreementRenderer:
+    return HtmlAgreementRenderer()
+
+
+def get_get_agreement(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    renderer: Annotated[AgreementRenderer, Depends(get_agreement_renderer)],
+) -> GetAgreement:
+    return GetAgreement(referrals, users, renderer)
+
+
+def get_locale(
+    request: Request,
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> str:
+    return resolve_locale(request.headers.get("accept-language"), settings.default_locale)

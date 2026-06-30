@@ -17,7 +17,9 @@ Every feature must reinforce one of: *attribution proof*, *a clean agreement*,
       commission preview, deal detail page with the full schedule.
 - [x] **Two-sided acceptance (API)** — qualify, accept (referrer + placed), activate
       transitions; signing seals the SHA-256 attribution hash. Owner-scoped.
-- [ ] **Agreement generation** — render the contract (PDF) from the deal.
+- [x] **Agreement generation (API)** — HTML contract behind an `AgreementRenderer` port
+      (FR/EN, parties + terms + attribution hash), `GET /referrals/{id}/agreement`,
+      available once signed.
 - [x] **Commission schedule** — generated on signing and **persisted**
       (`commission_installments` table); `GET /referrals/{id}` returns it with
       due/overdue status refreshed.

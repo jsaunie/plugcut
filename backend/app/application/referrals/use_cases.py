@@ -6,13 +6,19 @@ from collections.abc import Callable
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
+from app.application.identity.ports import UserRepository
 from app.application.referrals.dtos import CreateReferralCommand
 from app.application.referrals.errors import (
+    AgreementNotReady,
     InstallmentNotFound,
     ReferralForbidden,
     ReferralNotFound,
 )
-from app.application.referrals.ports import InstallmentRepository, ReferralRepository
+from app.application.referrals.ports import (
+    AgreementRenderer,
+    InstallmentRepository,
+    ReferralRepository,
+)
 from app.domain.billing.entities import CommissionInstallment, CommissionSchedule
 from app.domain.billing.services import CommissionScheduleService
 from app.domain.referrals.entities import Referral
@@ -172,6 +178,35 @@ class ActivateReferral:
         referral.activate(at=self._now())
         await self._referrals.save(referral)
         return referral
+
+
+_AGREEMENT_READY = {
+    ReferralStatus.SIGNED,
+    ReferralStatus.ACTIVE,
+    ReferralStatus.COMPLETED,
+}
+
+
+class GetAgreement:
+    """Render the referral contract once the deal is signed."""
+
+    def __init__(
+        self,
+        referrals: ReferralRepository,
+        users: UserRepository,
+        renderer: AgreementRenderer,
+    ) -> None:
+        self._referrals = referrals
+        self._users = users
+        self._renderer = renderer
+
+    async def execute(self, referral_id: UUID, *, requester_id: UUID, locale: str) -> str:
+        referral = await _load_owned(self._referrals, referral_id, requester_id)
+        if referral.status not in _AGREEMENT_READY:
+            raise AgreementNotReady
+        referrer = await self._users.get_by_id(referral.referrer_id)
+        referrer_email = referrer.email.value if referrer is not None else ""
+        return self._renderer.render(referral, referrer_email=referrer_email, locale=locale)
 
 
 class RecordInstallmentPayment:

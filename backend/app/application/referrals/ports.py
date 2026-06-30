@@ -32,3 +32,9 @@ class InstallmentRepository(Protocol):
     ) -> CommissionInstallment | None: ...
 
     async def update(self, referral_id: UUID, installment: CommissionInstallment) -> None: ...
+
+
+class AgreementRenderer(Protocol):
+    """Renders the referral agreement document (HTML) for a signed deal."""
+
+    def render(self, referral: Referral, *, referrer_email: str, locale: str) -> str: ...

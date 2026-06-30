@@ -22,6 +22,7 @@ _STATUS_BY_CODE: dict[str, int] = {
     "installment.not_found": 404,
     "installment.already_paid": 409,
     "domain.illegal_state_transition": 409,
+    "agreement.not_ready": 409,
 }
 _DEFAULT_STATUS = 400
 

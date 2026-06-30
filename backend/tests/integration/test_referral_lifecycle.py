@@ -49,6 +49,18 @@ async def _create(client: AsyncClient, headers: dict[str, str]) -> str:
     return response.json()["id"]
 
 
+async def _sign(client: AsyncClient, headers: dict[str, str]) -> str:
+    deal_id = await _create(client, headers)
+    await client.post(f"/api/v1/referrals/{deal_id}/qualify", headers=headers)
+    await client.post(
+        f"/api/v1/referrals/{deal_id}/accept", json={"party": "referrer"}, headers=headers
+    )
+    await client.post(
+        f"/api/v1/referrals/{deal_id}/accept", json={"party": "placed"}, headers=headers
+    )
+    return deal_id
+
+
 class TestSigningFlow:
     async def test_two_sided_acceptance_signs_and_seals_attribution(
         self, client: AsyncClient
@@ -87,20 +99,9 @@ class TestSigningFlow:
 
 
 class TestActivationAndPayment:
-    async def _sign(self, client: AsyncClient, headers: dict[str, str]) -> str:
-        deal_id = await _create(client, headers)
-        await client.post(f"/api/v1/referrals/{deal_id}/qualify", headers=headers)
-        await client.post(
-            f"/api/v1/referrals/{deal_id}/accept", json={"party": "referrer"}, headers=headers
-        )
-        await client.post(
-            f"/api/v1/referrals/{deal_id}/accept", json={"party": "placed"}, headers=headers
-        )
-        return deal_id
-
     async def test_activate_then_pay_installment(self, client: AsyncClient) -> None:
         headers = await _headers(client)
-        deal_id = await self._sign(client, headers)
+        deal_id = await _sign(client, headers)
 
         activated = await client.post(f"/api/v1/referrals/{deal_id}/activate", headers=headers)
         assert activated.json()["status"] == "active"
@@ -116,7 +117,7 @@ class TestActivationAndPayment:
 
     async def test_paying_twice_conflicts(self, client: AsyncClient) -> None:
         headers = await _headers(client)
-        deal_id = await self._sign(client, headers)
+        deal_id = await _sign(client, headers)
         await client.post(f"/api/v1/referrals/{deal_id}/installments/1/pay", headers=headers)
         again = await client.post(
             f"/api/v1/referrals/{deal_id}/installments/1/pay", headers=headers
@@ -139,3 +140,24 @@ class TestGuards:
         intruder = await _headers(client, "intruder@example.com")
         response = await client.post(f"/api/v1/referrals/{deal_id}/qualify", headers=intruder)
         assert response.status_code == 403
+
+
+class TestAgreement:
+    async def test_not_ready_before_signed(self, client: AsyncClient) -> None:
+        headers = await _headers(client)
+        deal_id = await _create(client, headers)
+        response = await client.get(f"/api/v1/referrals/{deal_id}/agreement", headers=headers)
+        assert response.status_code == 409
+        assert response.json()["error"]["code"] == "agreement.not_ready"
+
+    async def test_agreement_html_after_signing(self, client: AsyncClient) -> None:
+        headers = await _headers(client, "owner@example.com")
+        deal_id = await _sign(client, headers)
+        response = await client.get(
+            f"/api/v1/referrals/{deal_id}/agreement",
+            headers={**headers, "Accept-Language": "fr"},
+        )
+        assert response.status_code == 200
+        html = response.json()["html"]
+        assert "Apporteur" in html
+        assert "owner@example.com" in html
