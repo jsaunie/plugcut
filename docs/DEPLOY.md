@@ -34,6 +34,24 @@ the deployed environment.
 The schema is created by Alembic on the API container's first boot (`alembic upgrade head`
 runs from an empty database and builds every table). No SQL to run by hand.
 
+### Row Level Security (do this once, after the first deploy)
+
+Plugcut's authorization lives in the API (JWT + owner-scoped use cases); the browser never
+talks to Supabase directly. But Supabase auto-exposes every `public` table through a REST
+API reachable with the public `anon` key. Lock that door by enabling RLS with **no
+policies**: the public role then gets nothing, while the API (which connects as the table
+owner `postgres`) bypasses RLS and keeps full access. Do not put this in Alembic migrations
+(they also run on SQLite locally, which has no RLS). Run it once in the Supabase SQL editor
+after the tables exist:
+
+```sql
+alter table public.users                   enable row level security;
+alter table public.referrals               enable row level security;
+alter table public.commission_installments enable row level security;
+alter table public.contacts                enable row level security;
+alter table public.alembic_version         enable row level security;
+```
+
 ## 2. API — DigitalOcean App Platform
 
 The image is defined by `backend/Dockerfile` (migrates, then serves on `$PORT`; DO sets
