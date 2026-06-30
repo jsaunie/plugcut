@@ -30,6 +30,7 @@ from app.application.notifications.ports import EmailSender, ReminderEmailRender
 from app.application.referrals.ports import (
     AgreementRenderer,
     EvidenceRenderer,
+    FileStorage,
     InstallmentRepository,
     InvoiceRenderer,
     ReferralRepository,
@@ -43,12 +44,14 @@ from app.application.referrals.use_cases import (
     GetDealTimeline,
     GetDisputeEvidence,
     GetInstallmentInvoice,
+    GetPaymentProof,
     GetReferralByInvitation,
     GetReferralStats,
     GetReferralWithSchedule,
     ListReferrals,
     QualifyReferral,
     RecordInstallmentPayment,
+    RecordPaymentProof,
     ResolveDispute,
     SendInstallmentReminder,
     SignByInvitation,
@@ -64,6 +67,7 @@ from app.infrastructure.email.resend_sender import ResendEmailSender
 from app.infrastructure.evidence.html_renderer import HtmlEvidenceRenderer
 from app.infrastructure.invoices.html_renderer import HtmlInvoiceRenderer
 from app.infrastructure.persistence.contact_repository import SqlAlchemyContactRepository
+from app.infrastructure.persistence.file_storage import SqlAlchemyFileStorage
 from app.infrastructure.persistence.installment_repository import (
     SqlAlchemyInstallmentRepository,
 )
@@ -225,6 +229,28 @@ def get_record_payment(
     installments: Annotated[InstallmentRepository, Depends(get_installment_repository)],
 ) -> RecordInstallmentPayment:
     return RecordInstallmentPayment(referrals, installments)
+
+
+def get_file_storage(
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> FileStorage:
+    return SqlAlchemyFileStorage(session)
+
+
+def get_record_proof(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+    installments: Annotated[InstallmentRepository, Depends(get_installment_repository)],
+    storage: Annotated[FileStorage, Depends(get_file_storage)],
+) -> RecordPaymentProof:
+    return RecordPaymentProof(referrals, installments, storage)
+
+
+def get_get_proof(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+    installments: Annotated[InstallmentRepository, Depends(get_installment_repository)],
+    storage: Annotated[FileStorage, Depends(get_file_storage)],
+) -> GetPaymentProof:
+    return GetPaymentProof(referrals, installments, storage)
 
 
 def get_email_sender(

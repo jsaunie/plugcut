@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from dataclasses import asdict
 from typing import Annotated
+from urllib.parse import quote
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, File, Response, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.referrals.dtos import CreateReferralCommand
@@ -19,11 +20,13 @@ from app.application.referrals.use_cases import (
     GetDealTimeline,
     GetDisputeEvidence,
     GetInstallmentInvoice,
+    GetPaymentProof,
     GetReferralStats,
     GetReferralWithSchedule,
     ListReferrals,
     QualifyReferral,
     RecordInstallmentPayment,
+    RecordPaymentProof,
     ResolveDispute,
     SendInstallmentReminder,
 )
@@ -37,11 +40,13 @@ from app.interfaces.api.deps import (
     get_dispute_referral,
     get_get_agreement,
     get_get_invoice,
+    get_get_proof,
     get_get_referral,
     get_list_referrals,
     get_locale,
     get_qualify_referral,
     get_record_payment,
+    get_record_proof,
     get_referral_stats,
     get_resolve_dispute,
     get_send_reminder,
@@ -257,3 +262,42 @@ async def remind_installment(
     )
     await session.commit()
     return InstallmentResponse.from_domain(installment)
+
+
+@router.post("/{referral_id}/installments/{sequence}/proof", response_model=InstallmentResponse)
+async def upload_installment_proof(
+    referral_id: UUID,
+    sequence: int,
+    current_user: CurrentUser,
+    use_case: Annotated[RecordPaymentProof, Depends(get_record_proof)],
+    session: Annotated[AsyncSession, Depends(get_session)],
+    file: Annotated[UploadFile, File()],
+) -> InstallmentResponse:
+    data = await file.read()
+    installment = await use_case.execute(
+        referral_id,
+        sequence,
+        requester_id=current_user.id,
+        filename=file.filename or "justificatif",
+        content_type=file.content_type or "application/octet-stream",
+        data=data,
+    )
+    await session.commit()
+    return InstallmentResponse.from_domain(installment)
+
+
+@router.get("/{referral_id}/installments/{sequence}/proof")
+async def download_installment_proof(
+    referral_id: UUID,
+    sequence: int,
+    current_user: CurrentUser,
+    use_case: Annotated[GetPaymentProof, Depends(get_get_proof)],
+) -> Response:
+    proof, data = await use_case.execute(referral_id, sequence, requester_id=current_user.id)
+    # RFC 5987 filename* keeps unicode (accented) filenames intact in the header.
+    disposition = f"inline; filename*=UTF-8''{quote(proof.filename)}"
+    return Response(
+        content=data,
+        media_type=proof.content_type,
+        headers={"Content-Disposition": disposition},
+    )

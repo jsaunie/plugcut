@@ -7,7 +7,15 @@ from decimal import Decimal
 
 import pytest
 
-from app.domain.billing.entities import NothingToRemind
+from app.domain.billing.entities import (
+    MAX_PROOF_BYTES,
+    EmptyProof,
+    NothingToRemind,
+    PaymentProof,
+    ProofRequiresPaid,
+    ProofTooLarge,
+    UnsupportedProofType,
+)
 from app.domain.billing.services import CommissionScheduleService
 from app.domain.referrals.enums import InstallmentStatus
 from app.domain.referrals.value_objects import CommissionTerms, InvalidTerms
@@ -122,3 +130,51 @@ class TestInstallmentLifecycle:
         installment.mark_paid()
         with pytest.raises(NothingToRemind):
             installment.mark_reminded(at=datetime(2026, 2, 10, tzinfo=UTC))
+
+
+def make_proof(**overrides: object) -> PaymentProof:
+    defaults: dict[str, object] = {
+        "filename": "receipt.pdf",
+        "content_type": "application/pdf",
+        "size": 1024,
+        "storage_key": "deal:1",
+        "uploaded_at": datetime(2026, 2, 10, tzinfo=UTC),
+    }
+    defaults.update(overrides)
+    return PaymentProof(**defaults)  # type: ignore[arg-type]
+
+
+class TestPaymentProof:
+    def test_accepts_a_valid_pdf(self) -> None:
+        proof = make_proof()
+        assert proof.content_type == "application/pdf"
+        assert proof.size == 1024
+
+    def test_rejects_an_empty_file(self) -> None:
+        with pytest.raises(EmptyProof):
+            make_proof(size=0)
+
+    def test_rejects_a_file_over_the_size_cap(self) -> None:
+        with pytest.raises(ProofTooLarge):
+            make_proof(size=MAX_PROOF_BYTES + 1)
+
+    def test_rejects_an_unsupported_content_type(self) -> None:
+        with pytest.raises(UnsupportedProofType):
+            make_proof(content_type="application/zip")
+
+    def test_attaches_to_a_paid_installment(self) -> None:
+        schedule = CommissionScheduleService().generate(
+            make_terms(duration_months=1), start_date=date(2026, 1, 1)
+        )
+        installment = schedule.installments[0]
+        installment.mark_paid(at=datetime(2026, 2, 10, tzinfo=UTC))
+        proof = make_proof()
+        installment.attach_proof(proof)
+        assert installment.proof is proof
+
+    def test_cannot_attach_to_an_unpaid_installment(self) -> None:
+        schedule = CommissionScheduleService().generate(
+            make_terms(duration_months=1), start_date=date(2026, 1, 1)
+        )
+        with pytest.raises(ProofRequiresPaid):
+            schedule.installments[0].attach_proof(make_proof())

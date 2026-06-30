@@ -13,6 +13,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Integer,
+    LargeBinary,
     Numeric,
     String,
     Text,
@@ -91,6 +92,29 @@ class CommissionInstallmentModel(Base):
     last_reminded_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
+    # Payment proof metadata (the bytes live in PaymentProofBlobModel, behind the
+    # FileStorage port). All-or-nothing: set together when a proof is attached.
+    proof_filename: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    proof_content_type: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    proof_size: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    proof_storage_key: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    proof_uploaded_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+
+class PaymentProofBlobModel(Base):
+    """Opaque bytes for a payment proof, keyed by the installment's storage key.
+
+    Kept in its own table so the installment row stays small and the FileStorage
+    port can be swapped for object storage without schema churn on installments.
+    """
+
+    __tablename__ = "payment_proof_blobs"
+
+    storage_key: Mapped[str] = mapped_column(String(255), primary_key=True)
+    content_type: Mapped[str] = mapped_column(String(100))
+    data: Mapped[bytes] = mapped_column(LargeBinary)
 
 
 class ContactModel(Base):

@@ -21,6 +21,57 @@ class NothingToRemind(IllegalStateTransition):
     code = "installment.nothing_to_remind"
 
 
+class ProofRequiresPaid(IllegalStateTransition):
+    """A payment proof was attached to an installment that is not settled yet."""
+
+    code = "installment.proof_requires_paid"
+
+
+class EmptyProof(InvariantViolation):
+    code = "proof.empty"
+
+
+class UnsupportedProofType(InvariantViolation):
+    code = "proof.unsupported_type"
+
+
+class ProofTooLarge(InvariantViolation):
+    code = "proof.too_large"
+
+
+# A payment proof is a receipt or bank record. Keep the allowlist tight: documents
+# and images only, capped so a stored blob stays small.
+MAX_PROOF_BYTES = 5 * 1024 * 1024
+ALLOWED_PROOF_TYPES = frozenset({"application/pdf", "image/png", "image/jpeg"})
+
+
+@dataclass(frozen=True, slots=True)
+class PaymentProof:
+    """Evidence that a paid installment was actually settled.
+
+    The bytes live behind the ``FileStorage`` port; this value object is the
+    metadata kept on the installment, and it cannot exist in an invalid state.
+    """
+
+    filename: str
+    content_type: str
+    size: int
+    storage_key: str
+    uploaded_at: datetime
+
+    def __post_init__(self) -> None:
+        if self.size <= 0:
+            raise EmptyProof
+        if self.size > MAX_PROOF_BYTES:
+            raise ProofTooLarge
+        if self.content_type not in ALLOWED_PROOF_TYPES:
+            raise UnsupportedProofType
+        if not self.filename.strip():
+            raise InvariantViolation("a payment proof needs a filename")
+        if not self.storage_key:
+            raise InvariantViolation("a payment proof needs a storage key")
+
+
 @dataclass(slots=True)
 class CommissionInstallment:
     """One recurring commission owed for a billing period.
@@ -40,6 +91,13 @@ class CommissionInstallment:
     status: InstallmentStatus = InstallmentStatus.PENDING
     paid_at: datetime | None = None
     last_reminded_at: datetime | None = None
+    proof: PaymentProof | None = None
+
+    def attach_proof(self, proof: PaymentProof) -> None:
+        """Attach evidence the installment was settled. Only meaningful once paid."""
+        if self.status is not InstallmentStatus.PAID:
+            raise ProofRequiresPaid
+        self.proof = proof
 
     @property
     def amount_due(self) -> Money:

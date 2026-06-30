@@ -141,6 +141,13 @@ class PublicReferralResponse(BaseModel):
         )
 
 
+class PaymentProofResponse(BaseModel):
+    filename: str
+    content_type: str
+    size: int
+    uploaded_at: datetime
+
+
 class InstallmentResponse(BaseModel):
     sequence: int
     period_start: date
@@ -149,9 +156,11 @@ class InstallmentResponse(BaseModel):
     expected_amount: float
     status: str
     last_reminded_at: datetime | None
+    proof: PaymentProofResponse | None
 
     @classmethod
     def from_domain(cls, installment: CommissionInstallment) -> InstallmentResponse:
+        proof = installment.proof
         return cls(
             sequence=installment.sequence,
             period_start=installment.period_start,
@@ -160,6 +169,16 @@ class InstallmentResponse(BaseModel):
             expected_amount=float(installment.expected_amount.amount),
             status=installment.status.value,
             last_reminded_at=installment.last_reminded_at,
+            proof=(
+                PaymentProofResponse(
+                    filename=proof.filename,
+                    content_type=proof.content_type,
+                    size=proof.size,
+                    uploaded_at=proof.uploaded_at,
+                )
+                if proof is not None
+                else None
+            ),
         )
 
 
