@@ -7,8 +7,9 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.application.contacts.dtos import ContactData
 from app.domain.contacts.entities import Contact
-from app.domain.contacts.enums import ContactKind
+from app.domain.contacts.enums import ContactKind, ContactSource
 
 
 class ContactWriteRequest(BaseModel):
@@ -22,6 +23,26 @@ class ContactWriteRequest(BaseModel):
     location: str | None = None
     tags: list[str] = Field(default_factory=list)
     notes: str = ""
+
+
+class ContactSuggestionResponse(BaseModel):
+    """A suggested contact extracted from an uploaded document (for the user to confirm)."""
+
+    full_name: str
+    headline: str
+    linkedin_url: str | None
+    notes: str
+    source: str
+
+    @classmethod
+    def from_data(cls, data: ContactData, source: ContactSource) -> ContactSuggestionResponse:
+        return cls(
+            full_name=data.full_name,
+            headline=data.headline,
+            linkedin_url=data.linkedin_url,
+            notes=data.notes,
+            source=source.value,
+        )
 
 
 class ContactResponse(BaseModel):

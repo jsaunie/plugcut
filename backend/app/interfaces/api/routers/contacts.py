@@ -5,10 +5,11 @@ from __future__ import annotations
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.contacts.dtos import ContactData
+from app.application.contacts.ports import ContactImporter
 from app.application.contacts.use_cases import (
     CreateContact,
     DeleteContact,
@@ -16,9 +17,15 @@ from app.application.contacts.use_cases import (
     ListContacts,
     UpdateContact,
 )
-from app.interfaces.api.contact_schemas import ContactResponse, ContactWriteRequest
+from app.domain.contacts.enums import ContactSource
+from app.interfaces.api.contact_schemas import (
+    ContactResponse,
+    ContactSuggestionResponse,
+    ContactWriteRequest,
+)
 from app.interfaces.api.deps import (
     CurrentUser,
+    get_contact_importer,
     get_create_contact,
     get_delete_contact,
     get_get_contact,
@@ -55,6 +62,18 @@ async def create_contact(
     contact = await use_case.execute(current_user.id, _to_data(payload))
     await session.commit()
     return ContactResponse.from_domain(contact)
+
+
+@router.post("/import", response_model=ContactSuggestionResponse)
+async def import_contact(
+    current_user: CurrentUser,
+    importer: Annotated[ContactImporter, Depends(get_contact_importer)],
+    file: Annotated[UploadFile, File()],
+    source: Annotated[ContactSource, Query()] = ContactSource.LINKEDIN_PDF,
+) -> ContactSuggestionResponse:
+    data = await file.read()
+    suggestion = importer.suggest(data)
+    return ContactSuggestionResponse.from_data(suggestion, source)
 
 
 @router.get("", response_model=list[ContactResponse])

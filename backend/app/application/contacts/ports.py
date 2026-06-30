@@ -5,7 +5,14 @@ from __future__ import annotations
 from typing import Protocol
 from uuid import UUID
 
+from app.application.contacts.dtos import ContactData
 from app.domain.contacts.entities import Contact
+
+
+class ContactImporter(Protocol):
+    """Extracts a suggested contact from an uploaded document (LinkedIn PDF / CV)."""
+
+    def suggest(self, data: bytes) -> ContactData: ...
 
 
 class ContactRepository(Protocol):

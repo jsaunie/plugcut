@@ -11,7 +11,7 @@ from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.application.contacts.ports import ContactRepository
+from app.application.contacts.ports import ContactImporter, ContactRepository
 from app.application.contacts.use_cases import (
     CreateContact,
     DeleteContact,
@@ -51,6 +51,7 @@ from app.domain.identity.entities import User
 from app.domain.identity.ports import PasswordHasher
 from app.infrastructure.agreements.html_renderer import HtmlAgreementRenderer
 from app.infrastructure.config import Settings
+from app.infrastructure.contacts.pdf_importer import PdfContactImporter
 from app.infrastructure.invoices.html_renderer import HtmlInvoiceRenderer
 from app.infrastructure.persistence.contact_repository import SqlAlchemyContactRepository
 from app.infrastructure.persistence.installment_repository import (
@@ -252,6 +253,10 @@ def get_contact_repository(
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> ContactRepository:
     return SqlAlchemyContactRepository(session)
+
+
+def get_contact_importer() -> ContactImporter:
+    return PdfContactImporter()
 
 
 def get_create_contact(

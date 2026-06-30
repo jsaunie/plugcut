@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 
 import AppShell from '@/features/app/AppShell.vue'
-import { getContact } from '@/features/contacts/api'
+import { getContact, importContactPdf } from '@/features/contacts/api'
 import { useContactsStore } from '@/features/contacts/store'
 import type { Contact, ContactInput, ContactKind } from '@/features/contacts/types'
 import { nameError, parseTags } from '@/features/contacts/validation'
@@ -34,6 +34,36 @@ const form = reactive({
 const nameErr = ref('')
 const formError = ref('')
 const saving = ref(false)
+
+const fileInput = ref<HTMLInputElement>()
+const pendingSource = ref<'linkedin_pdf' | 'cv'>('linkedin_pdf')
+const importing = ref(false)
+const importError = ref('')
+
+function pickFile(source: 'linkedin_pdf' | 'cv'): void {
+  pendingSource.value = source
+  fileInput.value?.click()
+}
+
+async function onFile(event: Event): Promise<void> {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  importError.value = ''
+  importing.value = true
+  try {
+    const suggestion = await importContactPdf(file, pendingSource.value)
+    if (suggestion.full_name) form.full_name = suggestion.full_name
+    if (suggestion.headline) form.headline = suggestion.headline
+    if (suggestion.linkedin_url) form.linkedin_url = suggestion.linkedin_url
+    if (suggestion.notes) form.notes = suggestion.notes
+  } catch (err) {
+    importError.value = err instanceof ApiError ? err.message : t('contacts.import.error')
+  } finally {
+    importing.value = false
+    input.value = ''
+  }
+}
 
 function fill(contact: Contact): void {
   form.full_name = contact.full_name
@@ -116,6 +146,26 @@ async function remove(): Promise<void> {
   <AppShell>
     <RouterLink to="/app/contacts" class="back">← {{ t('contacts.title') }}</RouterLink>
     <h1 class="title">{{ isEdit ? t('contacts.form.editTitle') : t('contacts.form.newTitle') }}</h1>
+
+    <section v-if="!isEdit" class="import">
+      <p class="import__lead">{{ t('contacts.import.lead') }}</p>
+      <div class="import__row">
+        <UiButton variant="ghost" :loading="importing" @click="pickFile('linkedin_pdf')">
+          {{ t('contacts.import.linkedin') }}
+        </UiButton>
+        <UiButton variant="ghost" :loading="importing" @click="pickFile('cv')">
+          {{ t('contacts.import.cv') }}
+        </UiButton>
+      </div>
+      <p v-if="importError" class="form__error" role="alert">{{ importError }}</p>
+      <input
+        ref="fileInput"
+        class="import__file"
+        type="file"
+        accept="application/pdf"
+        @change="onFile"
+      />
+    </section>
 
     <form class="form" novalidate @submit.prevent="submit">
       <div class="kind">
@@ -202,6 +252,26 @@ async function remove(): Promise<void> {
 .title {
   margin: 1rem 0 2rem;
   font-size: var(--fs-display-md);
+}
+.import {
+  max-width: 640px;
+  margin-bottom: 1.8rem;
+  padding: 1.2rem;
+  border: 1px dashed var(--line-on-ink);
+  border-radius: var(--radius-sm);
+}
+.import__lead {
+  font-size: var(--fs-small);
+  color: var(--muted-on-ink);
+  margin-bottom: 0.8rem;
+}
+.import__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.import__file {
+  display: none;
 }
 .form {
   display: grid;

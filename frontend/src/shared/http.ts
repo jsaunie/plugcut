@@ -39,7 +39,8 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const headers = new Headers(options.headers)
   headers.set('Accept-Language', i18n.global.locale.value)
-  if (options.body && !headers.has('Content-Type')) {
+  // Let the browser set the multipart boundary for FormData; only default to JSON otherwise.
+  if (options.body && !(options.body instanceof FormData) && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
   }
   const token = getAuthToken()

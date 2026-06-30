@@ -1,6 +1,18 @@
 import { apiFetch } from '@/shared/http'
 
-import type { Contact, ContactInput } from './types'
+import type { Contact, ContactInput, ContactSuggestion } from './types'
+
+export function importContactPdf(
+  file: File,
+  source: 'linkedin_pdf' | 'cv',
+): Promise<ContactSuggestion> {
+  const body = new FormData()
+  body.append('file', file)
+  return apiFetch<ContactSuggestion>(`/contacts/import?source=${source}`, {
+    method: 'POST',
+    body,
+  })
+}
 
 export function listContacts(): Promise<Contact[]> {
   return apiFetch<Contact[]>('/contacts')

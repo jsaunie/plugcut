@@ -37,6 +37,12 @@
       "save": "Save",
       "delete": "Delete"
     },
+    "import": {
+      "lead": "Pre-fill from a PDF (LinkedIn profile export or CV). You can review and correct everything before saving.",
+      "linkedin": "Import LinkedIn (PDF)",
+      "cv": "Import a CV (PDF)",
+      "error": "Could not read this file. Enter the details manually."
+    },
     "errors": {
       "nameRequired": "Name is required.",
       "generic": "An action failed. Please try again."

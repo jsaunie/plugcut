@@ -101,6 +101,19 @@ class TestContactsCrud:
         )
         assert response.json()["kind"] == "company"
 
+    async def test_import_requires_auth(self, client: AsyncClient) -> None:
+        files = {"file": ("p.pdf", b"%PDF-1.4 x", "application/pdf")}
+        assert (await client.post("/api/v1/contacts/import", files=files)).status_code == 401
+
+    async def test_import_returns_a_suggestion(self, client: AsyncClient) -> None:
+        headers = await _headers(client)
+        files = {"file": ("profile.pdf", b"%PDF-1.4 not-really-a-pdf", "application/pdf")}
+        response = await client.post(
+            "/api/v1/contacts/import?source=linkedin_pdf", headers=headers, files=files
+        )
+        assert response.status_code == 200
+        assert response.json()["source"] == "linkedin_pdf"
+
     async def test_cannot_access_another_users_contact(self, client: AsyncClient) -> None:
         owner = await _headers(client, "owner@example.com")
         contact_id = (await client.post("/api/v1/contacts", json=PAYLOAD, headers=owner)).json()[

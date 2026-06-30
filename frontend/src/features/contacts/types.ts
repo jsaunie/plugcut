@@ -17,6 +17,14 @@ export interface Contact {
   updated_at: string
 }
 
+export interface ContactSuggestion {
+  full_name: string
+  headline: string
+  linkedin_url: string | null
+  notes: string
+  source: string
+}
+
 export interface ContactInput {
   full_name: string
   kind: ContactKind

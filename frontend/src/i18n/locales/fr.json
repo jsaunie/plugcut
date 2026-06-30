@@ -37,6 +37,12 @@
       "save": "Enregistrer",
       "delete": "Supprimer"
     },
+    "import": {
+      "lead": "Pré-remplis depuis un PDF (export de profil LinkedIn ou CV). Tu pourras tout relire et corriger avant d'enregistrer.",
+      "linkedin": "Importer LinkedIn (PDF)",
+      "cv": "Importer un CV (PDF)",
+      "error": "Impossible de lire ce fichier. Saisis les infos manuellement."
+    },
     "errors": {
       "nameRequired": "Le nom est requis.",
       "generic": "Une action a échoué. Réessaie."
