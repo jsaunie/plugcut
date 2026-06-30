@@ -65,3 +65,27 @@ export async function apiFetch<T>(
   }
   return data as T
 }
+
+/** Fetch a binary resource (e.g. a payment proof) with auth + 401-refresh, as a Blob. */
+export async function apiFetchBlob(path: string, retried = false): Promise<Blob> {
+  const headers = new Headers()
+  headers.set('Accept-Language', i18n.global.locale.value)
+  const token = getAuthToken()
+  if (token) headers.set('Authorization', `Bearer ${token}`)
+
+  const response = await fetch(`${BASE_URL}${path}`, { headers })
+
+  if (response.status === 401 && !retried) {
+    if (await refreshTokens()) return apiFetchBlob(path, true)
+  }
+
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as ApiErrorBody | null
+    throw new ApiError(
+      response.status,
+      body?.error?.code ?? 'http.error',
+      body?.error?.message ?? `HTTP ${response.status}`,
+    )
+  }
+  return response.blob()
+}

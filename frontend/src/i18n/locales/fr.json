@@ -289,7 +289,11 @@
       "invoice": "Facture",
       "remind": "Relancer",
       "remindAgain": "Relancer à nouveau",
-      "remindedOn": "Relancé le {date}"
+      "remindedOn": "Relancé le {date}",
+      "attachProof": "Joindre un justificatif",
+      "replaceProof": "Remplacer le justificatif",
+      "viewProof": "Voir le justificatif",
+      "uploadingProof": "Envoi..."
     },
     "sign": {
       "referrerPrompt": "Signe le deal en tant qu'apporteur.",

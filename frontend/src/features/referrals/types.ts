@@ -38,6 +38,13 @@ export interface ReferralStats {
   currency: string
 }
 
+export interface PaymentProof {
+  filename: string
+  content_type: string
+  size: number
+  uploaded_at: string
+}
+
 export interface Installment {
   sequence: number
   period_start: string
@@ -46,6 +53,7 @@ export interface Installment {
   expected_amount: number
   status: string
   last_reminded_at?: string | null
+  proof?: PaymentProof | null
 }
 
 export interface ReferralDetail extends Referral {

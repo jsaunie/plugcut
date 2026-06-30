@@ -1,4 +1,4 @@
-import { apiFetch } from '@/shared/http'
+import { apiFetch, apiFetchBlob } from '@/shared/http'
 
 import type {
   AcceptParty,
@@ -58,6 +58,23 @@ export function remindInstallment(id: string, sequence: number): Promise<Install
   return apiFetch<Installment>(`/referrals/${id}/installments/${sequence}/remind`, {
     method: 'POST',
   })
+}
+
+export function uploadInstallmentProof(
+  id: string,
+  sequence: number,
+  file: File,
+): Promise<Installment> {
+  const form = new FormData()
+  form.append('file', file)
+  return apiFetch<Installment>(`/referrals/${id}/installments/${sequence}/proof`, {
+    method: 'POST',
+    body: form,
+  })
+}
+
+export function getInstallmentProof(id: string, sequence: number): Promise<Blob> {
+  return apiFetchBlob(`/referrals/${id}/installments/${sequence}/proof`)
 }
 
 export function getAgreement(id: string): Promise<{ html: string }> {
