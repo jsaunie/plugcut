@@ -54,7 +54,12 @@ function money(amount: number, currency: string): string {
         <span class="kpi__label">{{ t('stats.runRate') }}</span>
         <strong class="kpi__value">{{ money(stats.monthly_run_rate, stats.currency) }}</strong>
         <span class="kpi__note">
-          {{ t('stats.deals', { total: stats.total_deals, active: stats.active_deals }) }}
+          {{
+            t('stats.deals', {
+              deals: t('stats.dealsCount', stats.total_deals),
+              active: t('stats.activeCount', stats.active_deals),
+            })
+          }}
         </span>
       </div>
     </section>

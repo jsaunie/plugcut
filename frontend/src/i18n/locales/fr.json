@@ -232,7 +232,9 @@
     "outstanding": "Restant dû",
     "overdue": "dont {amount} en retard",
     "runRate": "Run-rate / mois",
-    "deals": "{total} deals, {active} actifs"
+    "deals": "{deals}, {active}",
+    "dealsCount": "{n} deal | {n} deals",
+    "activeCount": "{n} actif | {n} actifs"
   },
   "deals": {
     "list": { "perMonth": "/ mois" },

@@ -232,7 +232,9 @@
     "outstanding": "Outstanding",
     "overdue": "incl. {amount} overdue",
     "runRate": "Run-rate / month",
-    "deals": "{total} deals, {active} active"
+    "deals": "{deals}, {active}",
+    "dealsCount": "{n} deal | {n} deals",
+    "activeCount": "{n} active | {n} active"
   },
   "deals": {
     "list": { "perMonth": "/ month" },

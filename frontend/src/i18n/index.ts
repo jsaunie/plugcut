@@ -18,6 +18,11 @@ export const i18n = createI18n({
   locale: detectLocale(),
   fallbackLocale: 'fr',
   messages: { fr, en },
+  // French treats 0 and 1 as singular (0 deal, 1 deal, 2 deals). The default
+  // rule pluralises 0, which reads wrong in FR.
+  pluralRules: {
+    fr: (choice: number) => (choice <= 1 ? 0 : 1),
+  },
 })
 
 export function setLocale(locale: AppLocale): void {
