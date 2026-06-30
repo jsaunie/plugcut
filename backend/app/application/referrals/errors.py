@@ -17,6 +17,10 @@ class InstallmentNotFound(DomainError):
     code = "installment.not_found"
 
 
+class ProofNotFound(DomainError):
+    code = "proof.not_found"
+
+
 class AgreementNotReady(DomainError):
     code = "agreement.not_ready"
 

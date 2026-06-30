@@ -94,7 +94,7 @@ import { UiButton, UiEyebrow } from '@/ui'
   height: 60vw;
   max-width: 760px;
   max-height: 760px;
-  background: radial-gradient(circle, rgba(216, 255, 54, 0.16), transparent 62%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 16%, transparent), transparent 62%);
   filter: blur(30px);
   pointer-events: none;
 }

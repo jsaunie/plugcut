@@ -21,10 +21,10 @@ const items = computed(() => tm('marquee.items') as string[])
 
 <style scoped>
 .marquee {
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: var(--ink);
+  color: var(--text-on-ink);
   overflow: hidden;
-  border-block: 1px solid var(--ink);
+  border-block: 1px solid var(--line-on-ink);
 }
 .marquee__track {
   display: flex;
@@ -47,7 +47,7 @@ const items = computed(() => tm('marquee.items') as string[])
   white-space: nowrap;
 }
 .marquee__sep {
-  opacity: 0.55;
+  color: var(--accent);
 }
 @keyframes scroll {
   to {

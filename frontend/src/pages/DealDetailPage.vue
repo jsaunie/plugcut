@@ -13,10 +13,12 @@ import {
   getEvidencePack,
   getInstallmentInvoice,
   getReferral,
+  getInstallmentProof,
   payInstallment,
   qualifyReferral,
   remindInstallment,
   resolveDispute,
+  uploadInstallmentProof,
 } from '@/features/referrals/api'
 import DealStatus from '@/features/referrals/DealStatus.vue'
 import type { ReferralDetail, TimelineEntry } from '@/features/referrals/types'
@@ -107,6 +109,24 @@ const signReferrer = () => run(() => acceptReferral(id, 'referrer', signatureNam
 const activate = () => run(() => activateReferral(id))
 const pay = (sequence: number) => run(() => payInstallment(id, sequence))
 const remind = (sequence: number) => run(() => remindInstallment(id, sequence))
+
+async function onProofSelected(sequence: number, event: Event): Promise<void> {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = '' // let the same file be re-picked after an error
+  if (file) await run(() => uploadInstallmentProof(id, sequence, file))
+}
+
+async function openProof(sequence: number): Promise<void> {
+  actionError.value = ''
+  try {
+    const url = URL.createObjectURL(await getInstallmentProof(id, sequence))
+    window.open(url, '_blank')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  } catch (err) {
+    actionError.value = err instanceof ApiError ? err.message : t('deals.errors.generic')
+  }
+}
 const resolve = () => run(() => resolveDispute(id))
 
 async function submitDispute(): Promise<void> {
@@ -338,6 +358,27 @@ onMounted(load)
                   >
                     {{ t('deals.actions.pay') }}
                   </button>
+                  <button
+                    v-if="row.proof"
+                    class="rowactions__link"
+                    @click="openProof(row.sequence)"
+                  >
+                    {{ t('deals.actions.viewProof') }}
+                  </button>
+                  <label
+                    v-if="isReferrer && !isFrozen && row.status === 'paid'"
+                    class="rowactions__link rowactions__upload"
+                    :class="{ 'rowactions__upload--busy': busy }"
+                  >
+                    {{ row.proof ? t('deals.actions.replaceProof') : t('deals.actions.attachProof') }}
+                    <input
+                      type="file"
+                      accept="application/pdf,image/png,image/jpeg"
+                      hidden
+                      :disabled="busy"
+                      @change="onProofSelected(row.sequence, $event)"
+                    />
+                  </label>
                 </span>
               </td>
             </tr>
@@ -413,8 +454,8 @@ onMounted(load)
   border-radius: var(--radius-pill);
 }
 .role--referrer {
-  background: rgba(216, 255, 54, 0.14);
-  color: var(--accent-deep);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent-on-ink);
 }
 .role--placed {
   background: var(--ink-3);
@@ -430,7 +471,7 @@ onMounted(load)
   padding: 1.1rem 1.3rem;
   border: 1px solid var(--danger);
   border-radius: var(--radius);
-  background: rgba(255, 92, 92, 0.08);
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
 }
 .freeze__title {
   font-weight: 700;
@@ -477,7 +518,7 @@ onMounted(load)
 .signed-note {
   margin-top: 1rem;
   font-size: var(--fs-small);
-  color: var(--accent-deep);
+  color: var(--accent-on-ink);
 }
 .invite {
   margin-bottom: 2.5rem;
@@ -549,7 +590,7 @@ onMounted(load)
 .attribution__hash {
   font-family: var(--font-mono);
   font-size: var(--fs-small);
-  color: var(--accent-deep);
+  color: var(--accent-on-ink);
   word-break: break-all;
   padding: 0.9rem 1rem;
   background: var(--ink-2);
@@ -586,7 +627,7 @@ onMounted(load)
   color: var(--muted-on-ink);
 }
 .istatus--paid {
-  color: var(--accent-deep);
+  color: var(--accent-on-ink);
 }
 .istatus--overdue {
   color: var(--danger);
@@ -639,11 +680,18 @@ onMounted(load)
 }
 .rowactions__link {
   font-size: 0.78rem;
-  color: var(--accent-deep);
+  color: var(--accent-on-ink);
   text-decoration: underline;
 }
 .rowactions__link:hover {
   color: var(--accent);
+}
+.rowactions__upload {
+  cursor: pointer;
+}
+.rowactions__upload--busy {
+  opacity: 0.5;
+  pointer-events: none;
 }
 .pay {
   padding: 0.3rem 0.8rem;

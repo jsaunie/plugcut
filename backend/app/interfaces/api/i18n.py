@@ -59,6 +59,26 @@ MESSAGES: dict[str, dict[str, str]] = {
         "fr": "Cette échéance est déjà réglée, aucune relance à envoyer.",
         "en": "This installment is already paid, nothing to remind.",
     },
+    "installment.proof_requires_paid": {
+        "fr": "Marque l'échéance comme payée avant d'ajouter un justificatif.",
+        "en": "Mark the installment as paid before adding a proof.",
+    },
+    "proof.not_found": {
+        "fr": "Aucun justificatif n'est attaché à cette échéance.",
+        "en": "No proof is attached to this installment.",
+    },
+    "proof.empty": {
+        "fr": "Le fichier est vide.",
+        "en": "The file is empty.",
+    },
+    "proof.unsupported_type": {
+        "fr": "Format non accepté. Joins un PDF, un PNG ou un JPEG.",
+        "en": "Unsupported format. Attach a PDF, PNG, or JPEG.",
+    },
+    "proof.too_large": {
+        "fr": "Le fichier est trop lourd (5 Mo maximum).",
+        "en": "The file is too large (5 MB maximum).",
+    },
     "email.delivery_failed": {
         "fr": "L'email n'a pas pu être envoyé. Réessaie plus tard.",
         "en": "The email could not be sent. Please try again later.",

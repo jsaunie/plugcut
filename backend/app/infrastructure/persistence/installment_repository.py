@@ -8,10 +8,28 @@ from uuid import UUID
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain.billing.entities import CommissionInstallment
+from app.domain.billing.entities import CommissionInstallment, PaymentProof
 from app.domain.referrals.enums import InstallmentStatus
 from app.domain.shared.value_objects import Money
 from app.infrastructure.persistence.models import CommissionInstallmentModel
+
+
+def _proof_to_domain(model: CommissionInstallmentModel) -> PaymentProof | None:
+    if (
+        model.proof_filename is None
+        or model.proof_content_type is None
+        or model.proof_size is None
+        or model.proof_storage_key is None
+        or model.proof_uploaded_at is None
+    ):
+        return None
+    return PaymentProof(
+        filename=model.proof_filename,
+        content_type=model.proof_content_type,
+        size=model.proof_size,
+        storage_key=model.proof_storage_key,
+        uploaded_at=model.proof_uploaded_at,
+    )
 
 
 def _to_domain(model: CommissionInstallmentModel) -> CommissionInstallment:
@@ -30,10 +48,12 @@ def _to_domain(model: CommissionInstallmentModel) -> CommissionInstallment:
         status=InstallmentStatus(model.status),
         paid_at=model.paid_at,
         last_reminded_at=model.last_reminded_at,
+        proof=_proof_to_domain(model),
     )
 
 
 def _to_model(referral_id: UUID, installment: CommissionInstallment) -> CommissionInstallmentModel:
+    proof = installment.proof
     return CommissionInstallmentModel(
         referral_id=referral_id,
         sequence=installment.sequence,
@@ -48,6 +68,11 @@ def _to_model(referral_id: UUID, installment: CommissionInstallment) -> Commissi
         status=installment.status.value,
         paid_at=installment.paid_at,
         last_reminded_at=installment.last_reminded_at,
+        proof_filename=proof.filename if proof else None,
+        proof_content_type=proof.content_type if proof else None,
+        proof_size=proof.size if proof else None,
+        proof_storage_key=proof.storage_key if proof else None,
+        proof_uploaded_at=proof.uploaded_at if proof else None,
     )
 
 

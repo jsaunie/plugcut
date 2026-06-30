@@ -42,7 +42,7 @@ defineProps<{ title: string; subtitle: string }>()
   width: 70vw;
   max-width: 700px;
   aspect-ratio: 1;
-  background: radial-gradient(circle, rgba(216, 255, 54, 0.12), transparent 62%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 12%, transparent), transparent 62%);
   filter: blur(30px);
   pointer-events: none;
 }

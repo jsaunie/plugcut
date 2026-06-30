@@ -289,7 +289,11 @@
       "invoice": "Invoice",
       "remind": "Send reminder",
       "remindAgain": "Remind again",
-      "remindedOn": "Reminded on {date}"
+      "remindedOn": "Reminded on {date}",
+      "attachProof": "Attach a proof",
+      "replaceProof": "Replace the proof",
+      "viewProof": "View proof",
+      "uploadingProof": "Uploading..."
     },
     "sign": {
       "referrerPrompt": "Sign the deal as the referrer.",

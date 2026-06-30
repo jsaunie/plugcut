@@ -43,13 +43,13 @@ const model = defineModel<string>({ default: '' })
 .ui-input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(216, 255, 54, 0.18);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 .ui-input--invalid {
   border-color: var(--danger);
 }
 .ui-input--invalid:focus {
-  box-shadow: 0 0 0 3px rgba(255, 92, 92, 0.2);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 20%, transparent);
 }
 .ui-input:disabled {
   opacity: 0.6;

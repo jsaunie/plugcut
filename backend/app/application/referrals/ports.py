@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 __all__ = [
     "AgreementRenderer",
     "EvidenceRenderer",
+    "FileStorage",
     "InstallmentRepository",
     "InvoiceRenderer",
     "ReferralRepository",
@@ -47,6 +48,21 @@ class InstallmentRepository(Protocol):
     ) -> CommissionInstallment | None: ...
 
     async def update(self, referral_id: UUID, installment: CommissionInstallment) -> None: ...
+
+
+class FileStorage(Protocol):
+    """Stores and retrieves opaque file blobs by key (payment proofs, for now).
+
+    Execution is simulated behind this port: the demo keeps bytes in the database
+    so they survive container restarts, but a real deployment could swap in object
+    storage (S3, Supabase Storage) without touching the use cases.
+    """
+
+    async def save(self, key: str, data: bytes, *, content_type: str) -> None: ...
+
+    async def load(self, key: str) -> bytes | None: ...
+
+    async def delete(self, key: str) -> None: ...
 
 
 class AgreementRenderer(Protocol):

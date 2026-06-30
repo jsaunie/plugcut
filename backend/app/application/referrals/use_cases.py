@@ -20,12 +20,14 @@ from app.application.referrals.errors import (
     DealFrozen,
     InstallmentNotFound,
     InvitationNotFound,
+    ProofNotFound,
     ReferralForbidden,
     ReferralNotFound,
 )
 from app.application.referrals.ports import (
     AgreementRenderer,
     EvidenceRenderer,
+    FileStorage,
     InstallmentRepository,
     InvoiceRenderer,
     ReferralRepository,
@@ -34,6 +36,7 @@ from app.domain.billing.entities import (
     CommissionInstallment,
     CommissionSchedule,
     NothingToRemind,
+    PaymentProof,
 )
 from app.domain.billing.services import CommissionScheduleService
 from app.domain.referrals.entities import Referral
@@ -494,6 +497,83 @@ class RecordInstallmentPayment:
         installment.mark_paid(at=self._now())
         await self._installments.update(referral_id, installment)
         return installment
+
+
+class RecordPaymentProof:
+    """Attach a receipt or bank record to a paid installment (referrer only).
+
+    The bytes go through the FileStorage port; the installment keeps the metadata.
+    The proof value object validates the content type and size on construction, so
+    an unsupported or oversized file is rejected before anything is stored.
+    """
+
+    def __init__(
+        self,
+        referrals: ReferralRepository,
+        installments: InstallmentRepository,
+        storage: FileStorage,
+        *,
+        now: Callable[[], datetime] = _utc_now,
+    ) -> None:
+        self._referrals = referrals
+        self._installments = installments
+        self._storage = storage
+        self._now = now
+
+    async def execute(
+        self,
+        referral_id: UUID,
+        sequence: int,
+        *,
+        requester_id: UUID,
+        filename: str,
+        content_type: str,
+        data: bytes,
+    ) -> CommissionInstallment:
+        referral = await _load_owned(self._referrals, referral_id, requester_id)
+        if referral.is_frozen:
+            raise DealFrozen
+        installment = await self._installments.get(referral_id, sequence)
+        if installment is None:
+            raise InstallmentNotFound
+        key = f"proof:{referral_id}:{sequence}"
+        proof = PaymentProof(
+            filename=filename,
+            content_type=content_type,
+            size=len(data),
+            storage_key=key,
+            uploaded_at=self._now(),
+        )
+        installment.attach_proof(proof)
+        await self._storage.save(key, data, content_type=content_type)
+        await self._installments.update(referral_id, installment)
+        return installment
+
+
+class GetPaymentProof:
+    """Return a paid installment's proof (metadata + bytes), visible to either party."""
+
+    def __init__(
+        self,
+        referrals: ReferralRepository,
+        installments: InstallmentRepository,
+        storage: FileStorage,
+    ) -> None:
+        self._referrals = referrals
+        self._installments = installments
+        self._storage = storage
+
+    async def execute(
+        self, referral_id: UUID, sequence: int, *, requester_id: UUID
+    ) -> tuple[PaymentProof, bytes]:
+        await _load_visible(self._referrals, referral_id, requester_id)
+        installment = await self._installments.get(referral_id, sequence)
+        if installment is None or installment.proof is None:
+            raise ProofNotFound
+        data = await self._storage.load(installment.proof.storage_key)
+        if data is None:
+            raise ProofNotFound
+        return installment.proof, data
 
 
 class SendInstallmentReminder:

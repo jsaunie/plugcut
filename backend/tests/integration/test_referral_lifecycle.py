@@ -455,3 +455,85 @@ class TestReminders:
             f"/api/v1/referrals/{deal_id}/installments/1/remind", headers=intruder
         )
         assert response.status_code == 403
+
+
+async def _sign_and_pay(client: AsyncClient, headers: dict[str, str]) -> str:
+    """Sign a deal and mark installment 1 as paid, ready for a proof."""
+    deal_id = await _sign(client, headers)
+    await client.post(f"/api/v1/referrals/{deal_id}/activate", headers=headers)
+    await client.post(f"/api/v1/referrals/{deal_id}/installments/1/pay", headers=headers)
+    return deal_id
+
+
+_PDF = ("receipt.pdf", b"%PDF-1.4 fake receipt bytes", "application/pdf")
+
+
+class TestPaymentProof:
+    async def test_upload_then_download_a_proof(self, client: AsyncClient) -> None:
+        headers = await _headers(client)
+        deal_id = await _sign_and_pay(client, headers)
+
+        uploaded = await client.post(
+            f"/api/v1/referrals/{deal_id}/installments/1/proof",
+            files={"file": _PDF},
+            headers=headers,
+        )
+        assert uploaded.status_code == 200
+        proof = uploaded.json()["proof"]
+        assert proof["filename"] == "receipt.pdf"
+        assert proof["content_type"] == "application/pdf"
+        assert proof["size"] == len(_PDF[1])
+
+        detail = await client.get(f"/api/v1/referrals/{deal_id}", headers=headers)
+        assert detail.json()["schedule"][0]["proof"]["filename"] == "receipt.pdf"
+
+        downloaded = await client.get(
+            f"/api/v1/referrals/{deal_id}/installments/1/proof", headers=headers
+        )
+        assert downloaded.status_code == 200
+        assert downloaded.content == _PDF[1]
+        assert downloaded.headers["content-type"].startswith("application/pdf")
+
+    async def test_cannot_attach_proof_to_an_unpaid_installment(
+        self, client: AsyncClient
+    ) -> None:
+        headers = await _headers(client)
+        deal_id = await _sign(client, headers)  # installment 1 not paid
+        response = await client.post(
+            f"/api/v1/referrals/{deal_id}/installments/1/proof",
+            files={"file": _PDF},
+            headers=headers,
+        )
+        assert response.status_code == 409
+        assert response.json()["error"]["code"] == "installment.proof_requires_paid"
+
+    async def test_rejects_an_unsupported_file_type(self, client: AsyncClient) -> None:
+        headers = await _headers(client)
+        deal_id = await _sign_and_pay(client, headers)
+        response = await client.post(
+            f"/api/v1/referrals/{deal_id}/installments/1/proof",
+            files={"file": ("archive.zip", b"PK\x03\x04 zip", "application/zip")},
+            headers=headers,
+        )
+        assert response.status_code == 415
+        assert response.json()["error"]["code"] == "proof.unsupported_type"
+
+    async def test_download_404_when_no_proof(self, client: AsyncClient) -> None:
+        headers = await _headers(client)
+        deal_id = await _sign_and_pay(client, headers)
+        response = await client.get(
+            f"/api/v1/referrals/{deal_id}/installments/1/proof", headers=headers
+        )
+        assert response.status_code == 404
+        assert response.json()["error"]["code"] == "proof.not_found"
+
+    async def test_upload_forbidden_for_non_owner(self, client: AsyncClient) -> None:
+        owner = await _headers(client, "owner@example.com")
+        deal_id = await _sign_and_pay(client, owner)
+        intruder = await _headers(client, "intruder@example.com")
+        forbidden = await client.post(
+            f"/api/v1/referrals/{deal_id}/installments/1/proof",
+            files={"file": _PDF},
+            headers=intruder,
+        )
+        assert forbidden.status_code == 403

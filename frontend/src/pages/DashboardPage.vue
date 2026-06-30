@@ -223,11 +223,46 @@ function money(amount: number, currency: string): string {
   border-radius: var(--radius-pill);
 }
 .deal__role--referrer {
-  background: rgba(216, 255, 54, 0.14);
-  color: var(--accent-deep);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent-on-ink);
 }
 .deal__role--placed {
   background: var(--ink-3);
   color: var(--muted-on-ink);
+}
+
+/* Signature motif: the meta block reads as a ticket's tear-off stub, split from
+   the body by a perforation with punched notches. Only on wide cards (when the
+   row does not wrap), so the stacked mobile layout stays clean. */
+@media (min-width: 600px) {
+  .deal {
+    position: relative;
+    overflow: hidden;
+  }
+  .deal__meta {
+    align-self: stretch;
+    position: relative;
+    margin-left: 0.2rem;
+    padding-left: 1.7rem;
+    border-left: 1.6px dashed var(--line-on-ink);
+  }
+  .deal__meta::before,
+  .deal__meta::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--ink);
+  }
+  .deal__meta::before {
+    top: -1.3rem;
+    transform: translate(-50%, -50%);
+  }
+  .deal__meta::after {
+    bottom: -1.3rem;
+    transform: translate(-50%, 50%);
+  }
 }
 </style>
