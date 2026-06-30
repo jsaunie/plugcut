@@ -52,6 +52,21 @@ Deal pipeline status: `SENT → IN_DISCUSSION → QUALIFIED → SIGNED → ACTIV
       timestamps; shown as a "Historique" timeline on the deal detail.
 - [ ] **Dispute mode** — flag, freeze, export an evidence pack.
 
+## Network address book (contacts)
+
+A private, owner-scoped CRM for the user's own network (not a shared directory, not
+matchmaking). General by design: a contact is a person or a company (freelancer, coach,
+agency, anyone).
+
+- [x] **Contacts CRUD** — full_name, headline, company, location, email, phone,
+      LinkedIn URL, tags, notes; `/api/v1/contacts` owner-scoped; list + create/edit/
+      delete UI with a Deals/Contacts nav.
+- [x] **PDF import** — upload a LinkedIn profile export or a CV; `POST /contacts/import`
+      extracts a suggested contact (pypdf) that pre-fills the form for the user to
+      confirm.
+- [ ] Link a contact to a referral deal (placed person / referrer).
+- [ ] Search / filter by tag.
+
 ## Collection model (decision)
 
 - **Now (Model A, in place):** Plugcut is the **system of record**. It generates the
