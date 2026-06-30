@@ -42,6 +42,15 @@ in `src/styles/base.css` (deliberately not utility-first, for a distinctive look
 user-facing copy goes through vue-i18n (`src/i18n/locales/{fr,en}.json`) — never hardcode
 strings.
 
+## Deployment (read `docs/DEPLOY.md`)
+
+SPA on **Vercel** (static, `frontend/vercel.json` declares the build and rewrites `/api/*`
+to the API host), FastAPI as a long-lived container (`backend/Dockerfile`, portable to
+Render / Railway / Fly) on **Supabase Postgres**. The container runs `alembic upgrade head`
+on boot, then serves on `$PORT`; production sets `PLUGCUT_AUTO_CREATE_SCHEMA=false` so
+Alembic owns the schema. Local dev stays on SQLite. The engine adds pooler-safe settings
+(`pool_pre_ping`, asyncpg `statement_cache_size=0`) only for Postgres URLs.
+
 ## Architecture (read `docs/ARCHITECTURE.md` first)
 
 Hexagonal / DDD. The **domain is pure Python with zero framework imports** — the
