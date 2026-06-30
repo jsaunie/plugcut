@@ -26,7 +26,9 @@ def _engine_options(url: str) -> dict[str, Any]:
         return {
             "pool_pre_ping": True,
             "pool_recycle": 1800,
-            "connect_args": {"statement_cache_size": 0},
+            # Managed Postgres (Supabase) requires TLS; asyncpg does not enable it on its
+            # own, so request it explicitly. statement_cache_size=0 keeps it pooler-safe.
+            "connect_args": {"statement_cache_size": 0, "ssl": "require"},
         }
     return {}
 
