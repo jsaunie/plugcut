@@ -1,31 +1,79 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink, useRoute } from 'vue-router'
 
 import AppShell from '@/features/app/AppShell.vue'
+import {
+  acceptReferral,
+  activateReferral,
+  getAgreement,
+  getReferral,
+  payInstallment,
+  qualifyReferral,
+} from '@/features/referrals/api'
 import DealStatus from '@/features/referrals/DealStatus.vue'
-import { getReferral } from '@/features/referrals/api'
-import type { ReferralDetail } from '@/features/referrals/types'
+import type { AcceptParty, ReferralDetail } from '@/features/referrals/types'
 import { formatCurrency, formatDate } from '@/shared/format'
 import { ApiError } from '@/shared/http'
+import { UiButton } from '@/ui'
 
 const { t, locale } = useI18n()
 const route = useRoute()
+const id = route.params.id as string
 
 const deal = ref<ReferralDetail | null>(null)
 const error = ref('')
 const loading = ref(true)
+const actionError = ref('')
+const busy = ref(false)
 
-onMounted(async () => {
+const signedStates = ['signed', 'active', 'completed']
+const canQualify = computed(() => ['sent', 'in_discussion'].includes(deal.value?.status ?? ''))
+const canAccept = computed(() => deal.value?.status === 'qualified')
+const canActivate = computed(() => deal.value?.status === 'signed')
+const isSigned = computed(() => signedStates.includes(deal.value?.status ?? ''))
+
+async function load(): Promise<void> {
+  loading.value = true
   try {
-    deal.value = await getReferral(route.params.id as string)
+    deal.value = await getReferral(id)
   } catch (err) {
     error.value = err instanceof ApiError ? err.message : t('deals.errors.generic')
   } finally {
     loading.value = false
   }
-})
+}
+
+async function run(action: () => Promise<unknown>): Promise<void> {
+  actionError.value = ''
+  busy.value = true
+  try {
+    await action()
+    await load()
+  } catch (err) {
+    actionError.value = err instanceof ApiError ? err.message : t('deals.errors.generic')
+  } finally {
+    busy.value = false
+  }
+}
+
+const qualify = () => run(() => qualifyReferral(id))
+const accept = (party: AcceptParty) => run(() => acceptReferral(id, party))
+const activate = () => run(() => activateReferral(id))
+const pay = (sequence: number) => run(() => payInstallment(id, sequence))
+
+async function openAgreement(): Promise<void> {
+  actionError.value = ''
+  try {
+    const { html } = await getAgreement(id)
+    const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }))
+    window.open(url, '_blank')
+    setTimeout(() => URL.revokeObjectURL(url), 30000)
+  } catch (err) {
+    actionError.value = err instanceof ApiError ? err.message : t('deals.errors.generic')
+  }
+}
 
 function money(value: number, currency = 'EUR'): string {
   return formatCurrency(value, currency, locale.value)
@@ -33,6 +81,8 @@ function money(value: number, currency = 'EUR'): string {
 function day(iso: string): string {
   return formatDate(iso, locale.value)
 }
+
+onMounted(load)
 </script>
 
 <template>
@@ -50,6 +100,38 @@ function day(iso: string): string {
         </div>
         <DealStatus :status="deal.status" />
       </header>
+
+      <section class="actions">
+        <h2 class="section-title">{{ t('deals.actions.title') }}</h2>
+        <div class="actions__row">
+          <UiButton v-if="canQualify" :loading="busy" @click="qualify">
+            {{ t('deals.actions.qualify') }}
+          </UiButton>
+          <template v-if="canAccept">
+            <UiButton
+              variant="ghost"
+              :disabled="busy || deal.accepted_by_referrer"
+              @click="accept('referrer')"
+            >
+              {{ deal.accepted_by_referrer ? t('deals.actions.accepted') : t('deals.actions.acceptReferrer') }}
+            </UiButton>
+            <UiButton
+              variant="ghost"
+              :disabled="busy || deal.accepted_by_placed"
+              @click="accept('placed')"
+            >
+              {{ deal.accepted_by_placed ? t('deals.actions.accepted') : t('deals.actions.acceptPlaced') }}
+            </UiButton>
+          </template>
+          <UiButton v-if="canActivate" :loading="busy" @click="activate">
+            {{ t('deals.actions.activate') }}
+          </UiButton>
+          <UiButton v-if="isSigned" variant="ghost" @click="openAgreement">
+            {{ t('deals.actions.viewAgreement') }}
+          </UiButton>
+        </div>
+        <p v-if="actionError" class="error" role="alert">{{ actionError }}</p>
+      </section>
 
       <dl class="terms">
         <div><dt>{{ t('deals.detail.dailyRate') }}</dt><dd>{{ money(deal.daily_rate, deal.currency) }}</dd></div>
@@ -80,6 +162,8 @@ function day(iso: string): string {
               <th>{{ t('deals.detail.period') }}</th>
               <th>{{ t('deals.detail.due') }}</th>
               <th class="num">{{ t('deals.detail.amount') }}</th>
+              <th>{{ t('deals.detail.status') }}</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -88,6 +172,19 @@ function day(iso: string): string {
               <td>{{ day(row.period_start) }}</td>
               <td>{{ day(row.due_date) }}</td>
               <td class="num">{{ money(row.expected_amount, deal.currency) }}</td>
+              <td class="istatus" :class="`istatus--${row.status}`">
+                {{ t(`deals.installmentStatus.${row.status}`) }}
+              </td>
+              <td class="num">
+                <button
+                  v-if="isSigned && row.status !== 'paid'"
+                  class="pay"
+                  :disabled="busy"
+                  @click="pay(row.sequence)"
+                >
+                  {{ t('deals.actions.pay') }}
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -109,6 +206,7 @@ function day(iso: string): string {
 }
 .error {
   color: var(--danger);
+  margin-top: 0.8rem;
 }
 .dealhead {
   display: flex;
@@ -126,6 +224,14 @@ function day(iso: string): string {
   color: var(--muted-on-ink);
   font-family: var(--font-mono);
   font-size: var(--fs-small);
+}
+.actions {
+  margin-bottom: 2.5rem;
+}
+.actions__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
 }
 .terms {
   display: grid;
@@ -197,5 +303,30 @@ function day(iso: string): string {
 .sched .num {
   text-align: right;
   font-family: var(--font-mono);
+}
+.istatus {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted-on-ink);
+}
+.istatus--paid {
+  color: var(--accent-deep);
+}
+.istatus--overdue {
+  color: var(--danger);
+}
+.pay {
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.pay:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

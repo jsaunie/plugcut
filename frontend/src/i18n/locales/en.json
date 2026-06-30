@@ -214,11 +214,28 @@
       "schedule": "Commission schedule",
       "period": "Period",
       "due": "Due",
-      "amount": "Amount"
+      "amount": "Amount",
+      "status": "Status"
+    },
+    "actions": {
+      "title": "Move the deal forward",
+      "qualify": "Qualify the deal",
+      "acceptReferrer": "Accept (referrer)",
+      "acceptPlaced": "Accept (placed person)",
+      "accepted": "Accepted",
+      "activate": "Activate the deal",
+      "viewAgreement": "View the contract",
+      "pay": "Pay"
+    },
+    "installmentStatus": {
+      "pending": "Upcoming",
+      "due": "Due",
+      "paid": "Paid",
+      "overdue": "Overdue"
     },
     "errors": {
       "clientRequired": "Client reference is required.",
-      "generic": "Could not create the deal. Please try again."
+      "generic": "An action failed. Please try again."
     }
   },
   "placeholder": {

@@ -7,11 +7,15 @@ export interface Referral {
   commission_rate: number
   duration_months: number
   status: string
+  accepted_by_referrer: boolean
+  accepted_by_placed: boolean
   attribution_hash: string | null
   created_at: string
   monthly_expected: number
   total_expected: number
 }
+
+export type AcceptParty = 'referrer' | 'placed'
 
 export interface Installment {
   sequence: number

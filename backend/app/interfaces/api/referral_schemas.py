@@ -40,6 +40,8 @@ class ReferralResponse(BaseModel):
     commission_rate: float
     duration_months: int
     status: str
+    accepted_by_referrer: bool
+    accepted_by_placed: bool
     attribution_hash: str | None
     created_at: datetime
     monthly_expected: float
@@ -57,6 +59,8 @@ class ReferralResponse(BaseModel):
             commission_rate=float(referral.terms.commission.value),
             duration_months=referral.terms.duration_months,
             status=referral.status.value,
+            accepted_by_referrer=referral.accepted_by_referrer_at is not None,
+            accepted_by_placed=referral.accepted_by_placed_at is not None,
             attribution_hash=referral.attribution_hash,
             created_at=referral.created_at,
             monthly_expected=float(monthly.amount),

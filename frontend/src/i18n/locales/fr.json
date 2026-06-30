@@ -214,11 +214,28 @@
       "schedule": "Échéancier des commissions",
       "period": "Période",
       "due": "Échéance",
-      "amount": "Montant"
+      "amount": "Montant",
+      "status": "Statut"
+    },
+    "actions": {
+      "title": "Faire avancer le deal",
+      "qualify": "Qualifier le deal",
+      "acceptReferrer": "Accepter (apporteur)",
+      "acceptPlaced": "Accepter (personne placée)",
+      "accepted": "Accepté",
+      "activate": "Activer le deal",
+      "viewAgreement": "Voir le contrat",
+      "pay": "Régler"
+    },
+    "installmentStatus": {
+      "pending": "À venir",
+      "due": "À régler",
+      "paid": "Réglé",
+      "overdue": "En retard"
     },
     "errors": {
       "clientRequired": "Référence client requise.",
-      "generic": "Impossible de créer le deal. Réessaie."
+      "generic": "Une action a échoué. Réessaie."
     }
   },
   "placeholder": {
