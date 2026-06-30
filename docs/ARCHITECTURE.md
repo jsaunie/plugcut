@@ -65,6 +65,23 @@ frontend/src/
 State via Pinia; server state via TanStack Query; i18n via vue-i18n (FR + EN complete,
 no hardcoded user-facing strings).
 
+## Security
+
+- **Passwords**: bcrypt with a per-password salt; only the hash is stored. Verification
+  fails closed on a malformed hash.
+- **Tokens**: own JWTs (HS256), short-lived access (15 min) + refresh (14 d). The token
+  type is encoded and checked, so a refresh token cannot be used as an access token and
+  `POST /auth/refresh` rejects an access token presented as a refresh token.
+- **CORS**: `CORSMiddleware` allows only the configured SPA origins
+  (`PLUGCUT_CORS_ORIGINS`, default `http://localhost:5173`).
+- **Authorization**: every referral/installment operation is owner-scoped (a deal is only
+  visible and mutable by its referrer), returning `403`/`404` accordingly.
+- **Errors**: domain errors carry stable codes mapped to localized messages, so the API
+  never leaks internal detail or raw English.
+- **Rate limiting**: not implemented in the demo. In production it would sit at the edge
+  (reverse proxy / API gateway) or via middleware (e.g. SlowAPI) on the auth endpoints
+  (`/auth/login`, `/auth/register`, `/auth/refresh`) to blunt credential stuffing.
+
 ## Testing strategy
 
 - **Domain** — fast pure unit tests (pytest), covering invariants and the schedule math.

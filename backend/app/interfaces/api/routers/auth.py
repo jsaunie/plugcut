@@ -8,15 +8,21 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.identity.dtos import AuthenticateUserCommand, RegisterUserCommand
-from app.application.identity.use_cases import AuthenticateUser, RegisterUser
+from app.application.identity.use_cases import (
+    AuthenticateUser,
+    RefreshAccessToken,
+    RegisterUser,
+)
 from app.interfaces.api.deps import (
     CurrentUser,
     get_authenticate_user,
+    get_refresh_access_token,
     get_register_user,
     get_session,
 )
 from app.interfaces.api.schemas import (
     LoginRequest,
+    RefreshRequest,
     RegisterRequest,
     TokenResponse,
     UserResponse,
@@ -42,6 +48,19 @@ async def login(
     use_case: Annotated[AuthenticateUser, Depends(get_authenticate_user)],
 ) -> TokenResponse:
     tokens = await use_case.execute(AuthenticateUserCommand(payload.email, payload.password))
+    return TokenResponse(
+        access_token=tokens.access_token,
+        refresh_token=tokens.refresh_token,
+        token_type=tokens.token_type,
+    )
+
+
+@router.post("/refresh", response_model=TokenResponse)
+async def refresh(
+    payload: RefreshRequest,
+    use_case: Annotated[RefreshAccessToken, Depends(get_refresh_access_token)],
+) -> TokenResponse:
+    tokens = await use_case.execute(payload.refresh_token)
     return TokenResponse(
         access_token=tokens.access_token,
         refresh_token=tokens.refresh_token,

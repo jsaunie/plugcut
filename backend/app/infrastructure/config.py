@@ -20,6 +20,9 @@ class Settings(BaseSettings):
 
     database_url: str = "sqlite+aiosqlite:///./plugcut.db"
 
+    # Origins allowed to call the API from a browser (the SPA). Override in prod.
+    cors_origins: list[str] = ["http://localhost:5173"]
+
     # Create tables from ORM metadata on startup. Convenient for local/sqlite dev;
     # set false in production and manage schema with Alembic migrations.
     auto_create_schema: bool = True

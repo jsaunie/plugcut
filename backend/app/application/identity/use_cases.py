@@ -15,6 +15,7 @@ from app.application.identity.errors import (
     EmailAlreadyRegistered,
     InactiveUser,
     InvalidCredentials,
+    InvalidToken,
 )
 from app.application.identity.ports import TokenService, UserRepository
 from app.domain.identity.entities import User
@@ -74,6 +75,26 @@ class AuthenticateUser:
             raise InvalidCredentials
         if not user.is_active:
             raise InactiveUser
+        return TokenPair(
+            access_token=self._tokens.create_access_token(str(user.id)),
+            refresh_token=self._tokens.create_refresh_token(str(user.id)),
+        )
+
+
+class RefreshAccessToken:
+    """Exchange a valid refresh token for a fresh access/refresh pair."""
+
+    def __init__(self, users: UserRepository, tokens: TokenService) -> None:
+        self._users = users
+        self._tokens = tokens
+
+    async def execute(self, refresh_token: str) -> TokenPair:
+        claims = self._tokens.decode(refresh_token)
+        if claims.token_type != "refresh":
+            raise InvalidToken
+        user = await self._users.get_by_id(UUID(claims.subject))
+        if user is None or not user.is_active:
+            raise InvalidToken
         return TokenPair(
             access_token=self._tokens.create_access_token(str(user.id)),
             refresh_token=self._tokens.create_refresh_token(str(user.id)),

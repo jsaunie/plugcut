@@ -44,6 +44,18 @@ export const useAuthStore = defineStore('auth', {
       this.user = await authApi.me()
     },
 
+    async tryRefresh(): Promise<boolean> {
+      if (!this.refreshToken) return false
+      try {
+        const tokens = await authApi.refresh(this.refreshToken)
+        this.setTokens(tokens.access_token, tokens.refresh_token)
+        return true
+      } catch {
+        this.logout()
+        return false
+      }
+    },
+
     logout(): void {
       this.accessToken = null
       this.refreshToken = null

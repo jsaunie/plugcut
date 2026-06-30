@@ -24,7 +24,19 @@ export function setAuthTokenGetter(getter: () => string | null): void {
   getAuthToken = getter
 }
 
-export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+// On a 401, try to refresh the access token once, then retry the original request.
+let refreshTokens: () => Promise<boolean> = async () => false
+export function setTokenRefresher(fn: () => Promise<boolean>): void {
+  refreshTokens = fn
+}
+
+const NO_REFRESH_PATHS = ['/auth/refresh', '/auth/login', '/auth/register']
+
+export async function apiFetch<T>(
+  path: string,
+  options: RequestInit = {},
+  retried = false,
+): Promise<T> {
   const headers = new Headers(options.headers)
   headers.set('Accept-Language', i18n.global.locale.value)
   if (options.body && !headers.has('Content-Type')) {
@@ -34,6 +46,10 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
   if (token) headers.set('Authorization', `Bearer ${token}`)
 
   const response = await fetch(`${BASE_URL}${path}`, { ...options, headers })
+
+  if (response.status === 401 && !retried && !NO_REFRESH_PATHS.includes(path)) {
+    if (await refreshTokens()) return apiFetch<T>(path, options, true)
+  }
 
   if (response.status === 204) return undefined as T
   const data: unknown = await response.json().catch(() => null)

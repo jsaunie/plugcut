@@ -13,7 +13,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.identity.errors import InvalidToken
 from app.application.identity.ports import TokenService, UserRepository
-from app.application.identity.use_cases import AuthenticateUser, RegisterUser
+from app.application.identity.use_cases import (
+    AuthenticateUser,
+    RefreshAccessToken,
+    RegisterUser,
+)
 from app.application.referrals.ports import (
     AgreementRenderer,
     InstallmentRepository,
@@ -82,6 +86,13 @@ def get_authenticate_user(
     tokens: Annotated[TokenService, Depends(get_token_service)],
 ) -> AuthenticateUser:
     return AuthenticateUser(users, hasher, tokens)
+
+
+def get_refresh_access_token(
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    tokens: Annotated[TokenService, Depends(get_token_service)],
+) -> RefreshAccessToken:
+    return RefreshAccessToken(users, tokens)
 
 
 async def get_current_user(

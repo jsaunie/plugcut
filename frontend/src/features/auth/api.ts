@@ -19,3 +19,10 @@ export function login(email: string, password: string): Promise<TokenPair> {
 export function me(): Promise<User> {
   return apiFetch<User>('/auth/me')
 }
+
+export function refresh(refreshToken: string): Promise<TokenPair> {
+  return apiFetch<TokenPair>('/auth/refresh', {
+    method: 'POST',
+    body: JSON.stringify({ refresh_token: refreshToken }),
+  })
+}

@@ -8,6 +8,7 @@ vi.mock('../api', () => ({
   register: vi.fn(),
   login: vi.fn(),
   me: vi.fn(),
+  refresh: vi.fn(),
 }))
 
 const mockedApi = vi.mocked(authApi)
@@ -76,5 +77,32 @@ describe('auth store', () => {
     store.logout()
     expect(store.isAuthenticated).toBe(false)
     expect(localStorage.getItem('plugcut.access')).toBeNull()
+  })
+
+  it('refreshes tokens with a stored refresh token', async () => {
+    mockedApi.refresh.mockResolvedValue({
+      access_token: 'access-2',
+      refresh_token: 'refresh-2',
+      token_type: 'bearer',
+    })
+    const store = useAuthStore()
+    store.setTokens('access-1', 'refresh-1')
+    const ok = await store.tryRefresh()
+    expect(ok).toBe(true)
+    expect(store.accessToken).toBe('access-2')
+  })
+
+  it('logs out when refresh fails', async () => {
+    mockedApi.refresh.mockRejectedValue(new Error('401'))
+    const store = useAuthStore()
+    store.setTokens('access-1', 'refresh-1')
+    const ok = await store.tryRefresh()
+    expect(ok).toBe(false)
+    expect(store.isAuthenticated).toBe(false)
+  })
+
+  it('does not refresh without a refresh token', async () => {
+    const store = useAuthStore()
+    expect(await store.tryRefresh()).toBe(false)
   })
 })

@@ -105,6 +105,39 @@ class TestLoginAndMe:
         assert response.json()["email"] == "dev@example.com"
 
 
+class TestRefresh:
+    async def test_refresh_returns_new_pair(self, client: AsyncClient) -> None:
+        await _register(client)
+        login = await client.post(
+            "/api/v1/auth/login", json={"email": "dev@example.com", "password": "supersecret"}
+        )
+        refresh_token = login.json()["refresh_token"]
+
+        response = await client.post(
+            "/api/v1/auth/refresh", json={"refresh_token": refresh_token}
+        )
+        assert response.status_code == 200
+        new_access = response.json()["access_token"]
+
+        me = await client.get(
+            "/api/v1/auth/me", headers={"Authorization": f"Bearer {new_access}"}
+        )
+        assert me.status_code == 200
+
+    async def test_access_token_rejected_as_refresh(self, client: AsyncClient) -> None:
+        await _register(client)
+        login = await client.post(
+            "/api/v1/auth/login", json={"email": "dev@example.com", "password": "supersecret"}
+        )
+        access_token = login.json()["access_token"]
+
+        response = await client.post(
+            "/api/v1/auth/refresh", json={"refresh_token": access_token}
+        )
+        assert response.status_code == 401
+        assert response.json()["error"]["code"] == "identity.invalid_token"
+
+
 class TestMeta:
     async def test_health(self, client: AsyncClient) -> None:
         assert (await client.get("/health")).json() == {"status": "ok"}
