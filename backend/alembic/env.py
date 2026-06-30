@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 from app.infrastructure.config import get_settings
 from app.infrastructure.persistence import models  # noqa: F401  (register tables)
-from app.infrastructure.persistence.database import Base
+from app.infrastructure.persistence.database import Base, engine_options
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -68,10 +68,14 @@ async def run_async_migrations() -> None:
 
     """
 
+    # Reuse the app's driver-specific connect args (TLS for managed Postgres, pooler-safe
+    # statement cache) so migrations connect exactly like the app does.
+    connect_args = engine_options(get_settings().database_url).get("connect_args", {})
     connectable = async_engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
+        connect_args=connect_args,
     )
 
     async with connectable.connect() as connection:

@@ -16,18 +16,18 @@ class Base(DeclarativeBase):
     """Declarative base for all ORM models."""
 
 
-def _engine_options(url: str) -> dict[str, Any]:
-    """Driver-specific tuning. Managed Postgres (Supabase, etc.) needs a couple of
-    safeguards that SQLite does not: pre-ping to survive idle-dropped connections, and
-    disabling asyncpg's prepared-statement cache so the app works through a transaction
-    pooler (pgbouncer) without 'prepared statement already exists' errors.
+def engine_options(url: str) -> dict[str, Any]:
+    """Driver-specific tuning, shared by the app engine and the Alembic migration engine.
+
+    Managed Postgres (Supabase, etc.) needs safeguards that SQLite does not: pre-ping to
+    survive idle-dropped connections; TLS, which asyncpg does not enable on its own; and a
+    disabled prepared-statement cache so the app works through a transaction pooler
+    (pgbouncer) without 'prepared statement already exists' errors.
     """
     if url.startswith("postgresql"):
         return {
             "pool_pre_ping": True,
             "pool_recycle": 1800,
-            # Managed Postgres (Supabase) requires TLS; asyncpg does not enable it on its
-            # own, so request it explicitly. statement_cache_size=0 keeps it pooler-safe.
             "connect_args": {"statement_cache_size": 0, "ssl": "require"},
         }
     return {}
@@ -35,7 +35,7 @@ def _engine_options(url: str) -> dict[str, Any]:
 
 class Database:
     def __init__(self, url: str) -> None:
-        self._engine = create_async_engine(url, future=True, **_engine_options(url))
+        self._engine = create_async_engine(url, future=True, **engine_options(url))
         self._session_factory = async_sessionmaker(self._engine, expire_on_commit=False)
 
     @property
