@@ -19,6 +19,11 @@
     "lead": "Ton carnet de réseau privé : les personnes et entreprises que tu peux placer, ou qui peuvent te placer.",
     "add": "Ajouter un contact",
     "empty": "Aucun contact pour l'instant. Ajoute la première personne de ton réseau.",
+    "filter": {
+      "search": "Rechercher un contact...",
+      "allTags": "Tous",
+      "none": "Aucun contact ne correspond à ce filtre."
+    },
     "kind": { "person": "Personne", "company": "Entreprise" },
     "form": {
       "newTitle": "Nouveau contact",
@@ -245,6 +250,8 @@
     "create": {
       "title": "Nouveau deal",
       "subtitle": "Définis qui tu as placé et les conditions de ta commission.",
+      "fromNetwork": "Depuis ton réseau",
+      "pickContact": "Choisir un contact...",
       "placedEmail": "Email de la personne placée",
       "clientRef": "Référence client (gardée discrète)",
       "dailyRate": "TJM placé (€)",

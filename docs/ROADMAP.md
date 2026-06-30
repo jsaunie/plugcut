@@ -64,8 +64,11 @@ agency, anyone).
 - [x] **PDF import** — upload a LinkedIn profile export or a CV; `POST /contacts/import`
       extracts a suggested contact (pypdf) that pre-fills the form for the user to
       confirm.
-- [ ] Link a contact to a referral deal (placed person / referrer).
-- [ ] Search / filter by tag.
+- [x] Link a contact to a referral deal — the create-deal form has a "From your network"
+      picker listing contacts that have an email (the ones you can actually invite);
+      selecting one prefills the placed person's email and the client reference.
+- [x] Search / filter by tag — the contacts list has a text search (name, company,
+      headline, email) plus one-click tag chips derived from the contacts themselves.
 
 ## Collection model (decision)
 

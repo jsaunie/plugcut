@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink } from 'vue-router'
 
@@ -9,7 +9,34 @@ import { UiButton } from '@/ui'
 
 const { t } = useI18n()
 const store = useContactsStore()
-const contacts = computed(() => store.contacts)
+
+const search = ref('')
+const activeTag = ref('')
+
+const allTags = computed(() => {
+  const seen = new Set<string>()
+  for (const contact of store.contacts) {
+    for (const tag of contact.tags) seen.add(tag)
+  }
+  return [...seen].sort((a, b) => a.localeCompare(b))
+})
+
+const contacts = computed(() => {
+  const query = search.value.trim().toLowerCase()
+  return store.contacts.filter((contact) => {
+    if (activeTag.value && !contact.tags.includes(activeTag.value)) return false
+    if (!query) return true
+    const haystack = [contact.full_name, contact.company, contact.headline, contact.email]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+    return haystack.includes(query)
+  })
+})
+
+function toggleTag(tag: string): void {
+  activeTag.value = activeTag.value === tag ? '' : tag
+}
 
 onMounted(() => {
   if (!store.loaded) void store.fetchAll()
@@ -26,14 +53,49 @@ onMounted(() => {
       <UiButton to="/app/contacts/nouveau">{{ t('contacts.add') }}</UiButton>
     </div>
 
-    <p v-if="store.loading && !contacts.length" class="muted">{{ t('common.loading') }}</p>
+    <p v-if="store.loading && !store.contacts.length" class="muted">{{ t('common.loading') }}</p>
 
-    <div v-else-if="!contacts.length" class="empty">
+    <div v-else-if="!store.contacts.length" class="empty">
       <p>{{ t('contacts.empty') }}</p>
       <UiButton to="/app/contacts/nouveau">{{ t('contacts.add') }}</UiButton>
     </div>
 
-    <ul v-else class="list">
+    <template v-else>
+      <div class="filters">
+        <input
+          v-model="search"
+          type="search"
+          class="filters__search"
+          :placeholder="t('contacts.filter.search')"
+          :aria-label="t('contacts.filter.search')"
+        />
+        <ul v-if="allTags.length" class="filters__tags">
+          <li>
+            <button
+              type="button"
+              class="chip"
+              :class="{ 'chip--active': !activeTag }"
+              @click="activeTag = ''"
+            >
+              {{ t('contacts.filter.allTags') }}
+            </button>
+          </li>
+          <li v-for="tag in allTags" :key="tag">
+            <button
+              type="button"
+              class="chip"
+              :class="{ 'chip--active': activeTag === tag }"
+              @click="toggleTag(tag)"
+            >
+              {{ tag }}
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <p v-if="!contacts.length" class="muted">{{ t('contacts.filter.none') }}</p>
+
+      <ul v-else class="list">
       <li v-for="contact in contacts" :key="contact.id">
         <RouterLink :to="`/app/contacts/${contact.id}`" class="card">
           <div class="card__main">
@@ -49,7 +111,8 @@ onMounted(() => {
           </div>
         </RouterLink>
       </li>
-    </ul>
+      </ul>
+    </template>
   </AppShell>
 </template>
 
@@ -72,6 +135,51 @@ onMounted(() => {
 }
 .muted {
   color: var(--muted-on-ink);
+}
+.filters {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.6rem;
+}
+.filters__search {
+  width: 100%;
+  max-width: 26rem;
+  padding: 0.7rem 1rem;
+  background: var(--ink-2);
+  border: 1px solid var(--line-on-ink);
+  border-radius: var(--radius-sm);
+  color: var(--text-on-ink);
+  font: inherit;
+}
+.filters__search:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.filters__tags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.chip {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 0.32rem 0.7rem;
+  border-radius: var(--radius-pill);
+  background: var(--ink-3);
+  color: var(--text-on-ink);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) ease,
+    background var(--dur-fast) ease;
+}
+.chip:hover {
+  border-color: var(--line-on-ink);
+}
+.chip--active {
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 .empty {
   display: grid;

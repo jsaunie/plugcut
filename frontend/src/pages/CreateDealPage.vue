@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterLink, useRouter } from 'vue-router'
 
 import AppShell from '@/features/app/AppShell.vue'
 import { emailError } from '@/features/auth/validation'
+import { useContactsStore } from '@/features/contacts/store'
 import { useReferralsStore } from '@/features/referrals/store'
 import { formatCurrency } from '@/shared/format'
 import { ApiError } from '@/shared/http'
@@ -13,6 +14,24 @@ import { UiButton, UiField, UiTextInput } from '@/ui'
 const { t, locale } = useI18n()
 const router = useRouter()
 const store = useReferralsStore()
+const contactsStore = useContactsStore()
+
+const selectedContactId = ref('')
+const pickableContacts = computed(() => contactsStore.contacts.filter((c) => c.email))
+
+onMounted(() => {
+  if (!contactsStore.loaded) void contactsStore.fetchAll()
+})
+
+function applyContact(): void {
+  const contact = contactsStore.contacts.find((c) => c.id === selectedContactId.value)
+  if (!contact?.email) return
+  form.placed_person_email = contact.email
+  if (!form.client_reference.trim()) {
+    form.client_reference = contact.company || contact.full_name
+  }
+  errors.email = undefined
+}
 
 const form = reactive({
   placed_person_email: '',
@@ -71,6 +90,20 @@ async function submit(): Promise<void> {
 
     <div class="layout">
       <form class="form" novalidate @submit.prevent="submit">
+        <UiField v-if="pickableContacts.length" :label="t('deals.create.fromNetwork')" for-id="contact">
+          <select
+            id="contact"
+            v-model="selectedContactId"
+            class="picker"
+            @change="applyContact"
+          >
+            <option value="">{{ t('deals.create.pickContact') }}</option>
+            <option v-for="c in pickableContacts" :key="c.id" :value="c.id">
+              {{ c.company ? `${c.full_name} · ${c.company}` : c.full_name }}
+            </option>
+          </select>
+        </UiField>
+
         <UiField
           :label="t('deals.create.placedEmail')"
           for-id="placed"
@@ -158,6 +191,20 @@ async function submit(): Promise<void> {
   display: grid;
   gap: 1.2rem;
   grid-template-columns: repeat(2, 1fr);
+}
+.picker {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: var(--ink-2);
+  border: 1px solid var(--line-on-ink);
+  border-radius: var(--radius-sm);
+  color: var(--text-on-ink);
+  font: inherit;
+  transition: border-color var(--dur-fast) ease;
+}
+.picker:focus {
+  outline: none;
+  border-color: var(--accent);
 }
 .form__error {
   color: var(--danger);

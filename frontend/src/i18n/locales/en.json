@@ -19,6 +19,11 @@
     "lead": "Your private network address book: the people and companies you can place, or who can place you.",
     "add": "Add a contact",
     "empty": "No contacts yet. Add the first person in your network.",
+    "filter": {
+      "search": "Search a contact...",
+      "allTags": "All",
+      "none": "No contact matches this filter."
+    },
     "kind": { "person": "Person", "company": "Company" },
     "form": {
       "newTitle": "New contact",
@@ -245,6 +250,8 @@
     "create": {
       "title": "New deal",
       "subtitle": "Set who you placed and your commission terms.",
+      "fromNetwork": "From your network",
+      "pickContact": "Pick a contact...",
       "placedEmail": "Placed person's email",
       "clientRef": "Client reference (kept discreet)",
       "dailyRate": "Placed day rate (€)",
