@@ -183,7 +183,7 @@ async function sign(): Promise<void> {
   font-size: var(--fs-eyebrow);
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--accent-deep);
+  color: var(--accent-on-ink);
 }
 .card__title {
   margin-top: 0.8rem;

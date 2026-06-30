@@ -18,7 +18,7 @@ withDefaults(defineProps<{ tone?: 'muted' | 'accent' | 'paper' }>(), { tone: 'mu
   color: var(--muted-on-ink);
 }
 .ui-eyebrow--accent {
-  color: var(--accent-deep);
+  color: var(--accent-on-ink);
 }
 .ui-eyebrow--paper {
   color: var(--text-on-paper);

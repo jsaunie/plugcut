@@ -71,6 +71,13 @@ Value objects enforce invariants in `__post_init__`, so an invalid instance can'
 
 ## Design & copy rules (hard requirements)
 
+**Read `DESIGN.md` before any visual or UI change.** It is the art-direction source
+of truth (direction "Billet Emeraude": softened navy ink + warm ticket paper +
+emerald spot color, with the ticket/tear-off-stub as the signature motif). All
+colors, fonts, spacing, and aesthetic decisions are defined there and implemented as
+CSS variables in `frontend/src/ui/tokens.css`; editing those variables recolors every
+page. Do not deviate without explicit approval, and flag any code that drifts from it.
+
 Avoid "AI-looking" output. These are enforced, not suggestions:
 
 - **No em dashes (—)** in any user-facing copy. Use commas, periods, colons, parentheses,

@@ -23,8 +23,8 @@ const { t } = useI18n()
   color: var(--muted-on-ink);
 }
 .status--qualified {
-  background: rgba(216, 255, 54, 0.14);
-  color: var(--accent-deep);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent-on-ink);
 }
 .status--signed,
 .status--active {
@@ -37,7 +37,7 @@ const { t } = useI18n()
 }
 .status--cancelled,
 .status--disputed {
-  background: rgba(255, 92, 92, 0.16);
+  background: color-mix(in srgb, var(--danger) 16%, transparent);
   color: var(--danger);
 }
 </style>

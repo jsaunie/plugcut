@@ -1,28 +1,38 @@
 /* ============================================================================
-   Plugcut design tokens. Single source of truth for the "fintech-noir editorial"
-   look. Consumed by the UI package and every screen. No literal colors/sizes in
-   components; reference these variables.
+   Plugcut design tokens. Single source of truth for the "billet / ticket-office"
+   look: softened ink-navy printing on warm ticket paper, with one confident
+   spot color (vert billet) for "the cut". Consumed by the UI package and every
+   screen. No literal colors/sizes in components; reference these variables.
+
+   Direction: A "Billet Emeraude" (see DESIGN.md). Green ink on paper is
+   banknote language: money, trust, calm. The deal is a ticket; the detachable
+   stub is the attribution proof each party keeps.
    ============================================================================ */
 
 :root {
-  /* ---- Palette ---- */
-  --ink: #0b0b0d;
-  --ink-2: #141417;
-  --ink-3: #1d1d22;
-  --paper: #f1ece0;
-  --paper-2: #e7e0d0;
-  --accent: #d8ff36; /* acid lime, the "cut" / money */
-  --accent-deep: #b4e000;
-  --accent-ink: #0b0b0d;
-  --danger: #ff5c5c;
+  /* ---- Palette: ink (deep navy, never pure black) ---- */
+  --ink: #102438;          /* deep navy "print" ink, reassuring, not harsh black */
+  --ink-2: #16314a;        /* raised surface on ink */
+  --ink-3: #1e3d59;        /* hover / third level on ink */
 
-  --text-on-ink: #ece8dd;
-  --muted-on-ink: rgba(236, 232, 221, 0.58);
-  --line-on-ink: rgba(236, 232, 221, 0.16);
+  /* ---- Palette: paper (warm ticket stock) ---- */
+  --paper: #f3eee2;
+  --paper-2: #ece5d5;
 
-  --text-on-paper: #16140f;
-  --muted-on-paper: rgba(22, 20, 15, 0.62);
-  --line-on-paper: rgba(22, 20, 15, 0.18);
+  /* ---- Spot color: "the cut" / money (vert billet) ---- */
+  --accent: #1f8f63;       /* emerald, money + growth + calm; fills + large text */
+  --accent-deep: #166f4c;  /* darker emerald: pressed fills + accent text ON paper */
+  --accent-on-ink: #4fc78f;/* light mint: accent text/labels ON dark ink (eyebrows, chips) */
+  --accent-ink: #ffffff;   /* text that sits ON the accent fill (white on emerald) */
+  --danger: #d4452f;       /* warm brick red, tuned to the warm palette */
+
+  --text-on-ink: #e9eef0;
+  --muted-on-ink: rgba(233, 238, 240, 0.6);
+  --line-on-ink: rgba(233, 238, 240, 0.16);
+
+  --text-on-paper: #15130e;
+  --muted-on-paper: rgba(21, 19, 14, 0.62);
+  --line-on-paper: rgba(21, 19, 14, 0.18);
 
   /* ---- Type families ---- */
   --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
@@ -59,8 +69,8 @@
   --radius-pill: 999px;
 
   /* ---- Shadows ---- */
-  --shadow-card: 0 40px 80px -30px rgba(0, 0, 0, 0.7);
-  --shadow-accent: 0 10px 30px -8px rgba(216, 255, 54, 0.55);
+  --shadow-card: 0 40px 80px -30px rgba(8, 18, 30, 0.55);
+  --shadow-accent: 0 10px 30px -8px rgba(31, 143, 99, 0.45);
 
   /* ---- Motion ---- */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
