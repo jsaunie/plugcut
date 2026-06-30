@@ -71,6 +71,18 @@ MESSAGES: dict[str, dict[str, str]] = {
         "fr": "La signature est requise.",
         "en": "A signature is required.",
     },
+    "contact.not_found": {
+        "fr": "Ce contact est introuvable.",
+        "en": "This contact was not found.",
+    },
+    "contact.forbidden": {
+        "fr": "Tu n'as pas accès à ce contact.",
+        "en": "You do not have access to this contact.",
+    },
+    "contact.name_required": {
+        "fr": "Le nom du contact est requis.",
+        "en": "The contact name is required.",
+    },
     "domain.error": {
         "fr": "Une erreur est survenue.",
         "en": "An error occurred.",

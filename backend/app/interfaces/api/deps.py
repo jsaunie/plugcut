@@ -11,6 +11,14 @@ from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.application.contacts.ports import ContactRepository
+from app.application.contacts.use_cases import (
+    CreateContact,
+    DeleteContact,
+    GetContact,
+    ListContacts,
+    UpdateContact,
+)
 from app.application.identity.errors import InvalidToken
 from app.application.identity.ports import TokenService, UserRepository
 from app.application.identity.use_cases import (
@@ -44,6 +52,7 @@ from app.domain.identity.ports import PasswordHasher
 from app.infrastructure.agreements.html_renderer import HtmlAgreementRenderer
 from app.infrastructure.config import Settings
 from app.infrastructure.invoices.html_renderer import HtmlInvoiceRenderer
+from app.infrastructure.persistence.contact_repository import SqlAlchemyContactRepository
 from app.infrastructure.persistence.installment_repository import (
     SqlAlchemyInstallmentRepository,
 )
@@ -237,3 +246,39 @@ def get_locale(
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> str:
     return resolve_locale(request.headers.get("accept-language"), settings.default_locale)
+
+
+def get_contact_repository(
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> ContactRepository:
+    return SqlAlchemyContactRepository(session)
+
+
+def get_create_contact(
+    contacts: Annotated[ContactRepository, Depends(get_contact_repository)],
+) -> CreateContact:
+    return CreateContact(contacts)
+
+
+def get_list_contacts(
+    contacts: Annotated[ContactRepository, Depends(get_contact_repository)],
+) -> ListContacts:
+    return ListContacts(contacts)
+
+
+def get_get_contact(
+    contacts: Annotated[ContactRepository, Depends(get_contact_repository)],
+) -> GetContact:
+    return GetContact(contacts)
+
+
+def get_update_contact(
+    contacts: Annotated[ContactRepository, Depends(get_contact_repository)],
+) -> UpdateContact:
+    return UpdateContact(contacts)
+
+
+def get_delete_contact(
+    contacts: Annotated[ContactRepository, Depends(get_contact_repository)],
+) -> DeleteContact:
+    return DeleteContact(contacts)

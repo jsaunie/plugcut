@@ -25,6 +25,9 @@ _STATUS_BY_CODE: dict[str, int] = {
     "agreement.not_ready": 409,
     "invitation.not_found": 404,
     "referral.signature_required": 422,
+    "contact.not_found": 404,
+    "contact.forbidden": 403,
+    "contact.name_required": 422,
 }
 _DEFAULT_STATUS = 400
 

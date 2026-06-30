@@ -6,7 +6,18 @@ from datetime import date, datetime
 from decimal import Decimal
 from uuid import UUID
 
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, Numeric, String, Uuid
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    Date,
+    DateTime,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+    Text,
+    Uuid,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.infrastructure.persistence.database import Base
@@ -73,3 +84,23 @@ class CommissionInstallmentModel(Base):
     actual_amount: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), nullable=True)
     status: Mapped[str] = mapped_column(String(20))
     paid_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class ContactModel(Base):
+    __tablename__ = "contacts"
+
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
+    owner_id: Mapped[UUID] = mapped_column(Uuid, index=True)
+    full_name: Mapped[str] = mapped_column(String(200))
+    kind: Mapped[str] = mapped_column(String(20))
+    headline: Mapped[str] = mapped_column(String(300), default="")
+    email: Mapped[str | None] = mapped_column(String(320), nullable=True)
+    phone: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    linkedin_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    company: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    location: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    tags: Mapped[list[str]] = mapped_column(JSON, default=list)
+    notes: Mapped[str] = mapped_column(Text, default="")
+    source: Mapped[str] = mapped_column(String(20))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
