@@ -21,10 +21,14 @@ export function qualifyReferral(id: string): Promise<Referral> {
   return apiFetch<Referral>(`/referrals/${id}/qualify`, { method: 'POST' })
 }
 
-export function acceptReferral(id: string, party: AcceptParty): Promise<Referral> {
+export function acceptReferral(
+  id: string,
+  party: AcceptParty,
+  signature: string,
+): Promise<Referral> {
   return apiFetch<Referral>(`/referrals/${id}/accept`, {
     method: 'POST',
-    body: JSON.stringify({ party }),
+    body: JSON.stringify({ party, signature }),
   })
 }
 

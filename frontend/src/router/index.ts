@@ -35,6 +35,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/DealDetailPage.vue'),
     meta: { requiresAuth: true },
   },
+  // Public signing page for the placed person (token is the credential, no account).
+  {
+    path: '/invitation/:token',
+    name: 'invitation',
+    component: () => import('@/pages/InvitationPage.vue'),
+  },
   // Legal documents.
   {
     path: '/mentions-legales',

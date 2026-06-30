@@ -220,12 +220,24 @@
     "actions": {
       "title": "Faire avancer le deal",
       "qualify": "Qualifier le deal",
-      "acceptReferrer": "Accepter (apporteur)",
-      "acceptPlaced": "Accepter (personne placée)",
-      "accepted": "Accepté",
       "activate": "Activer le deal",
       "viewAgreement": "Voir le contrat",
       "pay": "Régler"
+    },
+    "sign": {
+      "referrerPrompt": "Signe le deal en tant qu'apporteur.",
+      "yourName": "Ton nom complet",
+      "namePlaceholder": "Prénom Nom",
+      "signAsReferrer": "Signer",
+      "referrerSigned": "Tu as signé en tant qu'apporteur. En attente de la personne placée."
+    },
+    "invite": {
+      "title": "Inviter la personne placée",
+      "subtitle": "Envoie ce lien à la personne que tu as placée pour qu'elle signe sa part. La signature des deux parties scelle la preuve d'attribution.",
+      "copy": "Copier le lien",
+      "copied": "Copié",
+      "placedSigned": "La personne placée a signé.",
+      "placedPending": "En attente de la signature de la personne placée."
     },
     "installmentStatus": {
       "pending": "À venir",
@@ -236,6 +248,31 @@
     "errors": {
       "clientRequired": "Référence client requise.",
       "generic": "Une action a échoué. Réessaie."
+    }
+  },
+  "invitation": {
+    "loading": "Chargement…",
+    "invalidTitle": "Invitation invalide",
+    "invalid": "Ce lien d'invitation est invalide ou expiré.",
+    "eyebrow": "Accord d'apport",
+    "heading": "Tu as été placé",
+    "subtitle": "{referrer} t'invite à signer votre accord de commission.",
+    "client": "Client",
+    "dailyRate": "TJM",
+    "commission": "Commission",
+    "duration": "Durée",
+    "monthsUnit": "mois",
+    "monthly": "Commission / mois",
+    "yourName": "Signe avec ton nom complet",
+    "namePlaceholder": "Prénom Nom",
+    "consent": "J'accepte les termes de cet accord de commission.",
+    "sign": "Signer l'accord",
+    "signedTitle": "Accord signé",
+    "signed": "Merci, ta signature est enregistrée. L'accord est scellé.",
+    "errors": {
+      "nameRequired": "Ton nom est requis.",
+      "consentRequired": "Tu dois accepter les termes pour signer.",
+      "generic": "Une erreur est survenue. Réessaie."
     }
   },
   "legal": {

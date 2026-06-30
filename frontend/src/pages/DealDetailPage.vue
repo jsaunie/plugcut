@@ -13,10 +13,10 @@ import {
   qualifyReferral,
 } from '@/features/referrals/api'
 import DealStatus from '@/features/referrals/DealStatus.vue'
-import type { AcceptParty, ReferralDetail } from '@/features/referrals/types'
+import type { ReferralDetail } from '@/features/referrals/types'
+import { UiButton, UiField, UiTextInput } from '@/ui'
 import { formatCurrency, formatDate } from '@/shared/format'
 import { ApiError } from '@/shared/http'
-import { UiButton } from '@/ui'
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -27,12 +27,22 @@ const error = ref('')
 const loading = ref(true)
 const actionError = ref('')
 const busy = ref(false)
+const signatureName = ref('')
+const copied = ref(false)
 
 const signedStates = ['signed', 'active', 'completed']
 const canQualify = computed(() => ['sent', 'in_discussion'].includes(deal.value?.status ?? ''))
-const canAccept = computed(() => deal.value?.status === 'qualified')
+const canSignReferrer = computed(
+  () => deal.value?.status === 'qualified' && !deal.value?.accepted_by_referrer,
+)
 const canActivate = computed(() => deal.value?.status === 'signed')
 const isSigned = computed(() => signedStates.includes(deal.value?.status ?? ''))
+const showInvite = computed(() => !isSigned.value && Boolean(deal.value?.invitation_token))
+const inviteUrl = computed(() =>
+  deal.value?.invitation_token
+    ? `${window.location.origin}/invitation/${deal.value.invitation_token}`
+    : '',
+)
 
 async function load(): Promise<void> {
   loading.value = true
@@ -59,9 +69,15 @@ async function run(action: () => Promise<unknown>): Promise<void> {
 }
 
 const qualify = () => run(() => qualifyReferral(id))
-const accept = (party: AcceptParty) => run(() => acceptReferral(id, party))
+const signReferrer = () => run(() => acceptReferral(id, 'referrer', signatureName.value))
 const activate = () => run(() => activateReferral(id))
 const pay = (sequence: number) => run(() => payInstallment(id, sequence))
+
+async function copyLink(): Promise<void> {
+  await navigator.clipboard.writeText(inviteUrl.value)
+  copied.value = true
+  setTimeout(() => (copied.value = false), 2000)
+}
 
 async function openAgreement(): Promise<void> {
   actionError.value = ''
@@ -107,22 +123,6 @@ onMounted(load)
           <UiButton v-if="canQualify" :loading="busy" @click="qualify">
             {{ t('deals.actions.qualify') }}
           </UiButton>
-          <template v-if="canAccept">
-            <UiButton
-              variant="ghost"
-              :disabled="busy || deal.accepted_by_referrer"
-              @click="accept('referrer')"
-            >
-              {{ deal.accepted_by_referrer ? t('deals.actions.accepted') : t('deals.actions.acceptReferrer') }}
-            </UiButton>
-            <UiButton
-              variant="ghost"
-              :disabled="busy || deal.accepted_by_placed"
-              @click="accept('placed')"
-            >
-              {{ deal.accepted_by_placed ? t('deals.actions.accepted') : t('deals.actions.acceptPlaced') }}
-            </UiButton>
-          </template>
           <UiButton v-if="canActivate" :loading="busy" @click="activate">
             {{ t('deals.actions.activate') }}
           </UiButton>
@@ -130,7 +130,37 @@ onMounted(load)
             {{ t('deals.actions.viewAgreement') }}
           </UiButton>
         </div>
+
+        <form v-if="canSignReferrer" class="sign" @submit.prevent="signReferrer">
+          <p class="sign__prompt">{{ t('deals.sign.referrerPrompt') }}</p>
+          <div class="sign__row">
+            <UiField :label="t('deals.sign.yourName')" for-id="rsig">
+              <UiTextInput id="rsig" v-model="signatureName" :placeholder="t('deals.sign.namePlaceholder')" />
+            </UiField>
+            <UiButton type="submit" :loading="busy" :disabled="!signatureName.trim()">
+              {{ t('deals.sign.signAsReferrer') }}
+            </UiButton>
+          </div>
+        </form>
+        <p v-else-if="deal.accepted_by_referrer && !isSigned" class="signed-note">
+          {{ t('deals.sign.referrerSigned') }}
+        </p>
+
         <p v-if="actionError" class="error" role="alert">{{ actionError }}</p>
+      </section>
+
+      <section v-if="showInvite" class="invite">
+        <h2 class="section-title">{{ t('deals.invite.title') }}</h2>
+        <p class="muted invite__lead">{{ t('deals.invite.subtitle') }}</p>
+        <div class="invite__row">
+          <input class="invite__url" :value="inviteUrl" readonly @focus="(e) => (e.target as HTMLInputElement).select()" />
+          <UiButton variant="ghost" @click="copyLink">
+            {{ copied ? t('deals.invite.copied') : t('deals.invite.copy') }}
+          </UiButton>
+        </div>
+        <p class="invite__status">
+          {{ deal.accepted_by_placed ? t('deals.invite.placedSigned') : t('deals.invite.placedPending') }}
+        </p>
       </section>
 
       <dl class="terms">
@@ -232,6 +262,59 @@ onMounted(load)
   display: flex;
   flex-wrap: wrap;
   gap: 0.7rem;
+}
+.sign {
+  margin-top: 1.2rem;
+  padding: 1.2rem;
+  border: 1px solid var(--line-on-ink);
+  border-radius: var(--radius-sm);
+  max-width: 480px;
+}
+.sign__prompt {
+  font-size: var(--fs-small);
+  color: var(--muted-on-ink);
+  margin-bottom: 0.8rem;
+}
+.sign__row {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-end;
+}
+.sign__row > :first-child {
+  flex: 1;
+}
+.signed-note {
+  margin-top: 1rem;
+  font-size: var(--fs-small);
+  color: var(--accent-deep);
+}
+.invite {
+  margin-bottom: 2.5rem;
+}
+.invite__lead {
+  margin-bottom: 1rem;
+  max-width: 52ch;
+}
+.invite__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.invite__url {
+  flex: 1;
+  min-width: 240px;
+  padding: 0.7rem 0.9rem;
+  background: var(--ink-2);
+  border: 1px solid var(--line-on-ink);
+  border-radius: var(--radius-sm);
+  color: var(--text-on-ink);
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+}
+.invite__status {
+  margin-top: 0.9rem;
+  font-size: var(--fs-small);
+  color: var(--muted-on-ink);
 }
 .terms {
   display: grid;

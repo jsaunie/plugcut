@@ -16,8 +16,10 @@ Every feature must reinforce one of: *attribution proof*, *a clean agreement*,
       computes monthly/total commission. Persisted (SQLAlchemy + Alembic).
 - [x] **Create referral deal (UI)** — dashboard lists deals, create form with live
       commission preview, deal detail page with the full schedule.
-- [x] **Two-sided acceptance (API)** — qualify, accept (referrer + placed), activate
-      transitions; signing seals the SHA-256 attribution hash. Owner-scoped.
+- [x] **Two-sided acceptance + invitation + signature** — referrer signs with a typed
+      name; the placed person signs via a public invitation link (`/invitation/:token`,
+      no account) with consent. Both signatures seal the SHA-256 attribution hash.
+      Public endpoints `GET/POST /api/v1/invitations/{token}`. Verified end-to-end.
 - [x] **Agreement generation (API)** — HTML contract behind an `AgreementRenderer` port
       (FR/EN, parties + terms + attribution hash), `GET /referrals/{id}/agreement`,
       available once signed.

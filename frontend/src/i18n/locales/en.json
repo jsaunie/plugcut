@@ -220,12 +220,24 @@
     "actions": {
       "title": "Move the deal forward",
       "qualify": "Qualify the deal",
-      "acceptReferrer": "Accept (referrer)",
-      "acceptPlaced": "Accept (placed person)",
-      "accepted": "Accepted",
       "activate": "Activate the deal",
       "viewAgreement": "View the contract",
       "pay": "Pay"
+    },
+    "sign": {
+      "referrerPrompt": "Sign the deal as the referrer.",
+      "yourName": "Your full name",
+      "namePlaceholder": "First Last",
+      "signAsReferrer": "Sign",
+      "referrerSigned": "You signed as the referrer. Waiting for the placed person."
+    },
+    "invite": {
+      "title": "Invite the placed person",
+      "subtitle": "Send this link to the person you placed so they sign their side. Both signatures seal the attribution proof.",
+      "copy": "Copy the link",
+      "copied": "Copied",
+      "placedSigned": "The placed person has signed.",
+      "placedPending": "Waiting for the placed person's signature."
     },
     "installmentStatus": {
       "pending": "Upcoming",
@@ -236,6 +248,31 @@
     "errors": {
       "clientRequired": "Client reference is required.",
       "generic": "An action failed. Please try again."
+    }
+  },
+  "invitation": {
+    "loading": "Loading…",
+    "invalidTitle": "Invalid invitation",
+    "invalid": "This invitation link is invalid or expired.",
+    "eyebrow": "Referral agreement",
+    "heading": "You have been placed",
+    "subtitle": "{referrer} invites you to sign your commission agreement.",
+    "client": "Client",
+    "dailyRate": "Day rate",
+    "commission": "Commission",
+    "duration": "Duration",
+    "monthsUnit": "months",
+    "monthly": "Commission / month",
+    "yourName": "Sign with your full name",
+    "namePlaceholder": "First Last",
+    "consent": "I accept the terms of this commission agreement.",
+    "sign": "Sign the agreement",
+    "signedTitle": "Agreement signed",
+    "signed": "Thank you, your signature is recorded. The agreement is sealed.",
+    "errors": {
+      "nameRequired": "Your name is required.",
+      "consentRequired": "You must accept the terms to sign.",
+      "generic": "Something went wrong. Please try again."
     }
   },
   "legal": {

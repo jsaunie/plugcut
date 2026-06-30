@@ -9,6 +9,7 @@ export interface Referral {
   status: string
   accepted_by_referrer: boolean
   accepted_by_placed: boolean
+  invitation_token: string | null
   attribution_hash: string | null
   created_at: string
   monthly_expected: number
