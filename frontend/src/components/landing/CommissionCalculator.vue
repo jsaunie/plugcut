@@ -86,7 +86,7 @@ const fmt = (value: number) => currency.value.format(value)
   gap: 3rem;
 }
 .calc__head {
-  max-width: 30ch;
+  max-width: 34rem;
 }
 .calc__eyebrow {
   margin-bottom: 1rem;

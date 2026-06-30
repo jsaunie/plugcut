@@ -35,7 +35,7 @@ const steps = computed(() => tm('how.steps') as Step[])
 
 <style scoped>
 .how__head {
-  max-width: 22ch;
+  max-width: 32rem;
   margin-bottom: 3.5rem;
 }
 .how__eyebrow {

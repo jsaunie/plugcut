@@ -39,7 +39,7 @@ const glyphs = ['§', '✶', '↻', '◐']
   color: var(--text-on-paper);
 }
 .pillars__head {
-  max-width: 24ch;
+  max-width: 36rem;
   margin-bottom: 3.2rem;
 }
 .pillars__eyebrow {
