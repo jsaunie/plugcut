@@ -12,8 +12,10 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.referrals.use_cases import GetReferralByInvitation, SignByInvitation
+from app.domain.identity.entities import User
 from app.interfaces.api.deps import (
     get_invitation_view,
+    get_optional_current_user,
     get_session,
     get_sign_invitation,
 )
@@ -40,7 +42,11 @@ async def sign_invitation(
     payload: SignInvitationRequest,
     use_case: Annotated[SignByInvitation, Depends(get_sign_invitation)],
     session: Annotated[AsyncSession, Depends(get_session)],
+    current_user: Annotated[User | None, Depends(get_optional_current_user)],
 ) -> PublicReferralResponse:
-    referral, referrer_email = await use_case.execute(token, signature=payload.signature)
+    placed_person_id = current_user.id if current_user is not None else None
+    referral, referrer_email = await use_case.execute(
+        token, signature=payload.signature, placed_person_id=placed_person_id
+    )
     await session.commit()
     return PublicReferralResponse.from_domain(referral, referrer_email)

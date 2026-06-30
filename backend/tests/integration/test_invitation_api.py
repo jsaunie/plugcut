@@ -106,3 +106,40 @@ class TestSignByInvitation:
             json={"signature": ""},
         )
         assert response.status_code == 422
+
+
+class TestBidirectional:
+    async def test_placed_account_sees_the_deal_it_owes(self, client: AsyncClient) -> None:
+        referrer = await _headers(client, "ref@example.com")
+        deal = await _create_deal(client, referrer)
+        deal_id, token = deal["id"], deal["invitation_token"]
+        await client.post(f"/api/v1/referrals/{deal_id}/qualify", headers=referrer)
+        await client.post(
+            f"/api/v1/referrals/{deal_id}/accept",
+            json={"party": "referrer", "signature": "Jean"},
+            headers=referrer,
+        )
+
+        # The placed person, logged into their own account, signs the invitation.
+        placed = await _headers(client, "placed@example.com")
+        signed = await client.post(
+            f"/api/v1/invitations/{token}/accept",
+            json={"signature": "Dev Placed"},
+            headers=placed,
+        )
+        assert signed.json()["status"] == "signed"
+
+        # It now shows up in the placed person's own list, as a deal they owe.
+        deals = (await client.get("/api/v1/referrals", headers=placed)).json()
+        assert len(deals) == 1
+        assert deals[0]["role"] == "placed"
+
+        # They can read it, but the referrer's invitation token stays hidden.
+        detail = await client.get(f"/api/v1/referrals/{deal_id}", headers=placed)
+        assert detail.status_code == 200
+        assert detail.json()["role"] == "placed"
+        assert detail.json()["invitation_token"] is None
+
+        # They cannot drive the referrer's lifecycle.
+        forbidden = await client.post(f"/api/v1/referrals/{deal_id}/qualify", headers=placed)
+        assert forbidden.status_code == 403

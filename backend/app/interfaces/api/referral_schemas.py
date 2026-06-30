@@ -62,6 +62,7 @@ class ReferralResponse(BaseModel):
     commission_rate: float
     duration_months: int
     status: str
+    role: str
     accepted_by_referrer: bool
     accepted_by_placed: bool
     invitation_token: str | None
@@ -71,8 +72,9 @@ class ReferralResponse(BaseModel):
     total_expected: float
 
     @classmethod
-    def from_domain(cls, referral: Referral) -> ReferralResponse:
+    def from_domain(cls, referral: Referral, viewer_id: UUID) -> ReferralResponse:
         monthly = referral.terms.expected_amount_per_period
+        is_referrer = referral.referrer_id == viewer_id
         return cls(
             id=referral.id,
             placed_person_email=referral.placed_person_email,
@@ -82,9 +84,11 @@ class ReferralResponse(BaseModel):
             commission_rate=float(referral.terms.commission.value),
             duration_months=referral.terms.duration_months,
             status=referral.status.value,
+            role="referrer" if is_referrer else "placed",
             accepted_by_referrer=referral.accepted_by_referrer_at is not None,
             accepted_by_placed=referral.accepted_by_placed_at is not None,
-            invitation_token=referral.invitation_token,
+            # The invitation token is the referrer's secret; never expose it to the placed side.
+            invitation_token=referral.invitation_token if is_referrer else None,
             attribution_hash=referral.attribution_hash,
             created_at=referral.created_at,
             monthly_expected=float(monthly.amount),
@@ -154,9 +158,9 @@ class ReferralDetailResponse(ReferralResponse):
 
     @classmethod
     def from_domain_with_schedule(
-        cls, referral: Referral, schedule: CommissionSchedule
+        cls, referral: Referral, schedule: CommissionSchedule, viewer_id: UUID
     ) -> ReferralDetailResponse:
-        base = ReferralResponse.from_domain(referral)
+        base = ReferralResponse.from_domain(referral, viewer_id)
         return cls(
             **base.model_dump(),
             schedule=[InstallmentResponse.from_domain(i) for i in schedule.installments],

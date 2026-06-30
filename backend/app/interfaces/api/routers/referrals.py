@@ -73,7 +73,7 @@ async def create_referral(
         )
     )
     await session.commit()
-    return ReferralResponse.from_domain(referral)
+    return ReferralResponse.from_domain(referral, current_user.id)
 
 
 @router.get("", response_model=list[ReferralResponse])
@@ -82,7 +82,7 @@ async def list_referrals(
     use_case: Annotated[ListReferrals, Depends(get_list_referrals)],
 ) -> list[ReferralResponse]:
     referrals = await use_case.execute(current_user.id)
-    return [ReferralResponse.from_domain(referral) for referral in referrals]
+    return [ReferralResponse.from_domain(referral, current_user.id) for referral in referrals]
 
 
 @router.get("/stats", response_model=ReferralStatsResponse)
@@ -101,7 +101,7 @@ async def get_referral(
     use_case: Annotated[GetReferralWithSchedule, Depends(get_get_referral)],
 ) -> ReferralDetailResponse:
     referral, schedule = await use_case.execute(referral_id, requester_id=current_user.id)
-    return ReferralDetailResponse.from_domain_with_schedule(referral, schedule)
+    return ReferralDetailResponse.from_domain_with_schedule(referral, schedule, current_user.id)
 
 
 @router.post("/{referral_id}/qualify", response_model=ReferralResponse)
@@ -113,7 +113,7 @@ async def qualify_referral(
 ) -> ReferralResponse:
     referral = await use_case.execute(referral_id, requester_id=current_user.id)
     await session.commit()
-    return ReferralResponse.from_domain(referral)
+    return ReferralResponse.from_domain(referral, current_user.id)
 
 
 @router.post("/{referral_id}/accept", response_model=ReferralResponse)
@@ -131,7 +131,7 @@ async def accept_referral(
         signature=payload.signature,
     )
     await session.commit()
-    return ReferralResponse.from_domain(referral)
+    return ReferralResponse.from_domain(referral, current_user.id)
 
 
 @router.post("/{referral_id}/activate", response_model=ReferralResponse)
@@ -143,7 +143,7 @@ async def activate_referral(
 ) -> ReferralResponse:
     referral = await use_case.execute(referral_id, requester_id=current_user.id)
     await session.commit()
-    return ReferralResponse.from_domain(referral)
+    return ReferralResponse.from_domain(referral, current_user.id)
 
 
 @router.get("/{referral_id}/timeline", response_model=list[TimelineEntryResponse])

@@ -28,6 +28,8 @@ class ReferralRepository(Protocol):
 
     async def list_for_referrer(self, referrer_id: UUID) -> list[Referral]: ...
 
+    async def list_for_user(self, user_id: UUID) -> list[Referral]: ...
+
 
 class InstallmentRepository(Protocol):
     async def replace_for_referral(

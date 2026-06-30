@@ -60,10 +60,23 @@ async def _persist_schedule_on_signing(
 async def _load_owned(
     referrals: ReferralRepository, referral_id: UUID, requester_id: UUID
 ) -> Referral:
+    """For mutations: only the referrer (who owns the deal) may act."""
     referral = await referrals.get(referral_id)
     if referral is None:
         raise ReferralNotFound
     if referral.referrer_id != requester_id:
+        raise ReferralForbidden
+    return referral
+
+
+async def _load_visible(
+    referrals: ReferralRepository, referral_id: UUID, requester_id: UUID
+) -> Referral:
+    """For reads: either party (referrer or the placed person) may view the deal."""
+    referral = await referrals.get(referral_id)
+    if referral is None:
+        raise ReferralNotFound
+    if requester_id not in (referral.referrer_id, referral.placed_person_id):
         raise ReferralForbidden
     return referral
 
@@ -103,11 +116,13 @@ class CreateReferral:
 
 
 class ListReferrals:
+    """Every deal the user is a party to: those they refer and those they owe."""
+
     def __init__(self, referrals: ReferralRepository) -> None:
         self._referrals = referrals
 
-    async def execute(self, referrer_id: UUID) -> list[Referral]:
-        return await self._referrals.list_for_referrer(referrer_id)
+    async def execute(self, user_id: UUID) -> list[Referral]:
+        return await self._referrals.list_for_user(user_id)
 
 
 _COMMITTED = {ReferralStatus.SIGNED, ReferralStatus.ACTIVE, ReferralStatus.COMPLETED}
@@ -176,7 +191,7 @@ class GetDealTimeline:
         self._installments = installments
 
     async def execute(self, referral_id: UUID, *, requester_id: UUID) -> list[TimelineEntry]:
-        referral = await _load_owned(self._referrals, referral_id, requester_id)
+        referral = await _load_visible(self._referrals, referral_id, requester_id)
         entries: list[TimelineEntry] = [TimelineEntry("created", referral.created_at)]
 
         if referral.accepted_by_referrer_at is not None:
@@ -240,7 +255,7 @@ class GetReferralWithSchedule:
     async def execute(
         self, referral_id: UUID, *, requester_id: UUID
     ) -> tuple[Referral, CommissionSchedule]:
-        referral = await _load_owned(self._referrals, referral_id, requester_id)
+        referral = await _load_visible(self._referrals, referral_id, requester_id)
         persisted = await self._installments.list_for_referral(referral_id)
         if persisted:
             schedule = CommissionSchedule(installments=persisted)
@@ -335,7 +350,7 @@ class GetAgreement:
         self._renderer = renderer
 
     async def execute(self, referral_id: UUID, *, requester_id: UUID, locale: str) -> str:
-        referral = await _load_owned(self._referrals, referral_id, requester_id)
+        referral = await _load_visible(self._referrals, referral_id, requester_id)
         if referral.status not in _AGREEMENT_READY:
             raise AgreementNotReady
         referrer = await self._users.get_by_id(referral.referrer_id)
@@ -361,7 +376,7 @@ class GetInstallmentInvoice:
     async def execute(
         self, referral_id: UUID, sequence: int, *, requester_id: UUID, locale: str
     ) -> str:
-        referral = await _load_owned(self._referrals, referral_id, requester_id)
+        referral = await _load_visible(self._referrals, referral_id, requester_id)
         if referral.status not in _AGREEMENT_READY:
             raise AgreementNotReady
         installment = await self._installments.get(referral_id, sequence)
@@ -431,12 +446,16 @@ class SignByInvitation:
         self._now = now
         self._schedule_service = schedule_service or CommissionScheduleService()
 
-    async def execute(self, token: str, *, signature: str) -> tuple[Referral, str]:
+    async def execute(
+        self, token: str, *, signature: str, placed_person_id: UUID | None = None
+    ) -> tuple[Referral, str]:
         referral = await self._referrals.get_by_invitation_token(token)
         if referral is None:
             raise InvitationNotFound
         was_signed = referral.status is ReferralStatus.SIGNED
-        referral.accept_as_placed_person(at=self._now(), signature=signature)
+        referral.accept_as_placed_person(
+            at=self._now(), signature=signature, placed_person_id=placed_person_id
+        )
         await self._referrals.save(referral)
         await _persist_schedule_on_signing(
             referral, was_signed, self._installments, self._schedule_service

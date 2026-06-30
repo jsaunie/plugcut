@@ -131,6 +131,28 @@ async def get_current_user(
 CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
+async def get_optional_current_user(
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)],
+    tokens: Annotated[TokenService, Depends(get_token_service)],
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+) -> User | None:
+    """Returns the authenticated user if a valid token is present, else None.
+
+    Lets a public endpoint (the invitation signing page) link the deal to the placed
+    person's account when they happen to be logged in, without requiring it.
+    """
+    if credentials is None:
+        return None
+    try:
+        claims = tokens.decode(credentials.credentials)
+    except InvalidToken:
+        return None
+    if claims.token_type != "access":
+        return None
+    user = await users.get_by_id(UUID(claims.subject))
+    return user if user is not None and user.is_active else None
+
+
 def get_referral_repository(
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> ReferralRepository:

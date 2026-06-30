@@ -93,3 +93,14 @@ class SqlAlchemyReferralRepository:
             .order_by(ReferralModel.created_at.desc())
         )
         return [_to_domain(model) for model in result.all()]
+
+    async def list_for_user(self, user_id: UUID) -> list[Referral]:
+        result = await self._session.scalars(
+            select(ReferralModel)
+            .where(
+                (ReferralModel.referrer_id == user_id)
+                | (ReferralModel.placed_person_id == user_id)
+            )
+            .order_by(ReferralModel.created_at.desc())
+        )
+        return [_to_domain(model) for model in result.all()]
