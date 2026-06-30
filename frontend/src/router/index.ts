@@ -1,23 +1,29 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
+import { useAuthStore } from '@/features/auth/store'
 import LandingPage from '@/pages/LandingPage.vue'
 
 const routes: RouteRecordRaw[] = [
   { path: '/', name: 'landing', component: LandingPage },
-  // Placeholder routes so navigation/CTAs are never dead links. These pages are
-  // fleshed out in the next milestones (auth UI, legal documents).
   {
     path: '/inscription',
     name: 'register',
-    component: () => import('@/pages/PlaceholderPage.vue'),
-    props: { titleKey: 'placeholder.register' },
+    component: () => import('@/pages/RegisterPage.vue'),
+    meta: { guestOnly: true },
   },
   {
     path: '/connexion',
     name: 'login',
-    component: () => import('@/pages/PlaceholderPage.vue'),
-    props: { titleKey: 'placeholder.login' },
+    component: () => import('@/pages/LoginPage.vue'),
+    meta: { guestOnly: true },
   },
+  {
+    path: '/app',
+    name: 'dashboard',
+    component: () => import('@/pages/DashboardPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  // Legal documents (content built in a later milestone).
   {
     path: '/mentions-legales',
     name: 'legal-notice',
@@ -45,4 +51,15 @@ export const router = createRouter({
     if (to.hash) return { el: to.hash, behavior: 'smooth', top: 80 }
     return { top: 0 }
   },
+})
+
+router.beforeEach((to) => {
+  const auth = useAuthStore()
+  if (to.meta.requiresAuth && !auth.isAuthenticated) {
+    return { name: 'login', query: { redirect: to.fullPath } }
+  }
+  if (to.meta.guestOnly && auth.isAuthenticated) {
+    return { name: 'dashboard' }
+  }
+  return true
 })

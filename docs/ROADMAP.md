@@ -7,7 +7,8 @@ Every feature must reinforce one of: *attribution proof*, *a clean agreement*,
 ## MVP — what the demo must show
 
 - [x] **Auth (API)** — email+password signup/login, own JWT. Email verification stubbed.
-- [ ] **Auth (UI)** — signup/login screens wired to `/api/v1/auth`.
+- [x] **Auth (UI)** — signup/login screens wired to `/api/v1/auth`, Pinia store, route
+      guards, HTTP client with localized errors.
 - [x] **Landing page** (marketing) — i18n FR/EN, with interactive commission calculator.
 - [ ] **Legal docs** — mentions légales, CGU/CGV, politique de confidentialité (i18n).
 - [ ] **Create referral deal** — referrer, placed person, discreet client reference,

@@ -165,6 +165,12 @@
       "generic": "Une erreur est survenue. Réessaie."
     }
   },
+  "dashboard": {
+    "title": "Tes deals",
+    "lead": "Suis tes apports, tes commissions dues et tes contrats, au même endroit.",
+    "empty": "Aucun deal pour l'instant. Crée ton premier accord d'apport.",
+    "newDeal": "Créer un deal"
+  },
   "placeholder": {
     "back": "Retour à l'accueil",
     "soon": "Cette page arrive bientôt.",

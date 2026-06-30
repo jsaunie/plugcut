@@ -165,6 +165,12 @@
       "generic": "Something went wrong. Please try again."
     }
   },
+  "dashboard": {
+    "title": "Your deals",
+    "lead": "Track your referrals, commissions due, and contracts, all in one place.",
+    "empty": "No deals yet. Create your first referral agreement.",
+    "newDeal": "Create a deal"
+  },
   "placeholder": {
     "back": "Back to home",
     "soon": "This page is coming soon.",
