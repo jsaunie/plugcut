@@ -238,14 +238,90 @@
       "generic": "An action failed. Please try again."
     }
   },
-  "placeholder": {
+  "legal": {
     "back": "Back to home",
-    "soon": "This page is coming soon.",
-    "register": "Sign up",
-    "login": "Log in",
-    "legalNotice": "Legal notice",
-    "terms": "Terms & conditions",
-    "privacy": "Privacy policy"
+    "updated": "Last updated",
+    "updatedValue": "30 June 2026",
+    "demoNote": "Plugcut is a demonstration project. This document is provided as an example and has no legal value.",
+    "notice": {
+      "title": "Legal notice",
+      "sections": [
+        {
+          "heading": "Publisher",
+          "body": "Plugcut is a personal demonstration project published by an independent developer. No company is registered for this project."
+        },
+        {
+          "heading": "Hosting",
+          "body": "The demonstration app is hosted on standard cloud infrastructure. In production, the host's identity and contact details would be stated here."
+        },
+        {
+          "heading": "Intellectual property",
+          "body": "The name, design, and code of Plugcut belong to their author. Any reproduction or reuse without permission is prohibited."
+        },
+        {
+          "heading": "Contact",
+          "body": "For any question about this project, a contact address would be provided here in a production version."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Terms and conditions",
+      "sections": [
+        {
+          "heading": "Purpose",
+          "body": "Plugcut formalizes and tracks referral commission agreements made between individuals. The platform does not connect strangers and does not take part in the relationship with the end client."
+        },
+        {
+          "heading": "Account",
+          "body": "You are responsible for keeping your credentials confidential and for the actions taken from your account."
+        },
+        {
+          "heading": "Role of the platform",
+          "body": "Plugcut provides a frame to record an agreement, prove attribution, and track commissions. Plugcut is not a party to the contract made between the referrer and the placed person."
+        },
+        {
+          "heading": "Commissions",
+          "body": "The rate, duration, and amount of the commission are set freely by the parties. The estimates shown are indicative and computed from the information you enter."
+        },
+        {
+          "heading": "Liability",
+          "body": "As a demonstration project, the service is provided without warranty. The author cannot be held liable for any damage related to its use."
+        },
+        {
+          "heading": "Personal data",
+          "body": "The processing of personal data is described in the privacy policy."
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Privacy policy",
+      "sections": [
+        {
+          "heading": "Data collected",
+          "body": "Plugcut collects your account email address and the information about the deals you create (client reference, commission terms)."
+        },
+        {
+          "heading": "Purpose",
+          "body": "This data is used only to provide the service: authentication, display, and tracking of your agreements."
+        },
+        {
+          "heading": "Retention",
+          "body": "Data is kept for the duration of your use of the service. In production, specific retention periods would be defined."
+        },
+        {
+          "heading": "Sharing",
+          "body": "No data is sold. The end client has no access to the agreements. Data is shared only with the technical providers needed to run the service."
+        },
+        {
+          "heading": "Your rights",
+          "body": "You can request access to, correction of, or deletion of your data. In a production version, a dedicated contact channel would be provided."
+        },
+        {
+          "heading": "Security",
+          "body": "Passwords are stored as a hash (bcrypt) and access to the API is protected by signed tokens."
+        }
+      ]
+    }
   },
   "lang": { "fr": "FR", "en": "EN" }
 }

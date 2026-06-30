@@ -10,7 +10,8 @@ Every feature must reinforce one of: *attribution proof*, *a clean agreement*,
 - [x] **Auth (UI)** — signup/login screens wired to `/api/v1/auth`, Pinia store, route
       guards, HTTP client with localized errors.
 - [x] **Landing page** (marketing) — i18n FR/EN, with interactive commission calculator.
-- [ ] **Legal docs** — mentions légales, CGU/CGV, politique de confidentialité (i18n).
+- [x] **Legal docs** — mentions légales, CGU/CGV, politique de confidentialité (real
+      FR/EN content, shared LegalLayout, data-driven LegalDocPage).
 - [x] **Create referral deal (API)** — `POST/GET /api/v1/referrals`, owner-scoped,
       computes monthly/total commission. Persisted (SQLAlchemy + Alembic).
 - [x] **Create referral deal (UI)** — dashboard lists deals, create form with live

@@ -35,24 +35,24 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/DealDetailPage.vue'),
     meta: { requiresAuth: true },
   },
-  // Legal documents (content built in a later milestone).
+  // Legal documents.
   {
     path: '/mentions-legales',
     name: 'legal-notice',
-    component: () => import('@/pages/PlaceholderPage.vue'),
-    props: { titleKey: 'placeholder.legalNotice' },
+    component: () => import('@/pages/LegalDocPage.vue'),
+    props: { doc: 'notice' },
   },
   {
     path: '/cgu',
     name: 'terms',
-    component: () => import('@/pages/PlaceholderPage.vue'),
-    props: { titleKey: 'placeholder.terms' },
+    component: () => import('@/pages/LegalDocPage.vue'),
+    props: { doc: 'terms' },
   },
   {
     path: '/confidentialite',
     name: 'privacy',
-    component: () => import('@/pages/PlaceholderPage.vue'),
-    props: { titleKey: 'placeholder.privacy' },
+    component: () => import('@/pages/LegalDocPage.vue'),
+    props: { doc: 'privacy' },
   },
 ]
 

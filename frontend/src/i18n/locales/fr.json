@@ -238,14 +238,90 @@
       "generic": "Une action a échoué. Réessaie."
     }
   },
-  "placeholder": {
+  "legal": {
     "back": "Retour à l'accueil",
-    "soon": "Cette page arrive bientôt.",
-    "register": "Inscription",
-    "login": "Connexion",
-    "legalNotice": "Mentions légales",
-    "terms": "Conditions générales",
-    "privacy": "Politique de confidentialité"
+    "updated": "Dernière mise à jour",
+    "updatedValue": "30 juin 2026",
+    "demoNote": "Plugcut est un projet de démonstration. Ce document est fourni à titre d'exemple et n'a pas de valeur juridique.",
+    "notice": {
+      "title": "Mentions légales",
+      "sections": [
+        {
+          "heading": "Éditeur",
+          "body": "Plugcut est un projet personnel de démonstration édité par un développeur indépendant. Aucune société n'est immatriculée pour ce projet."
+        },
+        {
+          "heading": "Hébergement",
+          "body": "L'application de démonstration est hébergée sur une infrastructure cloud standard. En production, l'identité et les coordonnées de l'hébergeur seraient précisées ici."
+        },
+        {
+          "heading": "Propriété intellectuelle",
+          "body": "Le nom, le design et le code de Plugcut appartiennent à leur auteur. Toute reproduction ou réutilisation sans autorisation est interdite."
+        },
+        {
+          "heading": "Contact",
+          "body": "Pour toute question relative à ce projet, une adresse de contact serait indiquée ici dans une version de production."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Conditions générales",
+      "sections": [
+        {
+          "heading": "Objet",
+          "body": "Plugcut permet de formaliser et de suivre des accords de commission d'apport d'affaires conclus entre particuliers. La plateforme ne met pas en relation des inconnus et n'intervient pas dans la relation avec le client final."
+        },
+        {
+          "heading": "Compte",
+          "body": "Tu es responsable de la confidentialité de tes identifiants et des actions réalisées depuis ton compte."
+        },
+        {
+          "heading": "Rôle de la plateforme",
+          "body": "Plugcut fournit un cadre pour enregistrer un accord, prouver l'attribution et suivre les commissions. Plugcut n'est pas partie au contrat conclu entre l'apporteur et la personne placée."
+        },
+        {
+          "heading": "Commissions",
+          "body": "Le taux, la durée et le montant de la commission sont définis librement par les parties. Les estimations affichées sont indicatives et calculées à partir des informations que tu saisis."
+        },
+        {
+          "heading": "Responsabilité",
+          "body": "S'agissant d'un projet de démonstration, le service est fourni sans garantie. L'auteur ne saurait être tenu responsable d'un préjudice lié à son utilisation."
+        },
+        {
+          "heading": "Données personnelles",
+          "body": "Le traitement des données personnelles est décrit dans la politique de confidentialité."
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "sections": [
+        {
+          "heading": "Données collectées",
+          "body": "Plugcut collecte l'adresse email de ton compte et les informations relatives aux deals que tu crées (référence client, conditions de commission)."
+        },
+        {
+          "heading": "Finalité",
+          "body": "Ces données servent uniquement à fournir le service : authentification, affichage et suivi de tes accords."
+        },
+        {
+          "heading": "Conservation",
+          "body": "Les données sont conservées le temps de l'utilisation du service. En production, des durées de conservation précises seraient définies."
+        },
+        {
+          "heading": "Partage",
+          "body": "Aucune donnée n'est vendue. Le client final n'a pas accès aux accords. Les données ne sont partagées qu'avec les prestataires techniques nécessaires au fonctionnement du service."
+        },
+        {
+          "heading": "Tes droits",
+          "body": "Tu peux demander l'accès, la rectification ou la suppression de tes données. Dans une version de production, un canal de contact dédié serait fourni."
+        },
+        {
+          "heading": "Sécurité",
+          "body": "Les mots de passe sont stockés sous forme d'empreinte (bcrypt) et l'accès à l'API est protégé par des jetons signés."
+        }
+      ]
+    }
   },
   "lang": { "fr": "FR", "en": "EN" }
 }
