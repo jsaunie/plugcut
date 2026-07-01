@@ -151,7 +151,8 @@
       "duration": "Duration",
       "months": "12 months",
       "yourCut": "Your cut / month",
-      "stamp": "Attribution sealed"
+      "stamp": "Attribution sealed",
+      "cta": "Create my first deal"
     }
   },
   "marquee": {

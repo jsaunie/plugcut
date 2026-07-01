@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { RouterLink } from 'vue-router'
 import { UiButton, UiEyebrow } from '@/ui'
 </script>
 
@@ -36,44 +37,55 @@ import { UiButton, UiEyebrow } from '@/ui'
         </p>
       </div>
 
-      <!-- Signature visual: a referral "receipt" with a perforated cut line -->
+      <!-- Signature visual: a fanned stack of referral "receipts" with a perforated cut -->
       <div class="hero__receipt rise" style="animation-delay: 0.3s">
-        <article class="receipt" aria-hidden="true">
-          <header class="receipt__head">
-            <span class="receipt__brand">PLUGCUT</span>
-            <span class="receipt__label">{{ $t('hero.receipt.label') }}</span>
-          </header>
+        <div class="receipt-deck">
+          <div class="receipt-ghost receipt-ghost--far" aria-hidden="true" />
+          <div class="receipt-ghost receipt-ghost--near" aria-hidden="true" />
+          <article class="receipt">
+            <header class="receipt__head">
+              <span class="receipt__brand">PLUGCUT</span>
+              <span class="receipt__label">{{ $t('hero.receipt.label') }}</span>
+            </header>
 
-          <dl class="receipt__rows">
-            <div class="receipt__row">
-              <dt>{{ $t('hero.receipt.client') }}</dt>
-              <dd class="receipt__redacted">{{ $t('hero.receipt.clientValue') }}</dd>
-            </div>
-            <div class="receipt__row">
-              <dt>{{ $t('hero.receipt.tjm') }}</dt>
-              <dd>500 €</dd>
-            </div>
-            <div class="receipt__row">
-              <dt>{{ $t('hero.receipt.rate') }}</dt>
-              <dd>10 %</dd>
-            </div>
-            <div class="receipt__row">
-              <dt>{{ $t('hero.receipt.duration') }}</dt>
-              <dd>{{ $t('hero.receipt.months') }}</dd>
-            </div>
-          </dl>
+            <dl class="receipt__rows" aria-hidden="true">
+              <div class="receipt__row">
+                <dt>{{ $t('hero.receipt.client') }}</dt>
+                <dd class="receipt__redacted">{{ $t('hero.receipt.clientValue') }}</dd>
+              </div>
+              <div class="receipt__row">
+                <dt>{{ $t('hero.receipt.tjm') }}</dt>
+                <dd>500 €</dd>
+              </div>
+              <div class="receipt__row">
+                <dt>{{ $t('hero.receipt.rate') }}</dt>
+                <dd>10 %</dd>
+              </div>
+              <div class="receipt__row">
+                <dt>{{ $t('hero.receipt.duration') }}</dt>
+                <dd>{{ $t('hero.receipt.months') }}</dd>
+              </div>
+            </dl>
 
-          <div class="receipt__cut">
-            <span class="receipt__scissors">✂</span>
-          </div>
+            <div class="receipt__cut" aria-hidden="true">
+              <span class="receipt__scissors">✂</span>
+            </div>
 
-          <div class="receipt__total">
-            <span>{{ $t('hero.receipt.yourCut') }}</span>
-            <strong>1 000 €</strong>
-          </div>
+            <RouterLink
+              to="/inscription"
+              class="receipt__total"
+              :aria-label="$t('hero.receipt.cta')"
+            >
+              <span class="receipt__total-label">{{ $t('hero.receipt.yourCut') }}</span>
+              <span class="receipt__total-amount">
+                <strong>1 000 €</strong>
+                <span class="receipt__total-arrow" aria-hidden="true">→</span>
+              </span>
+            </RouterLink>
 
-          <span class="receipt__stamp">{{ $t('hero.receipt.stamp') }}</span>
-        </article>
+            <span class="receipt__stamp" aria-hidden="true">{{ $t('hero.receipt.stamp') }}</span>
+          </article>
+        </div>
       </div>
     </div>
   </section>
@@ -110,11 +122,11 @@ import { UiButton, UiEyebrow } from '@/ui'
 }
 .hero__title {
   font-size: clamp(3rem, 8vw, 5.6rem);
-  line-height: 1.1;
+  line-height: 1.18;
   letter-spacing: -0.025em;
   display: flex;
   flex-direction: column;
-  gap: 0.12em;
+  gap: 0.24em;
 }
 .hero__title-cut {
   width: fit-content;
@@ -143,9 +155,39 @@ import { UiButton, UiEyebrow } from '@/ui'
   display: flex;
   justify-content: center;
 }
-.receipt {
+/* Stack: the live receipt sits on top of two ghost tickets to hint at volume. */
+.receipt-deck {
   position: relative;
   width: min(340px, 84vw);
+}
+.receipt-ghost {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: var(--ink-2);
+  border: 1px solid var(--line-on-ink);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.receipt-ghost--near {
+  z-index: 1;
+  transform: rotate(-6.5deg) translateY(6px);
+}
+.receipt-ghost--far {
+  z-index: 0;
+  transform: rotate(-11deg) translateY(12px);
+  opacity: 0.75;
+}
+.hero__receipt:hover .receipt-ghost--near {
+  transform: rotate(-8deg) translate(-8px, 8px);
+}
+.hero__receipt:hover .receipt-ghost--far {
+  transform: rotate(-14deg) translate(-16px, 16px);
+}
+.receipt {
+  position: relative;
+  z-index: 2;
+  width: 100%;
   background: var(--ink-2);
   color: var(--text-on-ink);
   border-radius: var(--radius);
@@ -222,19 +264,49 @@ import { UiButton, UiEyebrow } from '@/ui'
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.6rem;
   margin-top: 0.8rem;
-  padding: 0.7rem 0.85rem;
+  padding: 0.72rem 0.9rem;
   background: var(--accent);
   color: var(--accent-ink);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) ease;
 }
-.receipt__total span {
+.receipt__total:hover,
+.receipt__total:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -12px rgba(23, 25, 28, 0.6);
+  outline: none;
+}
+.receipt__total-label {
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
-.receipt__total strong {
+.receipt__total-amount {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.receipt__total-amount strong {
   font-size: 1.35rem;
+}
+.receipt__total-arrow {
+  display: inline-block;
+  font-family: var(--font-body);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity var(--dur-fast) ease,
+    transform var(--dur-fast) var(--ease-out);
+}
+.receipt__total:hover .receipt__total-arrow,
+.receipt__total:focus-visible .receipt__total-arrow {
+  opacity: 1;
+  transform: translateX(0);
 }
 .receipt__stamp {
   position: absolute;
