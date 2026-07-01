@@ -119,6 +119,18 @@ MESSAGES: dict[str, dict[str, str]] = {
         "fr": "Le nom du contact est requis.",
         "en": "The contact name is required.",
     },
+    "profile.not_found": {
+        "fr": "Ce profil est introuvable.",
+        "en": "This profile was not found.",
+    },
+    "profile.invalid_handle": {
+        "fr": "Identifiant invalide : 3 à 40 caractères, minuscules, chiffres ou tirets.",
+        "en": "Invalid handle: 3 to 40 characters, lowercase letters, digits, or hyphens.",
+    },
+    "profile.handle_taken": {
+        "fr": "Cet identifiant est déjà pris.",
+        "en": "This handle is already taken.",
+    },
     "domain.error": {
         "fr": "Une erreur est survenue.",
         "en": "An error occurred.",

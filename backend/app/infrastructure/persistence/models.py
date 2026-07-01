@@ -117,6 +117,21 @@ class PaymentProofBlobModel(Base):
     data: Mapped[bytes] = mapped_column(LargeBinary)
 
 
+class ProfileModel(Base):
+    __tablename__ = "profiles"
+
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
+    owner_id: Mapped[UUID] = mapped_column(Uuid, unique=True, index=True)
+    handle: Mapped[str] = mapped_column(String(40), unique=True, index=True)
+    display_name: Mapped[str] = mapped_column(String(120))
+    headline: Mapped[str] = mapped_column(String(160), default="")
+    skills: Mapped[list[str]] = mapped_column(JSON, default=list)
+    bio: Mapped[str] = mapped_column(Text, default="")
+    available: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
 class ContactModel(Base):
     __tablename__ = "contacts"
 

@@ -27,6 +27,12 @@ from app.application.identity.use_cases import (
     RegisterUser,
 )
 from app.application.notifications.ports import EmailSender, ReminderEmailRenderer
+from app.application.profiles.ports import ProfileRepository
+from app.application.profiles.use_cases import (
+    GetMyProfile,
+    GetPublicProfile,
+    UpsertMyProfile,
+)
 from app.application.referrals.ports import (
     AgreementRenderer,
     EvidenceRenderer,
@@ -72,6 +78,7 @@ from app.infrastructure.persistence.file_storage import SqlAlchemyFileStorage
 from app.infrastructure.persistence.installment_repository import (
     SqlAlchemyInstallmentRepository,
 )
+from app.infrastructure.persistence.profile_repository import SqlAlchemyProfileRepository
 from app.infrastructure.persistence.referral_repository import SqlAlchemyReferralRepository
 from app.infrastructure.persistence.repositories import SqlAlchemyUserRepository
 from app.infrastructure.security.jwt_token_service import JwtTokenService
@@ -242,6 +249,31 @@ def get_reputation(
     referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
 ) -> GetReputation:
     return GetReputation(referrals)
+
+
+def get_profile_repository(
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> ProfileRepository:
+    return SqlAlchemyProfileRepository(session)
+
+
+def get_upsert_profile(
+    profiles: Annotated[ProfileRepository, Depends(get_profile_repository)],
+) -> UpsertMyProfile:
+    return UpsertMyProfile(profiles)
+
+
+def get_my_profile(
+    profiles: Annotated[ProfileRepository, Depends(get_profile_repository)],
+) -> GetMyProfile:
+    return GetMyProfile(profiles)
+
+
+def get_public_profile(
+    profiles: Annotated[ProfileRepository, Depends(get_profile_repository)],
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+) -> GetPublicProfile:
+    return GetPublicProfile(profiles, referrals)
 
 
 def get_record_proof(

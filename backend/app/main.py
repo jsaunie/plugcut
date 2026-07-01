@@ -15,6 +15,7 @@ from app.interfaces.api.routers import (
     auth,
     contacts,
     invitations,
+    profiles,
     referrals,
     reputation,
 )
@@ -49,6 +50,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(invitations.router, prefix="/api/v1")
     app.include_router(contacts.router, prefix="/api/v1")
     app.include_router(reputation.router, prefix="/api/v1")
+    app.include_router(profiles.router, prefix="/api/v1")
 
     @app.get("/health", tags=["meta"])
     async def health() -> dict[str, str]:

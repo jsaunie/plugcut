@@ -37,6 +37,9 @@ _STATUS_BY_CODE: dict[str, int] = {
     "contact.not_found": 404,
     "contact.forbidden": 403,
     "contact.name_required": 422,
+    "profile.not_found": 404,
+    "profile.invalid_handle": 422,
+    "profile.handle_taken": 409,
 }
 _DEFAULT_STATUS = 400
 
