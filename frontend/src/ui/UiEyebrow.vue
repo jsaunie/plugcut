@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // Section label. Plain mono uppercase text, no decorative dot/pastille.
-withDefaults(defineProps<{ tone?: 'muted' | 'accent' | 'paper' }>(), { tone: 'muted' })
+withDefaults(defineProps<{ tone?: 'muted' | 'accent' | 'paper' | 'solid' }>(), {
+  tone: 'muted',
+})
 </script>
 
 <template>
@@ -23,5 +25,9 @@ withDefaults(defineProps<{ tone?: 'muted' | 'accent' | 'paper' }>(), { tone: 'mu
 .ui-eyebrow--paper {
   color: var(--text-on-paper);
   opacity: 0.7;
+}
+.ui-eyebrow--solid {
+  color: var(--text-on-solid);
+  opacity: 0.6;
 }
 </style>

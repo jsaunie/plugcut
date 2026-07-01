@@ -18,12 +18,12 @@ const glyphs = ['§', '✶', '↻', '◐']
   <section id="security" class="section pillars">
     <div class="container">
       <header class="pillars__head">
-        <UiEyebrow tone="paper" class="pillars__eyebrow">{{ $t('pillars.eyebrow') }}</UiEyebrow>
+        <UiEyebrow tone="solid" class="pillars__eyebrow">{{ $t('pillars.eyebrow') }}</UiEyebrow>
         <h2 class="pillars__title">{{ $t('pillars.title') }}</h2>
       </header>
 
       <div class="pillars__grid">
-        <UiCard v-for="(pillar, i) in pillars" :key="pillar.title" hover class="pillar">
+        <UiCard v-for="(pillar, i) in pillars" :key="pillar.title" tone="solid" hover class="pillar">
           <span class="pillar__glyph" aria-hidden="true">{{ glyphs[i] }}</span>
           <h3 class="pillar__title">{{ pillar.title }}</h3>
           <p class="pillar__desc">{{ pillar.desc }}</p>
@@ -35,8 +35,8 @@ const glyphs = ['§', '✶', '↻', '◐']
 
 <style scoped>
 .pillars {
-  background: var(--paper);
-  color: var(--text-on-paper);
+  background: var(--solid);
+  color: var(--text-on-solid);
 }
 .pillars__head {
   max-width: 36rem;
@@ -60,8 +60,9 @@ const glyphs = ['§', '✶', '↻', '◐']
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: var(--accent);
-  color: var(--accent-ink);
+  /* Inverted on the dark card: a light chip with a near-black glyph. */
+  background: var(--text-on-solid);
+  color: var(--solid);
   font-size: 1.3rem;
   margin-bottom: 1.3rem;
 }
@@ -70,7 +71,7 @@ const glyphs = ['§', '✶', '↻', '◐']
   margin-bottom: 0.6rem;
 }
 .pillar__desc {
-  color: var(--muted-on-paper);
+  color: color-mix(in srgb, var(--text-on-solid) 64%, transparent);
   font-size: 0.96rem;
 }
 @media (min-width: 640px) {

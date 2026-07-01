@@ -1,5 +1,5 @@
 <script setup lang="ts">
-withDefaults(defineProps<{ tone?: 'ink' | 'paper'; hover?: boolean }>(), {
+withDefaults(defineProps<{ tone?: 'ink' | 'paper' | 'solid'; hover?: boolean }>(), {
   tone: 'ink',
   hover: false,
 })
@@ -31,6 +31,12 @@ withDefaults(defineProps<{ tone?: 'ink' | 'paper'; hover?: boolean }>(), {
 .ui-card--paper {
   background: var(--paper);
   border-color: var(--line-on-paper);
+}
+/* Raised dark surface, for cards sitting on a dark (solid) section band. */
+.ui-card--solid {
+  background: var(--solid-2);
+  border-color: color-mix(in srgb, var(--text-on-solid) 14%, transparent);
+  color: var(--text-on-solid);
 }
 .ui-card--hover:hover {
   transform: translateY(-4px);
