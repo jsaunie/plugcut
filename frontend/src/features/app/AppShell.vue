@@ -91,9 +91,12 @@ function logout(): void {
 }
 .app__head-inner {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  height: 72px;
+  row-gap: 0.3rem;
+  min-height: 72px;
+  padding-block: 0.6rem;
 }
 .app__wordmark {
   font-family: var(--font-display);
@@ -104,17 +107,26 @@ function logout(): void {
 .app__cut {
   color: var(--accent);
 }
+/* Mobile: the nav drops to its own full-width row, horizontally scrollable. */
 .app__nav {
-  display: none;
+  display: flex;
   gap: 1.4rem;
-  margin-right: auto;
-  margin-left: 2rem;
+  order: 3;
+  width: 100%;
+  margin: 0 calc(-1 * var(--gutter, 1rem));
+  padding: 0.2rem var(--gutter, 1rem) 0.1rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.app__nav::-webkit-scrollbar {
+  display: none;
 }
 .app__navlink {
   font-size: 0.95rem;
   color: var(--muted-on-ink);
   padding-bottom: 2px;
   border-bottom: 2px solid transparent;
+  white-space: nowrap;
 }
 .app__navlink:hover {
   color: var(--text-on-ink);
@@ -123,20 +135,33 @@ function logout(): void {
   color: var(--text-on-ink);
   border-bottom-color: var(--accent);
 }
-@media (min-width: 720px) {
-  .app__nav {
-    display: flex;
-  }
-}
 .app__user {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 .app__email {
+  display: none;
   font-family: var(--font-mono);
   font-size: var(--fs-small);
   color: var(--muted-on-ink);
+}
+@media (min-width: 720px) {
+  .app__head-inner {
+    flex-wrap: nowrap;
+    height: 72px;
+    padding-block: 0;
+  }
+  .app__nav {
+    order: 0;
+    width: auto;
+    margin: 0 auto 0 2rem;
+    padding: 0;
+    overflow: visible;
+  }
+  .app__email {
+    display: inline;
+  }
 }
 .app__main {
   padding-block: clamp(2.5rem, 6vw, 4.5rem);
