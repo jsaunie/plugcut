@@ -56,6 +56,13 @@ function logout(): void {
             {{ t('nav.network') }}
           </RouterLink>
           <RouterLink
+            to="/app/intros"
+            class="app__navlink"
+            active-class="app__navlink--active"
+          >
+            {{ t('nav.intros') }}
+          </RouterLink>
+          <RouterLink
             to="/app/profil"
             class="app__navlink"
             active-class="app__navlink--active"

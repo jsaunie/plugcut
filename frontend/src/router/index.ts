@@ -65,6 +65,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/DirectoryPage.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/app/intros',
+    name: 'intros',
+    component: () => import('@/pages/IntrosPage.vue'),
+    meta: { requiresAuth: true },
+  },
   // Public reputation page: shareable, no account needed to view.
   {
     path: '/p/:handle',

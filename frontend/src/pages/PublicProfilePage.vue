@@ -4,18 +4,27 @@ import { useI18n } from 'vue-i18n'
 import { RouterLink, useRoute } from 'vue-router'
 
 import LangSwitch from '@/components/shared/LangSwitch.vue'
+import { useAuthStore } from '@/features/auth/store'
+import { requestIntro } from '@/features/intros/api'
 import { getPublicProfile } from '@/features/profiles/api'
 import type { PublicProfile } from '@/features/profiles/types'
 import ReputationCard from '@/features/reputation/ReputationCard.vue'
-import { UiButton, UiEyebrow } from '@/ui'
+import { ApiError } from '@/shared/http'
+import { UiButton, UiEyebrow, UiTextarea } from '@/ui'
 
 const { t } = useI18n()
 const route = useRoute()
+const auth = useAuthStore()
 const handle = route.params.handle as string
 
 const data = ref<PublicProfile | null>(null)
 const loading = ref(true)
 const notFound = ref(false)
+
+const introMessage = ref('')
+const introSending = ref(false)
+const introSent = ref(false)
+const introError = ref('')
 
 onMounted(async () => {
   try {
@@ -26,6 +35,20 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+async function sendIntro(): Promise<void> {
+  introError.value = ''
+  introSending.value = true
+  try {
+    await requestIntro(handle, introMessage.value.trim())
+    introSent.value = true
+    introMessage.value = ''
+  } catch (err) {
+    introError.value = err instanceof ApiError ? err.message : t('publicProfile.introError')
+  } finally {
+    introSending.value = false
+  }
+}
 </script>
 
 <template>
@@ -78,6 +101,32 @@ onMounted(async () => {
         <aside class="side">
           <ReputationCard :reputation="data.reputation" />
           <p class="side__note">{{ t('publicProfile.repNote') }}</p>
+
+          <div class="intro card">
+            <UiEyebrow>{{ t('publicProfile.introTitle') }}</UiEyebrow>
+            <template v-if="auth.isAuthenticated">
+              <p v-if="introSent" class="intro__ok" role="status">
+                {{ t('publicProfile.introSent') }}
+              </p>
+              <template v-else>
+                <UiTextarea
+                  v-model="introMessage"
+                  :rows="3"
+                  :placeholder="t('publicProfile.introPlaceholder')"
+                />
+                <UiButton :loading="introSending" @click="sendIntro">
+                  {{ t('publicProfile.introCta') }}
+                </UiButton>
+                <p v-if="introError" class="intro__error" role="alert">{{ introError }}</p>
+              </template>
+            </template>
+            <p v-else class="side__note">
+              {{ t('publicProfile.introLoginPrompt') }}
+              <RouterLink to="/connexion" class="intro__link">
+                {{ t('publicProfile.introLoginCta') }}
+              </RouterLink>
+            </p>
+          </div>
         </aside>
       </div>
     </main>
@@ -184,5 +233,20 @@ onMounted(async () => {
 .side__note {
   font-size: var(--fs-small);
   color: var(--muted-on-ink);
+}
+.intro {
+  gap: 0.8rem;
+}
+.intro__ok {
+  color: var(--accent-on-ink);
+  font-size: var(--fs-small);
+}
+.intro__error {
+  color: var(--danger);
+  font-size: var(--fs-small);
+}
+.intro__link {
+  color: var(--accent-on-ink);
+  text-decoration: underline;
 }
 </style>

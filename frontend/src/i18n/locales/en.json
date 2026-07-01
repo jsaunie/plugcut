@@ -14,7 +14,25 @@
     "deals": "Deals",
     "contacts": "Contacts",
     "network": "Network",
+    "intros": "Intros",
     "profile": "Profile"
+  },
+  "intros": {
+    "eyebrow": "Introductions",
+    "title": "Your intros",
+    "lead": "Introduction requests, inbound and outbound. An accepted intro is a relationship starting.",
+    "inboundTitle": "Received",
+    "inboundEmpty": "No requests received yet.",
+    "outboundTitle": "Sent",
+    "outboundEmpty": "You have not sent any requests.",
+    "accept": "Accept",
+    "decline": "Decline",
+    "unknown": "Member",
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "declined": "Declined"
+    }
   },
   "directory": {
     "eyebrow": "Trust network",
@@ -68,7 +86,14 @@
     "repNote": "Reputation computed from deals actually sealed on Plugcut.",
     "notFoundTitle": "Profile not found",
     "notFoundLead": "This profile does not exist or was removed.",
-    "backHome": "Back home"
+    "backHome": "Back home",
+    "introTitle": "Request an intro",
+    "introPlaceholder": "A word on why you want to connect (shared client, project, etc.)",
+    "introCta": "Send request",
+    "introSent": "Request sent. You will see the reply in your intros.",
+    "introError": "Could not send the request.",
+    "introLoginPrompt": "Log in to request an intro.",
+    "introLoginCta": "Log in"
   },
   "contacts": {
     "title": "Your contacts",

@@ -14,7 +14,25 @@
     "deals": "Deals",
     "contacts": "Contacts",
     "network": "Réseau",
+    "intros": "Intros",
     "profile": "Profil"
+  },
+  "intros": {
+    "eyebrow": "Mises en relation",
+    "title": "Tes intros",
+    "lead": "Les demandes de mise en relation, entrantes et sortantes. Une intro acceptée, c'est une relation qui démarre.",
+    "inboundTitle": "Reçues",
+    "inboundEmpty": "Aucune demande reçue pour l'instant.",
+    "outboundTitle": "Envoyées",
+    "outboundEmpty": "Tu n'as envoyé aucune demande.",
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "unknown": "Membre",
+    "status": {
+      "pending": "En attente",
+      "accepted": "Acceptée",
+      "declined": "Refusée"
+    }
   },
   "directory": {
     "eyebrow": "Réseau de confiance",
@@ -68,7 +86,14 @@
     "repNote": "Réputation calculée à partir des deals réellement scellés sur Plugcut.",
     "notFoundTitle": "Profil introuvable",
     "notFoundLead": "Ce profil n'existe pas ou a été retiré.",
-    "backHome": "Retour à l'accueil"
+    "backHome": "Retour à l'accueil",
+    "introTitle": "Demander une intro",
+    "introPlaceholder": "Un mot sur pourquoi tu veux te connecter (client commun, projet, etc.)",
+    "introCta": "Envoyer la demande",
+    "introSent": "Demande envoyée. Tu verras la réponse dans tes intros.",
+    "introError": "Impossible d'envoyer la demande.",
+    "introLoginPrompt": "Connecte-toi pour demander une intro.",
+    "introLoginCta": "Se connecter"
   },
   "contacts": {
     "title": "Tes contacts",
