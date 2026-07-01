@@ -15,7 +15,8 @@
     "contacts": "Contacts",
     "network": "Network",
     "intros": "Intros",
-    "profile": "Profile"
+    "profile": "Profile",
+    "menu": "Menu"
   },
   "intros": {
     "eyebrow": "Introductions",

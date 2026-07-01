@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { RouterLink, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 
 import { useAuthStore } from '@/features/auth/store'
 import { ApiError } from '@/shared/http'
@@ -10,6 +10,25 @@ import { UiButton } from '@/ui'
 const { t } = useI18n()
 const auth = useAuthStore()
 const router = useRouter()
+const route = useRoute()
+
+const menuOpen = ref(false)
+
+// Close the drawer whenever the route changes (a link was tapped).
+watch(
+  () => route.fullPath,
+  () => {
+    menuOpen.value = false
+  },
+)
+
+const navItems = [
+  { to: '/app', key: 'deals', exact: true },
+  { to: '/app/contacts', key: 'contacts', exact: false },
+  { to: '/app/reseau', key: 'network', exact: false },
+  { to: '/app/intros', key: 'intros', exact: false },
+  { to: '/app/profil', key: 'profile', exact: false },
+]
 
 onMounted(async () => {
   if (!auth.user) {
@@ -25,6 +44,7 @@ onMounted(async () => {
 })
 
 function logout(): void {
+  menuOpen.value = false
   auth.logout()
   router.push('/')
 }
@@ -37,64 +57,76 @@ function logout(): void {
         <RouterLink to="/app" class="app__wordmark">
           <span>Plug</span><span class="app__cut">cut</span>
         </RouterLink>
+
         <nav class="app__nav">
-          <RouterLink to="/app" class="app__navlink" exact-active-class="app__navlink--active">
-            {{ t('nav.deals') }}
-          </RouterLink>
           <RouterLink
-            to="/app/contacts"
+            v-for="item in navItems"
+            :key="item.to"
+            :to="item.to"
             class="app__navlink"
-            active-class="app__navlink--active"
+            :active-class="item.exact ? '' : 'app__navlink--active'"
+            :exact-active-class="item.exact ? 'app__navlink--active' : ''"
           >
-            {{ t('nav.contacts') }}
-          </RouterLink>
-          <RouterLink
-            to="/app/reseau"
-            class="app__navlink"
-            active-class="app__navlink--active"
-          >
-            {{ t('nav.network') }}
-          </RouterLink>
-          <RouterLink
-            to="/app/intros"
-            class="app__navlink"
-            active-class="app__navlink--active"
-          >
-            {{ t('nav.intros') }}
-          </RouterLink>
-          <RouterLink
-            to="/app/profil"
-            class="app__navlink"
-            active-class="app__navlink--active"
-          >
-            {{ t('nav.profile') }}
+            {{ t(`nav.${item.key}`) }}
           </RouterLink>
         </nav>
+
         <div class="app__user">
           <span v-if="auth.user" class="app__email">{{ auth.user.email }}</span>
           <UiButton variant="ghost" size="sm" class="app__logout-text" @click="logout">
             {{ t('auth.logout') }}
           </UiButton>
-          <button class="app__logout-icon" :aria-label="t('auth.logout')" @click="logout">
-            <svg
-              viewBox="0 0 24 24"
-              width="19"
-              height="19"
-              aria-hidden="true"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
+          <button
+            class="app__burger"
+            :aria-label="t('nav.menu')"
+            :aria-expanded="menuOpen"
+            @click="menuOpen = !menuOpen"
+          >
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+              <path
+                v-if="!menuOpen"
+                d="M4 7h16M4 12h16M4 17h16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                v-else
+                d="M6 6l12 12M18 6L6 18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
             </svg>
           </button>
         </div>
       </div>
     </header>
+
+    <Transition name="drawer">
+      <nav v-if="menuOpen" class="app__drawer" aria-label="Menu">
+        <span class="app__drawer-label">{{ t('nav.menu') }}</span>
+        <RouterLink
+          v-for="item in navItems"
+          :key="item.to"
+          :to="item.to"
+          class="app__drawer-link"
+          :active-class="item.exact ? '' : 'app__drawer-link--active'"
+          :exact-active-class="item.exact ? 'app__drawer-link--active' : ''"
+        >
+          {{ t(`nav.${item.key}`) }}
+        </RouterLink>
+        <button class="app__drawer-logout" @click="logout">
+          {{ t('auth.logout') }}
+        </button>
+      </nav>
+    </Transition>
+    <Transition name="fade">
+      <div v-if="menuOpen" class="app__backdrop" @click="menuOpen = false" />
+    </Transition>
+
     <main class="container app__main">
       <slot />
     </main>
@@ -105,11 +137,11 @@ function logout(): void {
 .app {
   min-height: 100vh;
 }
-/* Sticky, lightly frosted so content scrolls under it without losing the nav. */
+/* Sticky, lightly frosted so content scrolls under it. */
 .app__head {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 30;
   background: color-mix(in srgb, var(--ink) 85%, transparent);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -117,12 +149,9 @@ function logout(): void {
 }
 .app__head-inner {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  row-gap: 0.5rem;
-  min-height: 64px;
-  padding-block: 0.7rem;
+  height: 64px;
 }
 .app__wordmark {
   font-family: var(--font-display);
@@ -133,20 +162,11 @@ function logout(): void {
 .app__cut {
   color: var(--accent);
 }
-/* Mobile: the nav drops to its own full-width row, a horizontally scrollable
-   segmented strip; the active tab is a filled pill for a clearer, less basic look. */
+/* Desktop inline nav (hidden on mobile, replaced by the burger drawer). */
 .app__nav {
-  display: flex;
-  gap: 0.3rem;
-  order: 3;
-  width: 100%;
-  margin: 0 calc(-1 * var(--gutter, 1rem));
-  padding: 0.1rem var(--gutter, 1rem) 0.15rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.app__nav::-webkit-scrollbar {
   display: none;
+  gap: 0.3rem;
+  margin: 0 auto 0 2rem;
 }
 .app__navlink {
   font-size: 0.92rem;
@@ -182,12 +202,13 @@ function logout(): void {
 .app__logout-text {
   display: none;
 }
-.app__logout-icon {
+/* Burger: mobile only. */
+.app__burger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: var(--radius-btn, 14px);
   border: 1px solid var(--line-on-ink);
   color: var(--text-on-ink);
@@ -195,23 +216,90 @@ function logout(): void {
     border-color var(--dur-fast) ease,
     background var(--dur-fast) ease;
 }
-.app__logout-icon:hover {
+.app__burger:hover {
   border-color: var(--text-on-ink);
   background: var(--ink-3);
 }
+
+/* ---- Mobile drawer ---- */
+.app__backdrop {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--solid) 45%, transparent);
+  z-index: 40;
+}
+.app__drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(82vw, 320px);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.4rem 1.2rem calc(1.4rem + env(safe-area-inset-bottom));
+  background: var(--ink-2);
+  border-left: 1px solid var(--line-on-ink);
+  box-shadow: -24px 0 60px -24px rgba(0, 0, 0, 0.3);
+}
+.app__drawer-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--muted-on-ink);
+  margin-bottom: 0.8rem;
+}
+.app__drawer-link {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-on-ink);
+  padding: 0.85rem 0.9rem;
+  border-radius: var(--radius);
+  transition: background var(--dur-fast) ease;
+}
+.app__drawer-link:hover {
+  background: var(--ink-3);
+}
+.app__drawer-link--active {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+.app__drawer-logout {
+  margin-top: auto;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-on-ink);
+  padding: 0.85rem 0.9rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-on-ink);
+}
+.app__drawer-logout:hover {
+  background: var(--ink-3);
+}
+
+.drawer-enter-active,
+.drawer-leave-active {
+  transition: transform var(--dur) cubic-bezier(0.22, 1, 0.36, 1);
+}
+.drawer-enter-from,
+.drawer-leave-to {
+  transform: translateX(100%);
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity var(--dur) ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 @media (min-width: 720px) {
-  .app__head-inner {
-    flex-wrap: nowrap;
-    height: 72px;
-    min-height: 0;
-    padding-block: 0;
-  }
   .app__nav {
-    order: 0;
-    width: auto;
-    margin: 0 auto 0 2rem;
-    padding: 0;
-    overflow: visible;
+    display: flex;
   }
   .app__email {
     display: inline;
@@ -219,7 +307,9 @@ function logout(): void {
   .app__logout-text {
     display: inline-flex;
   }
-  .app__logout-icon {
+  .app__burger,
+  .app__drawer,
+  .app__backdrop {
     display: none;
   }
 }
