@@ -56,6 +56,7 @@ from app.application.referrals.use_cases import (
     SendInstallmentReminder,
     SignByInvitation,
 )
+from app.application.reputation.use_cases import GetReputation
 from app.domain.identity.entities import User
 from app.domain.identity.ports import PasswordHasher
 from app.infrastructure.agreements.html_renderer import HtmlAgreementRenderer
@@ -235,6 +236,12 @@ def get_file_storage(
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> FileStorage:
     return SqlAlchemyFileStorage(session)
+
+
+def get_reputation(
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+) -> GetReputation:
+    return GetReputation(referrals)
 
 
 def get_record_proof(
