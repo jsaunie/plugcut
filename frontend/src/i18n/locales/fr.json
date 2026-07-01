@@ -12,7 +12,53 @@
     "login": "Se connecter",
     "start": "Commencer",
     "deals": "Deals",
-    "contacts": "Contacts"
+    "contacts": "Contacts",
+    "profile": "Profil"
+  },
+  "profile": {
+    "eyebrow": "Ton profil",
+    "title": "Ton profil public",
+    "lead": "Ta réputation d'apporteur, prouvée par tes deals scellés. Partage ton lien pour que d'autres freelances te trouvent.",
+    "fields": {
+      "handle": "Identifiant public",
+      "handleHint": "3 à 40 caractères : minuscules, chiffres, tirets. Il apparaît dans ton lien public.",
+      "displayName": "Nom affiché",
+      "headline": "Accroche",
+      "headlinePlaceholder": "Dev backend freelance, dispo pour de l'apport",
+      "skills": "Compétences",
+      "skillsHint": "Séparées par des virgules.",
+      "bio": "Bio",
+      "available": "Disponible pour de nouveaux deals"
+    },
+    "save": "Enregistrer",
+    "saved": "Profil enregistré.",
+    "publicLink": "Lien public",
+    "copy": "Copier",
+    "errors": { "generic": "Une erreur est survenue." }
+  },
+  "reputation": {
+    "title": "Réputation",
+    "tier": {
+      "none": "Nouveau",
+      "emerging": "Émergent",
+      "established": "Établi",
+      "trusted": "De confiance"
+    },
+    "sealed": "Deals scellés",
+    "completed": "Terminés",
+    "disputed": "En litige",
+    "asReferrer": "Comme apporteur",
+    "asPlaced": "Comme placé",
+    "empty": "Aucun deal scellé pour l'instant. Ta réputation se construit à chaque deal signé des deux côtés."
+  },
+  "publicProfile": {
+    "eyebrow": "Profil apporteur",
+    "available": "Disponible",
+    "unavailable": "Indisponible",
+    "repNote": "Réputation calculée à partir des deals réellement scellés sur Plugcut.",
+    "notFoundTitle": "Profil introuvable",
+    "notFoundLead": "Ce profil n'existe pas ou a été retiré.",
+    "backHome": "Retour à l'accueil"
   },
   "contacts": {
     "title": "Tes contacts",

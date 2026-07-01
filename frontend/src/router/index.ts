@@ -53,6 +53,18 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/ContactFormPage.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/app/profil',
+    name: 'profile',
+    component: () => import('@/pages/ProfilePage.vue'),
+    meta: { requiresAuth: true },
+  },
+  // Public reputation page: shareable, no account needed to view.
+  {
+    path: '/p/:handle',
+    name: 'public-profile',
+    component: () => import('@/pages/PublicProfilePage.vue'),
+  },
   // Public signing page for the placed person (token is the credential, no account).
   {
     path: '/invitation/:token',

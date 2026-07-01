@@ -12,7 +12,53 @@
     "login": "Log in",
     "start": "Get started",
     "deals": "Deals",
-    "contacts": "Contacts"
+    "contacts": "Contacts",
+    "profile": "Profile"
+  },
+  "profile": {
+    "eyebrow": "Your profile",
+    "title": "Your public profile",
+    "lead": "Your referral reputation, proven by your sealed deals. Share your link so other freelancers can find you.",
+    "fields": {
+      "handle": "Public handle",
+      "handleHint": "3 to 40 characters: lowercase, digits, hyphens. It appears in your public link.",
+      "displayName": "Display name",
+      "headline": "Headline",
+      "headlinePlaceholder": "Freelance backend dev, open to referrals",
+      "skills": "Skills",
+      "skillsHint": "Comma separated.",
+      "bio": "Bio",
+      "available": "Available for new deals"
+    },
+    "save": "Save",
+    "saved": "Profile saved.",
+    "publicLink": "Public link",
+    "copy": "Copy",
+    "errors": { "generic": "Something went wrong." }
+  },
+  "reputation": {
+    "title": "Reputation",
+    "tier": {
+      "none": "New",
+      "emerging": "Emerging",
+      "established": "Established",
+      "trusted": "Trusted"
+    },
+    "sealed": "Sealed deals",
+    "completed": "Completed",
+    "disputed": "Disputed",
+    "asReferrer": "As referrer",
+    "asPlaced": "As placed",
+    "empty": "No sealed deals yet. Your reputation builds with every deal both parties sign."
+  },
+  "publicProfile": {
+    "eyebrow": "Referrer profile",
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "repNote": "Reputation computed from deals actually sealed on Plugcut.",
+    "notFoundTitle": "Profile not found",
+    "notFoundLead": "This profile does not exist or was removed.",
+    "backHome": "Back home"
   },
   "contacts": {
     "title": "Your contacts",

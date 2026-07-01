@@ -48,6 +48,13 @@ function logout(): void {
           >
             {{ t('nav.contacts') }}
           </RouterLink>
+          <RouterLink
+            to="/app/profil"
+            class="app__navlink"
+            active-class="app__navlink--active"
+          >
+            {{ t('nav.profile') }}
+          </RouterLink>
         </nav>
         <div class="app__user">
           <span v-if="auth.user" class="app__email">{{ auth.user.email }}</span>
