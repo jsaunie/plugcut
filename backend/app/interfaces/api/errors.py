@@ -40,6 +40,12 @@ _STATUS_BY_CODE: dict[str, int] = {
     "profile.not_found": 404,
     "profile.invalid_handle": 422,
     "profile.handle_taken": 409,
+    "intro.cannot_self": 422,
+    "intro.already_resolved": 409,
+    "intro.not_found": 404,
+    "intro.forbidden": 403,
+    "intro.already_pending": 409,
+    "intro.profile_required": 409,
 }
 _DEFAULT_STATUS = 400
 

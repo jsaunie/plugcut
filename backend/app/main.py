@@ -14,6 +14,7 @@ from app.interfaces.api.errors import register_error_handlers
 from app.interfaces.api.routers import (
     auth,
     contacts,
+    intros,
     invitations,
     profiles,
     referrals,
@@ -51,6 +52,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(contacts.router, prefix="/api/v1")
     app.include_router(reputation.router, prefix="/api/v1")
     app.include_router(profiles.router, prefix="/api/v1")
+    app.include_router(intros.router, prefix="/api/v1")
 
     @app.get("/health", tags=["meta"])
     async def health() -> dict[str, str]:

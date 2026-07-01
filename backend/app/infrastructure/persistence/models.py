@@ -132,6 +132,20 @@ class ProfileModel(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
+class IntroRequestModel(Base):
+    __tablename__ = "intro_requests"
+
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
+    from_user_id: Mapped[UUID] = mapped_column(Uuid, index=True)
+    to_user_id: Mapped[UUID] = mapped_column(Uuid, index=True)
+    message: Mapped[str] = mapped_column(String(1000))
+    status: Mapped[str] = mapped_column(String(20))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    responded_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+
 class ContactModel(Base):
     __tablename__ = "contacts"
 

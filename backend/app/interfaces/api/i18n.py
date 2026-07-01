@@ -131,6 +131,30 @@ MESSAGES: dict[str, dict[str, str]] = {
         "fr": "Cet identifiant est déjà pris.",
         "en": "This handle is already taken.",
     },
+    "intro.cannot_self": {
+        "fr": "Tu ne peux pas te demander une intro à toi-même.",
+        "en": "You cannot request an intro to yourself.",
+    },
+    "intro.already_resolved": {
+        "fr": "Cette demande d'intro a déjà été traitée.",
+        "en": "This intro request has already been handled.",
+    },
+    "intro.not_found": {
+        "fr": "Cette demande d'intro est introuvable.",
+        "en": "This intro request was not found.",
+    },
+    "intro.forbidden": {
+        "fr": "Tu ne peux pas répondre à cette demande d'intro.",
+        "en": "You cannot respond to this intro request.",
+    },
+    "intro.already_pending": {
+        "fr": "Tu as déjà une demande d'intro en attente avec cette personne.",
+        "en": "You already have a pending intro request with this person.",
+    },
+    "intro.profile_required": {
+        "fr": "Crée ton profil avant de demander une intro.",
+        "en": "Create your profile before requesting an intro.",
+    },
     "domain.error": {
         "fr": "Une erreur est survenue.",
         "en": "An error occurred.",

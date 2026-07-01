@@ -26,6 +26,8 @@ from app.application.identity.use_cases import (
     RefreshAccessToken,
     RegisterUser,
 )
+from app.application.intros.ports import IntroRepository
+from app.application.intros.use_cases import ListMyIntros, RequestIntro, RespondToIntro
 from app.application.notifications.ports import EmailSender, ReminderEmailRenderer
 from app.application.profiles.ports import ProfileRepository
 from app.application.profiles.use_cases import (
@@ -79,6 +81,7 @@ from app.infrastructure.persistence.file_storage import SqlAlchemyFileStorage
 from app.infrastructure.persistence.installment_repository import (
     SqlAlchemyInstallmentRepository,
 )
+from app.infrastructure.persistence.intro_repository import SqlAlchemyIntroRepository
 from app.infrastructure.persistence.profile_repository import SqlAlchemyProfileRepository
 from app.infrastructure.persistence.referral_repository import SqlAlchemyReferralRepository
 from app.infrastructure.persistence.repositories import SqlAlchemyUserRepository
@@ -282,6 +285,32 @@ def get_search_profiles(
     referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
 ) -> SearchProfiles:
     return SearchProfiles(profiles, referrals)
+
+
+def get_intro_repository(
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> IntroRepository:
+    return SqlAlchemyIntroRepository(session)
+
+
+def get_request_intro(
+    intros: Annotated[IntroRepository, Depends(get_intro_repository)],
+    profiles: Annotated[ProfileRepository, Depends(get_profile_repository)],
+) -> RequestIntro:
+    return RequestIntro(intros, profiles)
+
+
+def get_list_intros(
+    intros: Annotated[IntroRepository, Depends(get_intro_repository)],
+    profiles: Annotated[ProfileRepository, Depends(get_profile_repository)],
+) -> ListMyIntros:
+    return ListMyIntros(intros, profiles)
+
+
+def get_respond_intro(
+    intros: Annotated[IntroRepository, Depends(get_intro_repository)],
+) -> RespondToIntro:
+    return RespondToIntro(intros)
 
 
 def get_record_proof(
