@@ -5,7 +5,7 @@ import { RouterLink } from 'vue-router'
 const props = withDefaults(
   defineProps<{
     variant?: 'accent' | 'ghost' | 'dark' | 'light'
-    size?: 'md' | 'lg'
+    size?: 'sm' | 'md' | 'lg'
     to?: string
     href?: string
     type?: 'button' | 'submit'
@@ -67,6 +67,10 @@ const linkBindings = computed(() => {
 .ui-btn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+.ui-btn--sm {
+  padding: 0.45rem 0.9rem;
+  font-size: var(--fs-small);
 }
 .ui-btn--md {
   padding: 0.7rem 1.2rem;
