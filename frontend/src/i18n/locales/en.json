@@ -2,7 +2,7 @@
   "brand": { "name": "Plugcut" },
   "seo": {
     "landingTitle": "Plugcut · Plug someone in, take your cut.",
-    "landingDescription": "Formalize and execute the private commission the person you placed owes you: a percentage of the day rate, over time. Contract, attribution proof, recurring collection, discretion."
+    "landingDescription": "Collect the private commission the person you placed owes you, and turn every deal into proven referral reputation. Attribution proof, trust network, discreet collection."
   },
   "nav": {
     "how": "How it works",
@@ -138,10 +138,10 @@
     "badge": "Business referrals, person to person",
     "title1": "You plugged them in.",
     "title2": "Take your cut.",
-    "subtitle": "Placed a freelancer, an indie, a company? Plugcut formalizes and executes the private commission they owe you: a percentage of the daily rate, over time. Discreetly, with a real contract.",
+    "subtitle": "Placed a freelancer, a company? Plugcut executes the private commission they owe you (a percentage of the daily rate, over time) and turns every deal into referral reputation, verifiable and shareable.",
     "ctaPrimary": "Create my first deal",
     "ctaSecondary": "See how it works",
-    "note": "The relationship already exists. Plugcut secures the agreement, not the intro.",
+    "note": "Every deal both sides sign feeds your reputation. This is where trusted freelancers are found.",
     "receipt": {
       "label": "Referral agreement",
       "client": "End client",
@@ -190,8 +190,8 @@
       },
       {
         "n": "05",
-        "title": "Recurring collection",
-        "desc": "Your cut is computed and tracked against the day rate, month after month."
+        "title": "Collection + reputation",
+        "desc": "Your cut is tracked against the day rate, month after month. And the sealed deal feeds your reputation, which gets you found in the network."
       }
     ]
   },
@@ -200,20 +200,20 @@
     "title": "What Plugcut secures, where a handshake falls short.",
     "items": [
       {
-        "title": "A real contract",
-        "desc": "The written, signed agreement between you and the placed person. A clean frame, not a promise."
+        "title": "Proven reputation",
+        "desc": "Every deal both sides sign becomes a verifiable reputation point. Facts, not recommendations traded between friends."
       },
       {
         "title": "Attribution proof",
         "desc": "Who introduced whom, timestamped and sealed by fingerprint. Your protection in a dispute."
       },
       {
-        "title": "Recurring collection",
-        "desc": "Your commission tracked and invoiced against the day rate, month after month. A clear schedule, nothing slips."
+        "title": "Trust network",
+        "desc": "Find trusted, available profiles ranked by real trust. You ask for an intro, never cold outreach."
       },
       {
-        "title": "Total discretion",
-        "desc": "The end client sees nothing. The agreement stays strictly between the two of you."
+        "title": "Discreet collection",
+        "desc": "Contract and invoices generated, your commission tracked against the day rate month after month. The end client sees nothing."
       }
     ]
   },
@@ -236,15 +236,15 @@
     "items": [
       {
         "q": "Why not just shake hands and send an invoice?",
-        "a": "Because on 10% of a day rate for a year, the referrer fears being forgotten, and the placed person wants a clean, discreet frame. Plugcut sells trust and execution of the deal, not the intro."
+        "a": "Because on 10% of a day rate for a year, the referrer fears being forgotten, and the placed person wants a clean, discreet frame. Plugcut sells proven trust, execution of the deal, and the network to find the right people."
       },
       {
         "q": "Who pays the commission?",
         "a": "The placed person, never the end client. Privately, discreetly."
       },
       {
-        "q": "Does Plugcut match strangers?",
-        "a": "No. The relationship already exists offline. We formalize and track the agreement. We do not do matching."
+        "q": "How do I find trusted profiles?",
+        "a": "In the network directory, ranked by real reputation: the score comes from sealed deals, not self-declared recommendations. You ask for an intro, the person accepts, the relationship starts. Never cold, never blind matching."
       },
       {
         "q": "Who can be a referrer?",
@@ -258,7 +258,7 @@
   },
   "cta": {
     "title": "Your network has value. Cash it in.",
-    "subtitle": "Put your next referral on a clean, discreet, contractual rail.",
+    "subtitle": "Put your next referral on a clean, discreet rail, and build your referral reputation along the way.",
     "button": "Get started now"
   },
   "footer": {

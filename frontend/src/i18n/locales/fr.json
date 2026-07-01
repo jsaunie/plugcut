@@ -2,7 +2,7 @@
   "brand": { "name": "Plugcut" },
   "seo": {
     "landingTitle": "Plugcut · Place un indé, touche ta part.",
-    "landingDescription": "Formalise et exécute la commission privée que la personne que tu as placée te verse : un pourcentage du TJM, sur la durée. Contrat, preuve d'attribution, collecte récurrente, discrétion."
+    "landingDescription": "Touche la commission privée que la personne que tu as placée te verse, et transforme chaque deal en réputation d'apporteur prouvée. Preuve d'attribution, réseau de confiance, collecte discrète."
   },
   "nav": {
     "how": "Comment ça marche",
@@ -138,10 +138,10 @@
     "badge": "Apport d'affaires, de particulier à particulier",
     "title1": "Tu l'as branché.",
     "title2": "Prends ta part.",
-    "subtitle": "Tu as placé un freelance, un indé, une boîte ? Plugcut formalise et exécute la commission privée qu'on te verse : un pourcentage du TJM, sur la durée. Discrètement, avec un vrai contrat.",
+    "subtitle": "Tu as placé un freelance, une boîte ? Plugcut exécute la commission privée qu'on te verse (un pourcentage du TJM, sur la durée) et transforme chaque deal en réputation d'apporteur, vérifiable et partageable.",
     "ctaPrimary": "Créer mon premier deal",
     "ctaSecondary": "Voir comment ça marche",
-    "note": "La relation existe déjà. Plugcut sécurise l'accord, pas la mise en relation.",
+    "note": "Chaque deal signé des deux côtés nourrit ta réputation. C'est là que les freelances de confiance se trouvent.",
     "receipt": {
       "label": "Accord d'apport",
       "client": "Client final",
@@ -190,8 +190,8 @@
       },
       {
         "n": "05",
-        "title": "Collecte récurrente",
-        "desc": "Ta part est calculée et suivie sur le TJM, mois après mois, jusqu'au bout."
+        "title": "Collecte + réputation",
+        "desc": "Ta part est suivie sur le TJM, mois après mois. Et le deal scellé nourrit ta réputation, qui te fait trouver dans le réseau."
       }
     ]
   },
@@ -200,20 +200,20 @@
     "title": "Ce que Plugcut sécurise, là où une poignée de main ne suffit pas.",
     "items": [
       {
-        "title": "Un vrai contrat",
-        "desc": "L'accord écrit et signé entre toi et la personne placée. Un cadre propre, pas une promesse."
+        "title": "Réputation prouvée",
+        "desc": "Chaque deal signé des deux côtés devient un point de réputation vérifiable. Des faits, pas des recommandations qu'on s'échange entre potes."
       },
       {
         "title": "Preuve d'attribution",
         "desc": "Qui a introduit qui, horodaté et scellé par empreinte. Ta protection en cas de litige."
       },
       {
-        "title": "Collecte récurrente",
-        "desc": "Ta commission suivie et facturée sur le TJM, mois après mois. Un échéancier clair, tu n'oublies rien."
+        "title": "Réseau de confiance",
+        "desc": "Trouve des profils fiables et disponibles, classés par confiance réelle. Tu demandes une intro, jamais du cold."
       },
       {
-        "title": "Discrétion totale",
-        "desc": "Le client final ne voit rien. L'accord reste strictement entre vous deux."
+        "title": "Collecte discrète",
+        "desc": "Contrat et factures générés, ta commission suivie sur le TJM mois après mois. Le client final ne voit rien."
       }
     ]
   },
@@ -236,15 +236,15 @@
     "items": [
       {
         "q": "Pourquoi ne pas juste se serrer la main et envoyer une facture ?",
-        "a": "Parce que sur 10 % d'un TJM pendant un an, l'apporteur a peur de se faire oublier, et la personne placée veut un cadre propre et discret. Plugcut vend la confiance et l'exécution du deal, pas l'intro."
+        "a": "Parce que sur 10 % d'un TJM pendant un an, l'apporteur a peur de se faire oublier, et la personne placée veut un cadre propre et discret. Plugcut vend la confiance prouvée, l'exécution du deal, et le réseau pour trouver les bonnes personnes."
       },
       {
         "q": "Qui paie la commission ?",
         "a": "La personne placée, jamais le client final. En privé, en toute discrétion."
       },
       {
-        "q": "Est-ce que Plugcut met en relation des inconnus ?",
-        "a": "Non. La relation existe déjà hors-ligne. On formalise et on suit l'accord. On ne fait pas de matching."
+        "q": "Comment je trouve des profils de confiance ?",
+        "a": "Dans l'annuaire du réseau, classé par réputation réelle : le score vient des deals scellés, pas de recommandations déclaratives. Tu demandes une intro, la personne accepte, la relation démarre. Jamais de cold, jamais de matching à l'aveugle."
       },
       {
         "q": "Qui peut être apporteur ?",
@@ -258,7 +258,7 @@
   },
   "cta": {
     "title": "Ton réseau a de la valeur. Encaisse-la.",
-    "subtitle": "Mets ton prochain apport sur un rail propre, discret et contractuel.",
+    "subtitle": "Mets ton prochain apport sur un rail propre et discret, et construis ta réputation d'apporteur au passage.",
     "button": "Commencer maintenant"
   },
   "footer": {
