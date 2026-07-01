@@ -270,7 +270,7 @@ async def seed_owner(db: Database) -> dict[str, int]:
     return {"contacts": len(_CONTACTS), "deals": len(_DEALS)}
 
 
-async def main(apply: bool) -> None:
+async def main(apply: bool, purge_only: bool = False) -> None:
     settings = Settings()
     if not settings.database_url.startswith("postgresql"):
         raise SystemExit(
@@ -289,11 +289,14 @@ async def main(apply: bool) -> None:
         return
     try:
         print("Purging test data...", await purge_test_data(db))
-        print("Seeding owner data...", await seed_owner(db))
+        if purge_only:
+            print("Purge-only: skipping seed.")
+        else:
+            print("Seeding owner data...", await seed_owner(db))
         print("Done.")
     finally:
         await db.dispose()
 
 
 if __name__ == "__main__":
-    asyncio.run(main(apply="--yes" in sys.argv))
+    asyncio.run(main(apply="--yes" in sys.argv, purge_only="--purge-only" in sys.argv))
