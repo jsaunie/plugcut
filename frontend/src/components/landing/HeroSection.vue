@@ -237,6 +237,7 @@ import { UiButton, UiEyebrow } from '@/ui'
   margin-top: 0.8rem;
   padding: 0.7rem 0.85rem;
   background: var(--accent);
+  color: var(--accent-ink);
   border-radius: 6px;
 }
 .receipt__total span {

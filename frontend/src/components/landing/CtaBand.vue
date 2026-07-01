@@ -9,7 +9,7 @@ import { UiButton } from '@/ui'
         <div class="ctaband__noise" aria-hidden="true" />
         <h2 class="ctaband__title">{{ $t('cta.title') }}</h2>
         <p class="ctaband__subtitle">{{ $t('cta.subtitle') }}</p>
-        <UiButton to="/inscription" variant="dark" size="lg" class="ctaband__btn">
+        <UiButton to="/inscription" variant="light" size="lg" class="ctaband__btn">
           {{ $t('cta.button') }} <span aria-hidden="true">→</span>
         </UiButton>
       </div>

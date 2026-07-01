@@ -1,15 +1,14 @@
 /* ============================================================================
    Plugcut design tokens. Single source of truth for the "billet / ticket-office"
-   look, now LIGHT-FIRST: a calm light canvas, white cards that float on soft
-   neutral shadows, warm ticket paper for the signature stub, near-black for the
-   few high-emphasis actions, and one confident spot color (vert billet) for
-   "the cut". Consumed by the UI package and every screen. No literal
-   colors/sizes in components; reference these variables.
+   look, LIGHT + MONOCHROME: a calm light canvas, white cards that float on soft
+   neutral shadows, warm ticket paper for the signature stub, and near-black for
+   every action and emphasis (no brand hue). Consumed by the UI package and every
+   screen. No literal colors/sizes in components; reference these variables.
 
-   Direction: A "Billet Emeraude, clair" (see DESIGN.md). A light, uncluttered
-   surface keeps the product feeling honest and effortless; emerald still carries
-   money/trust/calm. The deal is a ticket; the detachable stub is the attribution
-   proof each party keeps.
+   Direction: A clean monochrome ticket look (see DESIGN.md). Black-on-white with
+   warm paper for the stub; the product feels honest and effortless. "The cut" is
+   carried by form (the perforation and tear-off stub), not by color. The deal is
+   a ticket; the detachable stub is the attribution proof each party keeps.
 
    Note on naming: the `--ink*` / `--text-on-ink` family historically meant "dark
    surface". It is now the DEFAULT LIGHT CANVAS (surface + text on it), so a single
@@ -31,12 +30,12 @@
   --solid-2: #24272b;      /* hover on solid */
   --text-on-solid: #f5f5f3;/* text/icons sitting ON a solid-dark fill */
 
-  /* ---- Spot color: "the cut" / money (vert billet) ---- */
-  --accent: #1f8f63;       /* emerald, money + growth + calm; fills + large text */
-  --accent-deep: #166f4c;  /* darker emerald: pressed fills + accent text on light */
-  --accent-on-ink: #166f4c;/* accent text/labels on the light canvas (eyebrows, chips) */
-  --accent-ink: #ffffff;   /* text that sits ON the accent fill (white on emerald) */
-  --danger: #c53a26;       /* warm brick red, tuned to read on the light canvas */
+  /* ---- Accent: monochrome. Actions + emphasis are near-black, not a hue. ---- */
+  --accent: #17191c;       /* near-black: primary fills (buttons, bands, chips) */
+  --accent-deep: #0b0c0e;  /* pressed / darkest ink */
+  --accent-on-ink: #17191c;/* accent text/labels on the light canvas (eyebrows, chips) */
+  --accent-ink: #ffffff;   /* text that sits ON the accent (black) fill */
+  --danger: #c53a26;       /* warm brick red, kept only as a functional error state */
 
   --text-on-ink: #191b1e;         /* primary text on the light canvas (near-black) */
   --muted-on-ink: rgba(25, 27, 30, 0.58);
@@ -77,6 +76,7 @@
 
   /* ---- Radii ---- */
   --radius-sm: 10px;
+  --radius-btn: 14px;      /* rounded-rect buttons (not full pill), per reference */
   --radius: 20px;
   --radius-pill: 999px;
 
@@ -84,7 +84,7 @@
   --shadow-sm: 0 1px 2px rgba(23, 25, 28, 0.05);
   --shadow-card: 0 1px 2px rgba(23, 25, 28, 0.04), 0 18px 40px -22px rgba(23, 25, 28, 0.22);
   --shadow-lift: 0 4px 10px rgba(23, 25, 28, 0.06), 0 30px 60px -28px rgba(23, 25, 28, 0.28);
-  --shadow-accent: 0 10px 26px -10px rgba(31, 143, 99, 0.38);
+  --shadow-accent: 0 10px 26px -12px rgba(23, 25, 28, 0.35);
 
   /* ---- Motion ---- */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);

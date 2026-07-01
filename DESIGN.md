@@ -28,26 +28,29 @@ should appear across dashboard, contract, invoice, and the public signing page.
 
 ## Aesthetic direction
 
-- **Direction:** Billet / ticket-office, **light-first**. A calm, uncluttered light
-  canvas with white cards that float on soft neutral shadows, warm ticket paper for
-  the signature stub, near-black reserved for a few high-emphasis actions, and one
-  confident spot color (emerald) for "the cut".
-- **Why light and not the ink look:** a dark navy canvas read heavy and closed for a
-  product about honest, discreet money between two people. A light surface feels
-  open, effortless, and trustworthy (clean modern fintech), and it lets the ticket
-  paper and the emerald spot do the talking. Reference feel: simple, airy, clean;
-  white cards, generous radius, soft shadows, bold black headings.
+- **Direction:** Billet / ticket-office, **light + monochrome**. A calm,
+  uncluttered light canvas with white cards that float on soft neutral shadows,
+  warm ticket paper for the signature stub, and **near-black for every action and
+  emphasis** (no brand hue). Reference: a clean black-on-white app concept, simple
+  and airy.
+- **Why monochrome:** black-on-white with warm paper reads honest, exact, and
+  timeless, which is what money between two people needs. Removing the color spot
+  keeps attention on content and form. Reference feel: simple, airy, clean; white
+  cards, generous radius, soft shadows, bold black headings, black rounded-rect
+  buttons.
+- **"The cut" without color:** the cut is carried by **form**, the perforation and
+  the tear-off stub, not by a spot color.
 - **Decoration level:** intentional. Light surfaces, paper warmth, perforation,
-  monospace serials, one spot color. No gradients-as-decoration, no glowing dot
-  badges, no icon-grid filler.
+  monospace serials. No gradients-as-decoration, no glowing dot badges, no
+  icon-grid filler, no brand hue.
 - **Mood:** discreet, exact, trustworthy. A printed receipt you would keep, on a
   clean desk, not a flashy dark dashboard.
 
 ## Color
 
-- **Approach:** restrained and light. The canvas is near-white; cards are white and
-  float on soft shadows. One spot color (emerald) carries meaning (the cut, money,
-  success). Near-black is only for high-emphasis actions.
+- **Approach:** restrained, light, monochrome. The canvas is near-white; cards are
+  white and float on soft shadows. There is no brand hue: every action and emphasis
+  is near-black. The only non-neutral is a muted red kept strictly for error states.
 - **Canvas (the light surface family, historically named `--ink*`):** page/section
   `--ink #f4f3ef`, raised white cards `--ink-2 #ffffff`, recessed / hover / chips
   `--ink-3 #ecebe4`. (The `--ink*` names are kept so a single token edit still
@@ -58,18 +61,21 @@ should appear across dashboard, contract, invoice, and the public signing page.
 - **Solid dark (near-black, never navy):** `--solid #17191c`, hover `--solid-2
   #24272b`, text on it `--text-on-solid #f5f5f3`. Only for high-emphasis buttons and
   the occasional grounding surface, never as a full-page background.
-- **Spot, the cut / money:** `--accent #1f8f63` (emerald), for fills, focus rings,
-  and large text. Pressed / accent-text: `--accent-deep #166f4c`. Accent text and
-  labels on the light canvas (eyebrows, chips, status): `--accent-on-ink #166f4c`
-  (dark emerald, legible on light). Text sitting on the accent fill: `--accent-ink
-  #ffffff`.
-- **Danger:** `--danger #c53a26` (warm brick, tuned to read on the light canvas).
+- **Accent (monochrome, not a hue):** `--accent #17191c` (near-black), for fills,
+  focus rings, and emphasis text. Pressed / darkest: `--accent-deep #0b0c0e`. Accent
+  text and labels on the light canvas (eyebrows, chips, status): `--accent-on-ink
+  #17191c`. Text sitting on the accent fill: `--accent-ink #ffffff`. Note: `--accent`
+  and `--solid` are both near-black by design, so every button and emphasis reads as
+  one consistent black.
+- **Danger:** `--danger #c53a26` (warm brick, the only non-neutral, error states
+  only).
 - **Text on the canvas:** `--text-on-ink #191b1e` (near-black), muted
   `--muted-on-ink`, hairline `--line-on-ink`.
 - **Text on paper:** `--text-on-paper #15130e`, muted `--muted-on-paper`, hairline
   `--line-on-paper`.
-- **Buttons:** primary action = emerald fill (`accent`); high-emphasis / on-accent
-  action = near-black (`dark`); tertiary = hairline outline (`ghost`).
+- **Buttons:** rounded-rect, `--radius-btn 14px` (not full pill). Primary = near-black
+  fill (`accent`/`dark`, both black); tertiary = hairline outline (`ghost`); on a
+  dark surface, use the inverted white button (`light`).
 - **Shadows:** soft and neutral so white cards read as floating, not boxed:
   `--shadow-card` for resting cards, `--shadow-lift` on hover, `--shadow-sm` for
   subtle elevation.
@@ -91,7 +97,8 @@ should appear across dashboard, contract, invoice, and the public signing page.
 - **Base unit:** `0.25rem` steps, `--space-1` through `--space-8`.
 - **Density:** comfortable. Generous section padding (`--section-pad`).
 - **Max width:** `--maxw 1180px`, gutter `--gutter`.
-- **Radii:** `--radius-sm 8px`, `--radius 18px`, `--radius-pill 999px`.
+- **Radii:** `--radius-sm 10px`, `--radius-btn 14px` (buttons), `--radius 20px`
+  (cards), `--radius-pill 999px` (chips/toggles).
 - **The ticket primitive:** cards that represent a deal use the perforation plus
   tear-off stub treatment (see `PerforatedDivider.vue` and the perforation styles
   in `base.css`). Punched notches sit on the perforation line; the stub holds the
@@ -119,3 +126,4 @@ should appear across dashboard, contract, invoice, and the public signing page.
 |------|----------|-----------|
 | 2026-07-01 | Adopt direction A "Billet Emeraude": navy ink + warm paper + emerald spot. Replaced black plus acid-lime. | Old palette read aggressive. Money between individuals needs reassurance. Green ink on paper is banknote language (money, trust, calm) and fits the existing ticket/stub motif. Chosen from a 3-way live comparison (A emerald, B cobalt, C coral). |
 | 2026-07-01 | Go **light-first**: flip the canvas from navy ink to a near-white surface with white floating cards, soft neutral shadows, near-black for high-emphasis actions; keep warm paper for the stub and emerald as the spot. | The dark navy canvas read heavy/closed; a clean, airy light surface feels more open and trustworthy for honest person-to-person money and matches the reference feel (simple, épuré, propre). Implemented by repurposing the `--ink*` token family to light values (single-edit recolor), adding a `--solid` near-black for buttons, and softening shadows. Kept the bespoke token/design-system architecture (no Tailwind/shadcn needed to achieve the look). |
+| 2026-07-01 | Go **monochrome**: drop emerald entirely, make `--accent` near-black so every action/emphasis is black; buttons become rounded-rect (`--radius-btn 14px`), added a `light` inverted button for dark surfaces (CTA band goes near-black). Kept a muted red for error states only. | Requested reference palette is pure black/white/gray with black rounded-rect buttons. Setting the `--accent` family to near-black removed the hue everywhere in one edit. "The cut" is now carried by form (perforation/stub), not color. |

@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router'
 
 const props = withDefaults(
   defineProps<{
-    variant?: 'accent' | 'ghost' | 'dark'
+    variant?: 'accent' | 'ghost' | 'dark' | 'light'
     size?: 'md' | 'lg'
     to?: string
     href?: string
@@ -51,7 +51,7 @@ const linkBindings = computed(() => {
   align-items: center;
   justify-content: center;
   gap: 0.55rem;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-btn);
   font-weight: 600;
   text-align: center;
   transition:
@@ -100,6 +100,14 @@ const linkBindings = computed(() => {
 }
 .ui-btn--dark:hover:not(:disabled) {
   background: var(--solid-2);
+}
+/* Inverted: white button for use ON a dark (near-black) surface. */
+.ui-btn--light {
+  background: var(--ink-2);
+  color: var(--text-on-ink);
+}
+.ui-btn--light:hover:not(:disabled) {
+  box-shadow: var(--shadow-card);
 }
 .ui-btn__spinner {
   width: 14px;
