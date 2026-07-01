@@ -16,25 +16,24 @@ withDefaults(defineProps<{ tone?: 'ink' | 'paper'; hover?: boolean }>(), {
   border-radius: var(--radius);
   padding: 1.9rem 1.7rem 2rem;
   border: 1px solid var(--line-on-ink);
+  box-shadow: var(--shadow-card);
   transition:
     transform var(--dur) ease,
     border-color var(--dur) ease,
+    box-shadow var(--dur) ease,
     background var(--dur) ease;
 }
+/* Default surface: a white card floating on the light canvas. */
 .ui-card--ink {
   background: var(--ink-2);
 }
+/* Warm ticket-paper surface, for the signature stub/pillar treatment. */
 .ui-card--paper {
-  background: rgba(255, 255, 255, 0.4);
+  background: var(--paper);
   border-color: var(--line-on-paper);
 }
 .ui-card--hover:hover {
   transform: translateY(-4px);
-}
-.ui-card--ink.ui-card--hover:hover {
-  border-color: var(--text-on-ink);
-}
-.ui-card--paper.ui-card--hover:hover {
-  border-color: var(--text-on-paper);
+  box-shadow: var(--shadow-lift);
 }
 </style>

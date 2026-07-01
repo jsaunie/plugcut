@@ -1,34 +1,46 @@
 /* ============================================================================
    Plugcut design tokens. Single source of truth for the "billet / ticket-office"
-   look: softened ink-navy printing on warm ticket paper, with one confident
-   spot color (vert billet) for "the cut". Consumed by the UI package and every
-   screen. No literal colors/sizes in components; reference these variables.
+   look, now LIGHT-FIRST: a calm light canvas, white cards that float on soft
+   neutral shadows, warm ticket paper for the signature stub, near-black for the
+   few high-emphasis actions, and one confident spot color (vert billet) for
+   "the cut". Consumed by the UI package and every screen. No literal
+   colors/sizes in components; reference these variables.
 
-   Direction: A "Billet Emeraude" (see DESIGN.md). Green ink on paper is
-   banknote language: money, trust, calm. The deal is a ticket; the detachable
-   stub is the attribution proof each party keeps.
+   Direction: A "Billet Emeraude, clair" (see DESIGN.md). A light, uncluttered
+   surface keeps the product feeling honest and effortless; emerald still carries
+   money/trust/calm. The deal is a ticket; the detachable stub is the attribution
+   proof each party keeps.
+
+   Note on naming: the `--ink*` / `--text-on-ink` family historically meant "dark
+   surface". It is now the DEFAULT LIGHT CANVAS (surface + text on it), so a single
+   token edit still recolors every screen. Genuinely dark elements use `--solid`.
    ============================================================================ */
 
 :root {
-  /* ---- Palette: ink (deep navy, never pure black) ---- */
-  --ink: #102438;          /* deep navy "print" ink, reassuring, not harsh black */
-  --ink-2: #16314a;        /* raised surface on ink */
-  --ink-3: #1e3d59;        /* hover / third level on ink */
+  /* ---- Palette: canvas (default light surfaces; the old "ink" family) ---- */
+  --ink: #f4f3ef;          /* page / section background: warm near-white */
+  --ink-2: #ffffff;        /* raised surface: white cards, inputs, panels */
+  --ink-3: #ecebe4;        /* recessed fill / hover / chips */
 
-  /* ---- Palette: paper (warm ticket stock) ---- */
+  /* ---- Palette: paper (warm ticket stock, the signature stub) ---- */
   --paper: #f3eee2;
   --paper-2: #ece5d5;
 
+  /* ---- Solid dark: reserved for high-emphasis actions (near-black, not navy) ---- */
+  --solid: #17191c;        /* dark button fill, occasional grounding surface */
+  --solid-2: #24272b;      /* hover on solid */
+  --text-on-solid: #f5f5f3;/* text/icons sitting ON a solid-dark fill */
+
   /* ---- Spot color: "the cut" / money (vert billet) ---- */
   --accent: #1f8f63;       /* emerald, money + growth + calm; fills + large text */
-  --accent-deep: #166f4c;  /* darker emerald: pressed fills + accent text ON paper */
-  --accent-on-ink: #4fc78f;/* light mint: accent text/labels ON dark ink (eyebrows, chips) */
+  --accent-deep: #166f4c;  /* darker emerald: pressed fills + accent text on light */
+  --accent-on-ink: #166f4c;/* accent text/labels on the light canvas (eyebrows, chips) */
   --accent-ink: #ffffff;   /* text that sits ON the accent fill (white on emerald) */
-  --danger: #d4452f;       /* warm brick red, tuned to the warm palette */
+  --danger: #c53a26;       /* warm brick red, tuned to read on the light canvas */
 
-  --text-on-ink: #e9eef0;
-  --muted-on-ink: rgba(233, 238, 240, 0.6);
-  --line-on-ink: rgba(233, 238, 240, 0.16);
+  --text-on-ink: #191b1e;         /* primary text on the light canvas (near-black) */
+  --muted-on-ink: rgba(25, 27, 30, 0.58);
+  --line-on-ink: rgba(25, 27, 30, 0.12);
 
   --text-on-paper: #15130e;
   --muted-on-paper: rgba(21, 19, 14, 0.62);
@@ -64,13 +76,15 @@
   --space-8: 3rem;
 
   /* ---- Radii ---- */
-  --radius-sm: 8px;
-  --radius: 18px;
+  --radius-sm: 10px;
+  --radius: 20px;
   --radius-pill: 999px;
 
-  /* ---- Shadows ---- */
-  --shadow-card: 0 40px 80px -30px rgba(8, 18, 30, 0.55);
-  --shadow-accent: 0 10px 30px -8px rgba(31, 143, 99, 0.45);
+  /* ---- Shadows (soft + neutral, so white cards float on the light canvas) ---- */
+  --shadow-sm: 0 1px 2px rgba(23, 25, 28, 0.05);
+  --shadow-card: 0 1px 2px rgba(23, 25, 28, 0.04), 0 18px 40px -22px rgba(23, 25, 28, 0.22);
+  --shadow-lift: 0 4px 10px rgba(23, 25, 28, 0.06), 0 30px 60px -28px rgba(23, 25, 28, 0.28);
+  --shadow-accent: 0 10px 26px -10px rgba(31, 143, 99, 0.38);
 
   /* ---- Motion ---- */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);

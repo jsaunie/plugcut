@@ -149,8 +149,8 @@ import { UiButton, UiEyebrow } from '@/ui'
   padding: 1.6rem 1.5rem 1.4rem;
   font-family: var(--font-mono);
   box-shadow:
-    0 40px 80px -30px rgba(0, 0, 0, 0.7),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
+    0 30px 60px -28px rgba(23, 25, 28, 0.3),
+    0 0 0 1px rgba(23, 25, 28, 0.05);
   transform: rotate(-2.4deg);
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }

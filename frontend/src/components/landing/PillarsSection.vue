@@ -23,7 +23,7 @@ const glyphs = ['§', '✶', '↻', '◐']
       </header>
 
       <div class="pillars__grid">
-        <UiCard v-for="(pillar, i) in pillars" :key="pillar.title" tone="paper" hover class="pillar">
+        <UiCard v-for="(pillar, i) in pillars" :key="pillar.title" hover class="pillar">
           <span class="pillar__glyph" aria-hidden="true">{{ glyphs[i] }}</span>
           <h3 class="pillar__title">{{ pillar.title }}</h3>
           <p class="pillar__desc">{{ pillar.desc }}</p>

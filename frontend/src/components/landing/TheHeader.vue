@@ -48,7 +48,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   border-bottom: 1px solid transparent;
 }
 .hdr--scrolled {
-  background: rgba(11, 11, 13, 0.72);
+  background: rgba(250, 249, 246, 0.78);
   backdrop-filter: blur(14px) saturate(140%);
   border-bottom-color: var(--line-on-ink);
 }

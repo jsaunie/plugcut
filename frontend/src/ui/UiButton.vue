@@ -95,8 +95,11 @@ const linkBindings = computed(() => {
   border-color: var(--text-on-ink);
 }
 .ui-btn--dark {
-  background: var(--ink);
-  color: var(--text-on-ink);
+  background: var(--solid);
+  color: var(--text-on-solid);
+}
+.ui-btn--dark:hover:not(:disabled) {
+  background: var(--solid-2);
 }
 .ui-btn__spinner {
   width: 14px;
