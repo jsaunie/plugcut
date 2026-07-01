@@ -191,7 +191,8 @@ const fmt = (value: number) => currency.value.format(value)
   margin-top: 0.3rem;
 }
 .calc__result-cut {
-  border-color: rgba(11, 11, 13, 0.3);
+  /* light dashed line: this perforation sits on the dark (near-black) result panel */
+  border-color: rgba(255, 255, 255, 0.32);
 }
 .calc__result-cut .perforation__scissors {
   background: var(--accent);
