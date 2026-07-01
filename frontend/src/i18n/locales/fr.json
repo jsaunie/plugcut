@@ -16,7 +16,38 @@
     "network": "Réseau",
     "intros": "Intros",
     "profile": "Profil",
+    "settings": "Paramètres",
     "menu": "Menu"
+  },
+  "settings": {
+    "eyebrow": "Compte",
+    "title": "Paramètres",
+    "currentPassword": "Mot de passe actuel",
+    "genericError": "Une erreur est survenue.",
+    "email": {
+      "title": "Adresse email",
+      "current": "Actuelle :",
+      "new": "Nouvelle adresse email",
+      "save": "Changer l'email",
+      "done": "Email mis à jour."
+    },
+    "password": {
+      "title": "Mot de passe",
+      "new": "Nouveau mot de passe",
+      "confirm": "Confirme le nouveau mot de passe",
+      "hint": "8 caractères minimum.",
+      "mismatch": "Les mots de passe ne correspondent pas.",
+      "save": "Changer le mot de passe",
+      "done": "Mot de passe mis à jour."
+    },
+    "delete": {
+      "title": "Supprimer le compte",
+      "lead": "Supprime définitivement ton compte et toutes tes données : deals, profil, contacts, réputation, intros. Cette action est irréversible.",
+      "trigger": "Supprimer mon compte",
+      "warn": "Attention, c'est définitif. Toutes tes données seront effacées.",
+      "confirm": "Supprimer définitivement",
+      "cancel": "Annuler"
+    }
   },
   "intros": {
     "eyebrow": "Mises en relation",

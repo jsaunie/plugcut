@@ -28,6 +28,7 @@ const navItems = [
   { to: '/app/reseau', key: 'network', exact: false },
   { to: '/app/intros', key: 'intros', exact: false },
   { to: '/app/profil', key: 'profile', exact: false },
+  { to: '/app/parametres', key: 'settings', exact: false },
 ]
 
 onMounted(async () => {

@@ -16,7 +16,38 @@
     "network": "Network",
     "intros": "Intros",
     "profile": "Profile",
+    "settings": "Settings",
     "menu": "Menu"
+  },
+  "settings": {
+    "eyebrow": "Account",
+    "title": "Settings",
+    "currentPassword": "Current password",
+    "genericError": "Something went wrong.",
+    "email": {
+      "title": "Email address",
+      "current": "Current:",
+      "new": "New email address",
+      "save": "Change email",
+      "done": "Email updated."
+    },
+    "password": {
+      "title": "Password",
+      "new": "New password",
+      "confirm": "Confirm new password",
+      "hint": "8 characters minimum.",
+      "mismatch": "Passwords do not match.",
+      "save": "Change password",
+      "done": "Password updated."
+    },
+    "delete": {
+      "title": "Delete account",
+      "lead": "Permanently delete your account and all your data: deals, profile, contacts, reputation, intros. This cannot be undone.",
+      "trigger": "Delete my account",
+      "warn": "Warning, this is permanent. All your data will be erased.",
+      "confirm": "Delete permanently",
+      "cancel": "Cancel"
+    }
   },
   "intros": {
     "eyebrow": "Introductions",
