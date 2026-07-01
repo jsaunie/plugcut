@@ -137,3 +137,60 @@ class TestPublicProfile:
         response = await client.get("/api/v1/profiles/nobody-here")
         assert response.status_code == 404
         assert response.json()["error"]["code"] == "profile.not_found"
+
+
+class TestDirectory:
+    async def test_requires_auth(self, client: AsyncClient) -> None:
+        assert (await client.get("/api/v1/profiles")).status_code == 401
+
+    async def test_ranks_by_trust_score(self, client: AsyncClient) -> None:
+        # Trusted owner: a profile plus a sealed deal (trust > 0).
+        trusted = await _headers(client, "trusted@example.com")
+        await client.put(
+            "/api/v1/profile/me",
+            json={**_PROFILE, "handle": "trusted-dev", "display_name": "Trusted Dev"},
+            headers=trusted,
+        )
+        await _sign_a_deal(client, trusted)
+        # Newcomer: a profile, no deals (trust 0).
+        newcomer = await _headers(client, "newcomer@example.com")
+        await client.put(
+            "/api/v1/profile/me",
+            json={**_PROFILE, "handle": "new-dev", "display_name": "New Dev"},
+            headers=newcomer,
+        )
+
+        response = await client.get("/api/v1/profiles", headers=trusted)
+        assert response.status_code == 200
+        handles = [row["profile"]["handle"] for row in response.json()]
+        assert handles == ["trusted-dev", "new-dev"]
+        assert response.json()[0]["reputation"]["trust_score"] > 0
+
+    async def test_filters_by_skill(self, client: AsyncClient) -> None:
+        pydev = await _headers(client, "py@example.com")
+        await client.put(
+            "/api/v1/profile/me",
+            json={**_PROFILE, "handle": "py-dev", "skills": ["Python", "FastAPI"]},
+            headers=pydev,
+        )
+        vuedev = await _headers(client, "vue@example.com")
+        await client.put(
+            "/api/v1/profile/me",
+            json={**_PROFILE, "handle": "vue-dev", "skills": ["Vue"]},
+            headers=vuedev,
+        )
+        response = await client.get("/api/v1/profiles?skill=python", headers=pydev)
+        handles = [row["profile"]["handle"] for row in response.json()]
+        assert handles == ["py-dev"]
+
+    async def test_hides_unavailable_by_default(self, client: AsyncClient) -> None:
+        away = await _headers(client, "away@example.com")
+        await client.put(
+            "/api/v1/profile/me",
+            json={**_PROFILE, "handle": "away-dev", "available": False},
+            headers=away,
+        )
+        default = await client.get("/api/v1/profiles", headers=away)
+        assert default.json() == []
+        including = await client.get("/api/v1/profiles?available=false", headers=away)
+        assert [r["profile"]["handle"] for r in including.json()] == ["away-dev"]

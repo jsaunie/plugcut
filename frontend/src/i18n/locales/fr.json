@@ -13,7 +13,17 @@
     "start": "Commencer",
     "deals": "Deals",
     "contacts": "Contacts",
+    "network": "Réseau",
     "profile": "Profil"
+  },
+  "directory": {
+    "eyebrow": "Réseau de confiance",
+    "title": "Trouve un profil fiable",
+    "lead": "Les freelances du réseau, classés par confiance prouvée. La réputation vient des deals réellement scellés, pas de recommandations déclaratives.",
+    "skillPlaceholder": "Filtrer par compétence (ex. Python)",
+    "availableOnly": "Disponibles seulement",
+    "empty": "Aucun profil ne correspond. Élargis ta recherche.",
+    "sealedCount": "{n} deal scellé | {n} deals scellés"
   },
   "profile": {
     "eyebrow": "Ton profil",

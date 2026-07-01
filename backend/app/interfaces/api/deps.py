@@ -31,6 +31,7 @@ from app.application.profiles.ports import ProfileRepository
 from app.application.profiles.use_cases import (
     GetMyProfile,
     GetPublicProfile,
+    SearchProfiles,
     UpsertMyProfile,
 )
 from app.application.referrals.ports import (
@@ -274,6 +275,13 @@ def get_public_profile(
     referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
 ) -> GetPublicProfile:
     return GetPublicProfile(profiles, referrals)
+
+
+def get_search_profiles(
+    profiles: Annotated[ProfileRepository, Depends(get_profile_repository)],
+    referrals: Annotated[ReferralRepository, Depends(get_referral_repository)],
+) -> SearchProfiles:
+    return SearchProfiles(profiles, referrals)
 
 
 def get_record_proof(

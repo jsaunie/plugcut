@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,6 +14,7 @@ from app.application.profiles.use_cases import (
     GetMyProfile,
     GetPublicProfile,
     ProfileData,
+    SearchProfiles,
     UpsertMyProfile,
 )
 from app.domain.profiles.entities import Profile
@@ -21,6 +22,7 @@ from app.interfaces.api.deps import (
     CurrentUser,
     get_my_profile,
     get_public_profile,
+    get_search_profiles,
     get_session,
     get_upsert_profile,
 )
@@ -67,6 +69,23 @@ class ProfileUpsertRequest(BaseModel):
 class PublicProfileResponse(BaseModel):
     profile: ProfileResponse
     reputation: ReputationResponse
+
+
+@router.get("/profiles", response_model=list[PublicProfileResponse])
+async def search_profiles(
+    current_user: CurrentUser,
+    use_case: Annotated[SearchProfiles, Depends(get_search_profiles)],
+    skill: Annotated[str | None, Query(max_length=40)] = None,
+    available: bool = True,
+) -> list[PublicProfileResponse]:
+    ranked = await use_case.execute(skill=skill, available_only=available)
+    return [
+        PublicProfileResponse(
+            profile=ProfileResponse.from_domain(item.profile),
+            reputation=ReputationResponse.from_domain(item.reputation),
+        )
+        for item in ranked
+    ]
 
 
 @router.get("/profile/me", response_model=ProfileResponse)

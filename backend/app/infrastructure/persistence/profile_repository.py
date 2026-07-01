@@ -62,3 +62,12 @@ class SqlAlchemyProfileRepository:
             select(ProfileModel).where(ProfileModel.handle == handle)
         )
         return _to_domain(model) if model is not None else None
+
+    async def list_all(self, *, available_only: bool = False) -> list[Profile]:
+        # Skill filtering is done in the use-case (portable across SQLite/Postgres
+        # JSON columns); availability is a plain column, so filter it here.
+        stmt = select(ProfileModel).order_by(ProfileModel.display_name)
+        if available_only:
+            stmt = stmt.where(ProfileModel.available.is_(True))
+        result = await self._session.scalars(stmt)
+        return [_to_domain(model) for model in result.all()]

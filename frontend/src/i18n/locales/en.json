@@ -13,7 +13,17 @@
     "start": "Get started",
     "deals": "Deals",
     "contacts": "Contacts",
+    "network": "Network",
     "profile": "Profile"
+  },
+  "directory": {
+    "eyebrow": "Trust network",
+    "title": "Find a trusted profile",
+    "lead": "Freelancers in the network, ranked by proven trust. Reputation comes from deals actually sealed, not self-declared recommendations.",
+    "skillPlaceholder": "Filter by skill (e.g. Python)",
+    "availableOnly": "Available only",
+    "empty": "No profile matches. Widen your search.",
+    "sealedCount": "{n} sealed deal | {n} sealed deals"
   },
   "profile": {
     "eyebrow": "Your profile",

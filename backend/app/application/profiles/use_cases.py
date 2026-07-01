@@ -88,6 +88,48 @@ class GetMyProfile:
         return await self._profiles.get_by_owner(owner_id)
 
 
+@dataclass(frozen=True, slots=True)
+class RankedProfile:
+    """A directory entry: a profile with its computed trust standing."""
+
+    profile: Profile
+    reputation: Reputation
+
+
+class SearchProfiles:
+    """Browse the trust network: profiles filtered by skill, ranked by trust score.
+
+    Reputation is computed per profile from sealed deals; the demo scale keeps this
+    simple (one lookup per profile). A denormalized trust score would remove the
+    per-profile query once the network grows.
+    """
+
+    def __init__(
+        self,
+        profiles: ProfileRepository,
+        referrals: ReferralRepository,
+        service: ReputationService | None = None,
+    ) -> None:
+        self._profiles = profiles
+        self._referrals = referrals
+        self._service = service or ReputationService()
+
+    async def execute(
+        self, *, skill: str | None = None, available_only: bool = True
+    ) -> list[RankedProfile]:
+        profiles = await self._profiles.list_all(available_only=available_only)
+        needle = skill.strip().lower() if skill else None
+        ranked: list[RankedProfile] = []
+        for profile in profiles:
+            if needle is not None and not any(needle in s.lower() for s in profile.skills):
+                continue
+            deals = await self._referrals.list_for_user(profile.owner_id)
+            reputation = self._service.compute(deals, subject_id=profile.owner_id)
+            ranked.append(RankedProfile(profile=profile, reputation=reputation))
+        ranked.sort(key=lambda r: r.reputation.trust_score, reverse=True)
+        return ranked
+
+
 class GetPublicProfile:
     """View a profile by handle, with its trust standing computed from sealed deals."""
 
