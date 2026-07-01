@@ -110,8 +110,11 @@ import { UiButton, UiEyebrow } from '@/ui'
 }
 .hero__title {
   font-size: clamp(3rem, 8vw, 5.6rem);
+  line-height: 1.1;
+  letter-spacing: -0.025em;
   display: flex;
   flex-direction: column;
+  gap: 0.12em;
 }
 .hero__title-cut {
   width: fit-content;
@@ -143,9 +146,9 @@ import { UiButton, UiEyebrow } from '@/ui'
 .receipt {
   position: relative;
   width: min(340px, 84vw);
-  background: var(--paper);
-  color: var(--text-on-paper);
-  border-radius: 6px;
+  background: var(--ink-2);
+  color: var(--text-on-ink);
+  border-radius: var(--radius);
   padding: 1.6rem 1.5rem 1.4rem;
   font-family: var(--font-mono);
   box-shadow:
@@ -162,7 +165,7 @@ import { UiButton, UiEyebrow } from '@/ui'
   justify-content: space-between;
   align-items: baseline;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--line-on-paper);
+  border-bottom: 1px solid var(--line-on-ink);
 }
 .receipt__brand {
   font-weight: 700;
@@ -173,7 +176,7 @@ import { UiButton, UiEyebrow } from '@/ui'
   font-size: 0.62rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--muted-on-paper);
+  color: var(--muted-on-ink);
 }
 .receipt__rows {
   padding: 1rem 0;
@@ -186,49 +189,34 @@ import { UiButton, UiEyebrow } from '@/ui'
   font-size: 0.8rem;
 }
 .receipt__row dt {
-  color: var(--muted-on-paper);
+  color: var(--muted-on-ink);
 }
 .receipt__row dd {
   font-weight: 700;
 }
 .receipt__redacted {
-  background: var(--text-on-paper);
-  color: var(--text-on-paper);
+  background: var(--text-on-ink);
+  color: var(--text-on-ink);
   border-radius: 3px;
   padding-inline: 0.5rem;
   user-select: none;
 }
 .receipt__cut {
   position: relative;
-  height: 18px;
-  margin: 0.4rem -1.5rem;
-  border-top: 2px dashed var(--line-on-paper);
-}
-/* ticket notches on each side of the perforation */
-.receipt__cut::before,
-.receipt__cut::after {
-  content: '';
-  position: absolute;
-  top: -11px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--ink);
-}
-.receipt__cut::before {
-  left: -10px;
-}
-.receipt__cut::after {
-  right: -10px;
+  height: 0;
+  margin: 1.2rem -1.5rem;
+  border-top: 2px dashed var(--line-on-ink);
 }
 .receipt__scissors {
   position: absolute;
-  top: 50%;
+  top: 0;
   left: 1.5rem;
   transform: translateY(-50%);
-  background: var(--paper);
-  padding-inline: 0.35rem;
+  background: var(--ink-2);
+  padding-inline: 0.4rem;
   font-size: 0.85rem;
+  line-height: 1;
+  color: var(--muted-on-ink);
 }
 .receipt__total {
   display: flex;
@@ -250,19 +238,20 @@ import { UiButton, UiEyebrow } from '@/ui'
 }
 .receipt__stamp {
   position: absolute;
-  right: -10px;
-  bottom: 64px;
+  right: 1.3rem;
+  bottom: 92px;
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: 0.62rem;
+  font-size: 0.56rem;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
   color: var(--accent-deep);
-  border: 2px solid var(--accent-deep);
+  background: var(--ink-2);
+  border: 1.5px solid var(--accent-deep);
   border-radius: 4px;
-  padding: 0.25rem 0.5rem;
-  transform: rotate(-12deg);
-  opacity: 0.85;
+  padding: 0.28rem 0.55rem;
+  transform: rotate(-7deg);
 }
 
 @media (min-width: 980px) {
