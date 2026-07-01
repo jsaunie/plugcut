@@ -17,7 +17,11 @@ from app.application.identity.errors import (
     InvalidCredentials,
     InvalidToken,
 )
-from app.application.identity.ports import TokenService, UserRepository
+from app.application.identity.ports import (
+    AccountEraser,
+    TokenService,
+    UserRepository,
+)
 from app.domain.identity.entities import User
 from app.domain.identity.ports import PasswordHasher
 from app.domain.identity.value_objects import Email
@@ -99,3 +103,59 @@ class RefreshAccessToken:
             access_token=self._tokens.create_access_token(str(user.id)),
             refresh_token=self._tokens.create_refresh_token(str(user.id)),
         )
+
+
+class ChangePassword:
+    """Change the caller's password after verifying the current one."""
+
+    def __init__(self, users: UserRepository, hasher: PasswordHasher) -> None:
+        self._users = users
+        self._hasher = hasher
+
+    async def execute(
+        self, user_id: UUID, *, current_password: str, new_password: str
+    ) -> None:
+        user = await self._users.get_by_id(user_id)
+        if user is None or not user.verify_password(current_password, self._hasher):
+            raise InvalidCredentials
+        user.change_password(new_password, self._hasher)
+        await self._users.save(user)
+
+
+class ChangeEmail:
+    """Change the caller's email after verifying the current password."""
+
+    def __init__(self, users: UserRepository, hasher: PasswordHasher) -> None:
+        self._users = users
+        self._hasher = hasher
+
+    async def execute(
+        self, user_id: UUID, *, new_email: str, current_password: str
+    ) -> User:
+        user = await self._users.get_by_id(user_id)
+        if user is None or not user.verify_password(current_password, self._hasher):
+            raise InvalidCredentials
+        email = Email(new_email)
+        existing = await self._users.get_by_email(email)
+        if existing is not None and existing.id != user_id:
+            raise EmailAlreadyRegistered
+        user.change_email(email)
+        await self._users.save(user)
+        return user
+
+
+class DeleteAccount:
+    """Erase the caller and everything they own, after verifying their password."""
+
+    def __init__(
+        self, users: UserRepository, hasher: PasswordHasher, eraser: AccountEraser
+    ) -> None:
+        self._users = users
+        self._hasher = hasher
+        self._eraser = eraser
+
+    async def execute(self, user_id: UUID, *, current_password: str) -> None:
+        user = await self._users.get_by_id(user_id)
+        if user is None or not user.verify_password(current_password, self._hasher):
+            raise InvalidCredentials
+        await self._eraser.erase(user_id)

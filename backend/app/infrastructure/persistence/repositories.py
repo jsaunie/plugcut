@@ -50,3 +50,6 @@ class SqlAlchemyUserRepository:
 
     async def add(self, user: User) -> None:
         self._session.add(_to_model(user))
+
+    async def save(self, user: User) -> None:
+        await self._session.merge(_to_model(user))

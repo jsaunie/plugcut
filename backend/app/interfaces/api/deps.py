@@ -20,9 +20,16 @@ from app.application.contacts.use_cases import (
     UpdateContact,
 )
 from app.application.identity.errors import InvalidToken
-from app.application.identity.ports import TokenService, UserRepository
+from app.application.identity.ports import (
+    AccountEraser,
+    TokenService,
+    UserRepository,
+)
 from app.application.identity.use_cases import (
     AuthenticateUser,
+    ChangeEmail,
+    ChangePassword,
+    DeleteAccount,
     RefreshAccessToken,
     RegisterUser,
 )
@@ -76,6 +83,7 @@ from app.infrastructure.email.reminder_renderer import HtmlReminderEmailRenderer
 from app.infrastructure.email.resend_sender import ResendEmailSender
 from app.infrastructure.evidence.html_renderer import HtmlEvidenceRenderer
 from app.infrastructure.invoices.html_renderer import HtmlInvoiceRenderer
+from app.infrastructure.persistence.account_eraser import SqlAlchemyAccountEraser
 from app.infrastructure.persistence.contact_repository import SqlAlchemyContactRepository
 from app.infrastructure.persistence.file_storage import SqlAlchemyFileStorage
 from app.infrastructure.persistence.installment_repository import (
@@ -136,6 +144,34 @@ def get_refresh_access_token(
     tokens: Annotated[TokenService, Depends(get_token_service)],
 ) -> RefreshAccessToken:
     return RefreshAccessToken(users, tokens)
+
+
+def get_account_eraser(
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> AccountEraser:
+    return SqlAlchemyAccountEraser(session)
+
+
+def get_change_password(
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    hasher: Annotated[PasswordHasher, Depends(get_hasher)],
+) -> ChangePassword:
+    return ChangePassword(users, hasher)
+
+
+def get_change_email(
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    hasher: Annotated[PasswordHasher, Depends(get_hasher)],
+) -> ChangeEmail:
+    return ChangeEmail(users, hasher)
+
+
+def get_delete_account(
+    users: Annotated[UserRepository, Depends(get_user_repository)],
+    hasher: Annotated[PasswordHasher, Depends(get_hasher)],
+    eraser: Annotated[AccountEraser, Depends(get_account_eraser)],
+) -> DeleteAccount:
+    return DeleteAccount(users, hasher, eraser)
 
 
 async def get_current_user(

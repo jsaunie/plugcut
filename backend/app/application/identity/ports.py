@@ -17,6 +17,14 @@ class UserRepository(Protocol):
 
     async def add(self, user: User) -> None: ...
 
+    async def save(self, user: User) -> None: ...
+
+
+class AccountEraser(Protocol):
+    """Erase a user and everything they own (right to be forgotten)."""
+
+    async def erase(self, user_id: UUID) -> None: ...
+
 
 class TokenService(Protocol):
     def create_access_token(self, subject: str) -> str: ...

@@ -45,3 +45,12 @@ class User:
 
     def verify_password(self, raw_password: str, hasher: PasswordHasher) -> bool:
         return hasher.verify(raw_password, self.password_hash)
+
+    def change_password(self, new_raw_password: str, hasher: PasswordHasher) -> None:
+        if len(new_raw_password) < MIN_PASSWORD_LENGTH:
+            raise WeakPassword
+        self.password_hash = hasher.hash(new_raw_password)
+
+    def change_email(self, new_email: Email) -> None:
+        """Set a new address. Uniqueness is enforced by the use case, not here."""
+        self.email = new_email

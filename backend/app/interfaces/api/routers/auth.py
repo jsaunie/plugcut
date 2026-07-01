@@ -10,17 +10,26 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.application.identity.dtos import AuthenticateUserCommand, RegisterUserCommand
 from app.application.identity.use_cases import (
     AuthenticateUser,
+    ChangeEmail,
+    ChangePassword,
+    DeleteAccount,
     RefreshAccessToken,
     RegisterUser,
 )
 from app.interfaces.api.deps import (
     CurrentUser,
     get_authenticate_user,
+    get_change_email,
+    get_change_password,
+    get_delete_account,
     get_refresh_access_token,
     get_register_user,
     get_session,
 )
 from app.interfaces.api.schemas import (
+    ChangeEmailRequest,
+    ChangePasswordRequest,
+    DeleteAccountRequest,
     LoginRequest,
     RefreshRequest,
     RegisterRequest,
@@ -71,3 +80,45 @@ async def refresh(
 @router.get("/me", response_model=UserResponse)
 async def me(current_user: CurrentUser) -> UserResponse:
     return UserResponse.from_domain(current_user)
+
+
+@router.put("/me/password", status_code=status.HTTP_204_NO_CONTENT)
+async def change_password(
+    payload: ChangePasswordRequest,
+    current_user: CurrentUser,
+    use_case: Annotated[ChangePassword, Depends(get_change_password)],
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> None:
+    await use_case.execute(
+        current_user.id,
+        current_password=payload.current_password,
+        new_password=payload.new_password,
+    )
+    await session.commit()
+
+
+@router.put("/me/email", response_model=UserResponse)
+async def change_email(
+    payload: ChangeEmailRequest,
+    current_user: CurrentUser,
+    use_case: Annotated[ChangeEmail, Depends(get_change_email)],
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> UserResponse:
+    user = await use_case.execute(
+        current_user.id,
+        new_email=payload.new_email,
+        current_password=payload.current_password,
+    )
+    await session.commit()
+    return UserResponse.from_domain(user)
+
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_account(
+    payload: DeleteAccountRequest,
+    current_user: CurrentUser,
+    use_case: Annotated[DeleteAccount, Depends(get_delete_account)],
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> None:
+    await use_case.execute(current_user.id, current_password=payload.current_password)
+    await session.commit()

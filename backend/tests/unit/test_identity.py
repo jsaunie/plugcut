@@ -115,3 +115,95 @@ class TestAuthenticateUser:
         auth = AuthenticateUser(repo, FakePasswordHasher(), _StubTokens())
         with pytest.raises(InactiveUser):
             await auth.execute(AuthenticateUserCommand("dev@example.com", "supersecret"))
+
+
+class TestAccountManagement:
+    async def _seed(self) -> tuple[InMemoryUserRepository, User]:
+        repo = InMemoryUserRepository()
+        user = User.register(
+            id=uuid4(),
+            email=Email("dev@example.com"),
+            raw_password="supersecret",
+            hasher=FakePasswordHasher(),
+            now=_now(),
+        )
+        await repo.add(user)
+        return repo, user
+
+    async def test_change_password(self) -> None:
+        from app.application.identity.use_cases import ChangePassword
+
+        repo, user = await self._seed()
+        await ChangePassword(repo, FakePasswordHasher()).execute(
+            user.id, current_password="supersecret", new_password="brandnewpass"
+        )
+        assert user.verify_password("brandnewpass", FakePasswordHasher())
+
+    async def test_change_password_rejects_wrong_current(self) -> None:
+        from app.application.identity.use_cases import ChangePassword
+
+        repo, user = await self._seed()
+        with pytest.raises(InvalidCredentials):
+            await ChangePassword(repo, FakePasswordHasher()).execute(
+                user.id, current_password="wrong", new_password="brandnewpass"
+            )
+
+    async def test_change_password_rejects_weak(self) -> None:
+        from app.application.identity.use_cases import ChangePassword
+
+        repo, user = await self._seed()
+        with pytest.raises(WeakPassword):
+            await ChangePassword(repo, FakePasswordHasher()).execute(
+                user.id, current_password="supersecret", new_password="short"
+            )
+
+    async def test_change_email(self) -> None:
+        from app.application.identity.use_cases import ChangeEmail
+
+        repo, user = await self._seed()
+        await ChangeEmail(repo, FakePasswordHasher()).execute(
+            user.id, new_email="New@Example.com", current_password="supersecret"
+        )
+        assert user.email.value == "new@example.com"
+        assert await repo.get_by_email(Email("new@example.com")) is not None
+
+    async def test_change_email_rejects_taken(self) -> None:
+        from app.application.identity.use_cases import ChangeEmail
+
+        repo, user = await self._seed()
+        await repo.add(
+            User.register(
+                id=uuid4(),
+                email=Email("taken@example.com"),
+                raw_password="supersecret",
+                hasher=FakePasswordHasher(),
+                now=_now(),
+            )
+        )
+        with pytest.raises(EmailAlreadyRegistered):
+            await ChangeEmail(repo, FakePasswordHasher()).execute(
+                user.id, new_email="taken@example.com", current_password="supersecret"
+            )
+
+    async def test_delete_account_erases_after_password_check(self) -> None:
+        from app.application.identity.use_cases import DeleteAccount
+        from tests.fakes import InMemoryAccountEraser
+
+        repo, user = await self._seed()
+        eraser = InMemoryAccountEraser()
+        await DeleteAccount(repo, FakePasswordHasher(), eraser).execute(
+            user.id, current_password="supersecret"
+        )
+        assert eraser.erased == [user.id]
+
+    async def test_delete_account_rejects_wrong_password(self) -> None:
+        from app.application.identity.use_cases import DeleteAccount
+        from tests.fakes import InMemoryAccountEraser
+
+        repo, user = await self._seed()
+        eraser = InMemoryAccountEraser()
+        with pytest.raises(InvalidCredentials):
+            await DeleteAccount(repo, FakePasswordHasher(), eraser).execute(
+                user.id, current_password="nope"
+            )
+        assert eraser.erased == []

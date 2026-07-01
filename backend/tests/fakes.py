@@ -21,6 +21,21 @@ class InMemoryUserRepository:
     async def add(self, user: User) -> None:
         self._by_email[user.email.value] = user
 
+    async def save(self, user: User) -> None:
+        # Drop any stale key for this user (e.g. after an email change), re-index.
+        for key, existing in list(self._by_email.items()):
+            if existing.id == user.id:
+                del self._by_email[key]
+        self._by_email[user.email.value] = user
+
+
+class InMemoryAccountEraser:
+    def __init__(self) -> None:
+        self.erased: list[UUID] = []
+
+    async def erase(self, user_id: UUID) -> None:
+        self.erased.append(user_id)
+
 
 class FakePasswordHasher:
     """Deterministic, fast hasher for unit tests (NOT for production)."""
